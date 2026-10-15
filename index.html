@@ -65,7 +65,6 @@
                 radial-gradient(circle at 90% 90%, rgba(0,0,0,0.5) 0%, transparent 40%);
         }
 
-        /* Уведомления */
         .toast-container {
             position: fixed;
             top: 20px;
@@ -98,7 +97,6 @@
             to { transform: translateX(0); opacity: 1; }
         }
 
-        /* Модальное окно просмотра отчетов */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -130,7 +128,6 @@
         }
         .modal-close:hover { color: var(--danger); }
 
-        /* Форма авторизации */
         .auth-container {
             position: fixed;
             inset: 0;
@@ -244,6 +241,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            position: relative;
         }
 
         .nav-tab.active {
@@ -251,6 +249,23 @@
             color: #fff;
             border-color: var(--accent);
             box-shadow: 0 -4px 15px var(--accent-glow);
+        }
+
+        /* Оранжевый мигающий бейдж новых заявок */
+        .badge-notice {
+            background: var(--warning);
+            color: #000;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 10px;
+            animation: pulseNotice 1.5s infinite;
+        }
+
+        @keyframes pulseNotice {
+            0% { box-shadow: 0 0 0 0 rgba(255, 165, 2, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(255, 165, 2, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 165, 2, 0); }
         }
 
         .container { padding: 30px; flex: 1; max-width: 1300px; width: 100%; margin: 0 auto; }
@@ -357,10 +372,31 @@
             box-shadow: 0 0 12px var(--accent-glow);
         }
 
-        .theme-switcher {
+        /* Виджет музыки и тема */
+        .bottom-controls {
             position: fixed;
             bottom: 20px;
             right: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .music-player {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 30px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            font-size: 12px;
+        }
+
+        .theme-switcher {
             background: var(--bg-card);
             border: 1px solid var(--border);
             padding: 8px 14px;
@@ -369,7 +405,6 @@
             gap: 10px;
             align-items: center;
             box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-            z-index: 999;
             backdrop-filter: blur(10px);
         }
         .theme-circle {
@@ -393,16 +428,29 @@
         </div>
     </div>
 
-    <div class="theme-switcher">
-        <span style="font-size: 11px; color: var(--text-muted); font-weight: bold;">ТЕМА:</span>
-        <div class="theme-circle" style="background: #2ed573;" onclick="setTheme('green')"></div>
-        <div class="theme-circle" style="background: #ff4757;" onclick="setTheme('pink')"></div>
-        <div class="theme-circle" style="background: #1e90ff;" onclick="setTheme('blue')"></div>
-        <div class="theme-circle" style="background: #8a2be2;" onclick="setTheme('purple')"></div>
-        <div class="theme-circle" style="background: #ffa502;" onclick="setTheme('orange')"></div>
+    <!-- Нижняя панель: Переключатель тем и Музыкальный плеер -->
+    <div class="bottom-controls">
+        <div class="music-player">
+            <i class="fa-solid fa-compact-disc" id="musicIcon" style="color: var(--accent); font-size: 16px;"></i>
+            <div>
+                <b id="trackTitle">Relax Lo-Fi Mix</b><br>
+                <small style="color: var(--text-muted);" id="trackArtist">SureBox Radio</small>
+            </div>
+            <button onclick="toggleMusic()" class="btn-sm btn-success" id="playBtn" style="padding: 4px 10px;"><i class="fa-solid fa-play"></i></button>
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.3" oninput="changeVolume(this.value)" style="width: 60px; accent-color: var(--accent);">
+        </div>
+
+        <div class="theme-switcher">
+            <span style="font-size: 11px; color: var(--text-muted); font-weight: bold;">ТЕМА:</span>
+            <div class="theme-circle" style="background: #2ed573;" onclick="setTheme('green')"></div>
+            <div class="theme-circle" style="background: #ff4757;" onclick="setTheme('pink')"></div>
+            <div class="theme-circle" style="background: #1e90ff;" onclick="setTheme('blue')"></div>
+            <div class="theme-circle" style="background: #8a2be2;" onclick="setTheme('purple')"></div>
+            <div class="theme-circle" style="background: #ffa502;" onclick="setTheme('orange')"></div>
+        </div>
     </div>
 
-    <!-- Вход (Исправлены все поля) -->
+    <!-- Вход -->
     <div class="auth-container" id="authScreen">
         <div class="auth-card">
             <h1>Sure<span>Box</span> Staff</h1>
@@ -421,7 +469,7 @@
         </div>
     </div>
 
-    <!-- Основное приложение -->
+    <!-- Основной дашборд -->
     <div id="appScreen" style="display: none;">
         <header>
             <div class="logo"><i class="fa-solid fa-cube"></i> SureBox Staff</div>
@@ -435,8 +483,8 @@
             <div class="nav-tab active" id="tabBtn-reports" onclick="switchTab('reports')"><i class="fa-solid fa-file-lines"></i> Отчеты</div>
             <div class="nav-tab" id="tabBtn-news" onclick="switchTab('news')"><i class="fa-solid fa-bullhorn"></i> Новости</div>
             <div class="nav-tab" id="tabBtn-profile" onclick="switchTab('profile')"><i class="fa-solid fa-user"></i> Профиль</div>
-            <div class="nav-tab" id="tabBtn-vacation" onclick="switchTab('vacation')"><i class="fa-solid fa-umbrella-beach"></i> Отпуск</div>
-            <div class="nav-tab" id="tabBtn-promotion" onclick="switchTab('promotion')"><i class="fa-solid fa-arrow-up-right-dots"></i> Повышение</div>
+            <div class="nav-tab" id="tabBtn-vacation" onclick="switchTab('vacation')"><i class="fa-solid fa-umbrella-beach"></i> Отпуск <span class="badge-notice" id="vacationNotice" style="display: none;">0</span></div>
+            <div class="nav-tab" id="tabBtn-promotion" onclick="switchTab('promotion')"><i class="fa-solid fa-arrow-up-right-dots"></i> Повышение <span class="badge-notice" id="promotionNotice" style="display: none;">0</span></div>
             <div class="nav-tab" id="curatorTab" style="display: none;" onclick="switchTab('curator')"><i class="fa-solid fa-crown"></i> Управление КП</div>
             <div class="nav-tab" id="supportTab" style="display: none;" onclick="switchTab('supportView')"><i class="fa-solid fa-eye"></i> Просмотр отчетов</div>
         </div>
@@ -527,19 +575,22 @@
             <div id="tab-vacation" class="tab-content">
                 <div class="card">
                     <div class="card-title"><div><i class="fa-solid fa-umbrella-beach"></i> Заявка на отпуск</div></div>
-                    <form onsubmit="event.preventDefault(); playSound('success'); showToast('Заявка на отпуск успешно отправлена!');">
-                        <div class="form-group"><label>Причина отпуска</label><input type="text" class="form-control" placeholder="Учеба, семейные обстоятельства" required></div>
-                        <div class="form-group"><label>Срок (дней)</label><input type="text" class="form-control" placeholder="7 дней" required></div>
-                        <button type="submit" class="btn-primary" style="width: auto; padding: 10px 25px;"><i class="fa-solid fa-paper-plane"></i> Отправить</button>
+                    <form id="vacationSubmitForm">
+                        <div class="form-group"><label>Причина отпуска</label><input type="text" id="vacReason" class="form-control" placeholder="Учеба, семейные обстоятельства" required></div>
+                        <div class="form-group"><label>Срок (дней)</label><input type="text" id="vacDays" class="form-control" placeholder="7 дней" required></div>
+                        <button type="submit" class="btn-primary" style="width: auto; padding: 10px 25px;"><i class="fa-solid fa-paper-plane"></i> Отправить заявку</button>
                     </form>
                 </div>
 
-                <div class="mc-banner">
-                    <i class="fa-solid fa-circle-info" style="font-size: 38px; color: var(--warning);"></i>
-                    <div>
-                        <h4 style="margin-bottom: 4px;">Правила предоставления отпуска КП</h4>
-                        <p style="font-size: 13px; color: var(--text-muted);">Максимальный срок отпуска — 14 дней в месяц. Во время отпуска выполнение недельной нормы замораживается.</p>
-                    </div>
+                <!-- Управление заявками на отпуск для администрации -->
+                <div class="card" id="vacationAdminCard" style="display: none;">
+                    <div class="card-title"><div><i class="fa-solid fa-list-check"></i> Поданные заявки на отпуск</div></div>
+                    <table>
+                        <thead>
+                            <tr><th>Сотрудник</th><th>Причина</th><th>Срок</th><th>Статус</th><th>Действия</th></tr>
+                        </thead>
+                        <tbody id="vacationTableBody"></tbody>
+                    </table>
                 </div>
             </div>
 
@@ -547,9 +598,9 @@
             <div id="tab-promotion" class="tab-content">
                 <div class="card">
                     <div class="card-title"><div><i class="fa-solid fa-arrow-up-right-dots"></i> Заявка на повышение</div></div>
-                    <form onsubmit="event.preventDefault(); playSound('success'); showToast('Заявка на повышение отправлена!');">
+                    <form id="promotionSubmitForm">
                         <div class="form-group"><label>Желаемая должность</label>
-                            <select class="form-control">
+                            <select id="promTargetRole" class="form-control">
                                 <option>Ст. Хелпер</option>
                                 <option>Мл. Модератор</option>
                                 <option>Модератор</option>
@@ -558,6 +609,17 @@
                         </div>
                         <button type="submit" class="btn-primary" style="width: auto; padding: 10px 25px;"><i class="fa-solid fa-paper-plane"></i> Подать заявку</button>
                     </form>
+                </div>
+
+                <!-- Управление заявками на повышение -->
+                <div class="card" id="promotionAdminCard" style="display: none;">
+                    <div class="card-title"><div><i class="fa-solid fa-user-graduate"></i> Поданные заявки на повышение</div></div>
+                    <table>
+                        <thead>
+                            <tr><th>Сотрудник</th><th>Желаемая роль</th><th>Статус</th><th>Действия</th></tr>
+                        </thead>
+                        <tbody id="promotionTableBody"></tbody>
+                    </table>
                 </div>
             </div>
 
@@ -656,10 +718,34 @@
         </div>
     </div>
 
+    <!-- Аудиопоток релакс музыки -->
+    <audio id="bgAudio" loop src="https://stream.zeno.fm/f3v62880y8quv"></audio>
+
     <script>
         let currentUser = null;
         let selectedStaffFilter = 'all';
         let currentPastedImage = null;
+        let isPlaying = false;
+
+        function toggleMusic() {
+            const audio = document.getElementById('bgAudio');
+            const btn = document.getElementById('playBtn');
+            const icon = document.getElementById('musicIcon');
+            if (isPlaying) {
+                audio.pause();
+                btn.innerHTML = '<i class="fa-solid fa-play"></i>';
+                icon.style.animation = 'none';
+            } else {
+                audio.play();
+                btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+                icon.style.animation = 'spin 3s linear infinite';
+            }
+            isPlaying = !isPlaying;
+        }
+
+        function changeVolume(val) {
+            document.getElementById('bgAudio').volume = val;
+        }
 
         function playSound(type = 'click') {
             try {
@@ -702,6 +788,8 @@
         let staffDatabase = JSON.parse(localStorage.getItem('surebox_staff')) || defaultStaff;
         let submittedReports = JSON.parse(localStorage.getItem('surebox_reports')) || [];
         let newsList = JSON.parse(localStorage.getItem('surebox_news')) || [];
+        let vacationRequests = JSON.parse(localStorage.getItem('surebox_vacations')) || [];
+        let promotionRequests = JSON.parse(localStorage.getItem('surebox_promotions')) || [];
         let pckAccepted = parseInt(localStorage.getItem('surebox_accepted') || '0');
         let pckRemoved = parseInt(localStorage.getItem('surebox_removed') || '0');
 
@@ -709,6 +797,8 @@
             localStorage.setItem('surebox_staff', JSON.stringify(staffDatabase));
             localStorage.setItem('surebox_reports', JSON.stringify(submittedReports));
             localStorage.setItem('surebox_news', JSON.stringify(newsList));
+            localStorage.setItem('surebox_vacations', JSON.stringify(vacationRequests));
+            localStorage.setItem('surebox_promotions', JSON.stringify(promotionRequests));
             localStorage.setItem('surebox_accepted', pckAccepted);
             localStorage.setItem('surebox_removed', pckRemoved);
         }
@@ -757,6 +847,94 @@
         function closeModal() {
             document.getElementById('reportModal').style.display = 'none';
         }
+
+        function renderRequestsTables() {
+            const vacTbody = document.getElementById('vacationTableBody');
+            const promTbody = document.getElementById('promotionTableBody');
+            vacTbody.innerHTML = '';
+            promTbody.innerHTML = '';
+
+            const pendingVac = vacationRequests.filter(r => r.status === 'На рассмотрении').length;
+            const pendingProm = promotionRequests.filter(r => r.status === 'На рассмотрении').length;
+
+            const vacNotice = document.getElementById('vacationNotice');
+            const promNotice = document.getElementById('promotionNotice');
+
+            if (pendingVac > 0) { vacNotice.innerText = pendingVac; vacNotice.style.display = 'inline-block'; }
+            else { vacNotice.style.display = 'none'; }
+
+            if (pendingProm > 0) { promNotice.innerText = pendingProm; promNotice.style.display = 'inline-block'; }
+            else { promNotice.style.display = 'none'; }
+
+            vacationRequests.forEach((req, idx) => {
+                vacTbody.innerHTML += `
+                    <tr>
+                        <td><b>${req.author}</b></td>
+                        <td>${req.reason}</td>
+                        <td>${req.days}</td>
+                        <td><span style="color: ${req.status==='Одобрено'?'var(--success)':req.status==='Отклонено'?'var(--danger)':'var(--warning)'}; font-weight: bold;">${req.status}</span></td>
+                        <td>
+                            ${req.status==='На рассмотрении' ? `
+                                <button onclick="updateVacStatus(${idx}, 'Одобрено')" class="btn-sm btn-success"><i class="fa-solid fa-check"></i></button>
+                                <button onclick="updateVacStatus(${idx}, 'Отклонено')" class="btn-sm btn-danger"><i class="fa-solid fa-xmark"></i></button>
+                            ` : '-'}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            promotionRequests.forEach((req, idx) => {
+                promTbody.innerHTML += `
+                    <tr>
+                        <td><b>${req.author}</b></td>
+                        <td><span style="color: var(--accent); font-weight:bold;">${req.targetRole}</span></td>
+                        <td><span style="color: ${req.status==='Одобрено'?'var(--success)':req.status==='Отклонено'?'var(--danger)':'var(--warning)'}; font-weight: bold;">${req.status}</span></td>
+                        <td>
+                            ${req.status==='На рассмотрении' ? `
+                                <button onclick="updatePromStatus(${idx}, 'Одобрено')" class="btn-sm btn-success"><i class="fa-solid fa-check"></i></button>
+                                <button onclick="updatePromStatus(${idx}, 'Отклонено')" class="btn-sm btn-danger"><i class="fa-solid fa-xmark"></i></button>
+                            ` : '-'}
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function updateVacStatus(idx, status) {
+            vacationRequests[idx].status = status;
+            saveData();
+            renderRequestsTables();
+            playSound('click');
+        }
+
+        function updatePromStatus(idx, status) {
+            promotionRequests[idx].status = status;
+            saveData();
+            renderRequestsTables();
+            playSound('click');
+        }
+
+        document.getElementById('vacationSubmitForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const reason = document.getElementById('vacReason').value.trim();
+            const days = document.getElementById('vacDays').value.trim();
+            vacationRequests.unshift({ author: currentUser.name, reason, days, status: 'На рассмотрении' });
+            saveData();
+            renderRequestsTables();
+            this.reset();
+            playSound('success');
+            showToast('Заявка на отпуск успешно отправлена!');
+        });
+
+        document.getElementById('promotionSubmitForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const targetRole = document.getElementById('promTargetRole').value;
+            promotionRequests.unshift({ author: currentUser.name, targetRole, status: 'На рассмотрении' });
+            saveData();
+            renderRequestsTables();
+            playSound('success');
+            showToast('Заявка на повышение отправлена!');
+        });
 
         function renderStaffTables() {
             const tbody = document.getElementById('staffTable');
@@ -920,6 +1098,8 @@
             if (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Администратор') {
                 document.getElementById('curatorTab').style.display = 'flex';
                 document.getElementById('supportTab').style.display = 'flex';
+                document.getElementById('vacationAdminCard').style.display = 'block';
+                document.getElementById('promotionAdminCard').style.display = 'block';
             }
 
             if (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора') {
@@ -936,11 +1116,13 @@
 
             renderStaffTables();
             renderSupportView();
+            renderRequestsTables();
             renderNews();
             updateProfileStats();
             showToast(`Успешный вход! Добро пожаловать, ${currentUser.name}`);
         });
 
+        // Гарантированная очистка всей формы после отправки
         document.getElementById('reportForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const cmd = document.getElementById('repCmd').value;
@@ -969,6 +1151,7 @@
             playSound('success');
             showToast('Отчет успешно подан!');
 
+            // ПОЛНАЯ ОЧИСТКА ВСЕХ ПОЛЕЙ
             document.getElementById('repTarget').value = '';
             document.getElementById('repDuration').value = '';
             document.getElementById('repReason').value = '';
@@ -1007,6 +1190,7 @@
             return 300;
         }
 
+        // Гарантированный сброс недельной нормы при генерации отчета
         function generateWeeklyReport() {
             playSound('success');
 
@@ -1052,6 +1236,7 @@
                     </tr>
                 `;
 
+                // ПОЛНЫЙ СБРОС НЕДЕЛЬНОЙ СТАТИСТИКИ У ВСЕХ
                 user.mutes = 0;
                 user.bans = 0;
             });
@@ -1077,7 +1262,7 @@
             renderStaffTables();
             renderSupportView();
             updateProfileStats();
-            showToast('Недельный отчет опубликован! Статистика сброшена на 0.');
+            showToast('Недельный отчет опубликован! Статистика недели сброшена на 0.');
             switchTab('news');
         }
 
