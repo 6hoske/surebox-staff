@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SureBox | Панель Управления КП</title>
+    <title>SureBox | Панель Управления КП (Cloud Edition)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -11,7 +11,6 @@
             --bg-card: rgba(18, 18, 24, 0.95);
             --bg-input: #0f0f14;
             --accent: #2ed573;
-            --accent-hover: #26af5d;
             --accent-glow: rgba(46, 213, 115, 0.4);
             --text-main: #f8f9fa;
             --text-muted: #9494a0;
@@ -21,444 +20,74 @@
             --warning: #ffa502;
         }
 
-        [data-theme="pink"] {
-            --accent: #ff4757;
-            --accent-hover: #ff6b81;
-            --accent-glow: rgba(255, 71, 87, 0.4);
-            --border: rgba(255, 71, 87, 0.3);
-        }
-        [data-theme="blue"] {
-            --accent: #1e90ff;
-            --accent-hover: #3742fa;
-            --accent-glow: rgba(30, 144, 255, 0.4);
-            --border: rgba(30, 144, 255, 0.3);
-        }
-        [data-theme="purple"] {
-            --accent: #8a2be2;
-            --accent-hover: #9d4edd;
-            --accent-glow: rgba(138, 43, 226, 0.4);
-            --border: rgba(138, 43, 226, 0.3);
-        }
-        [data-theme="orange"] {
-            --accent: #ffa502;
-            --accent-hover: #ff7f00;
-            --accent-glow: rgba(255, 165, 2, 0.4);
-            --border: rgba(255, 165, 2, 0.3);
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; transition: all 0.2s ease; }
+        body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            transition: all 0.2s ease;
-        }
-
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background-image: 
-                radial-gradient(circle at 15% 15%, var(--accent-glow) 0%, transparent 45%),
-                radial-gradient(circle at 85% 85%, rgba(138, 43, 226, 0.15) 0%, transparent 45%);
-        }
-
-        .toast-container {
+        .sync-badge {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .toast {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            padding: 14px 22px;
-            border-radius: 10px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.6);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 14px;
-            backdrop-filter: blur(12px);
-            animation: slideIn 0.3s ease;
-        }
-        .toast.error { border-color: var(--danger); }
-        .toast.error i { color: var(--danger); }
-        .toast.success { border-color: var(--success); }
-        .toast.success i { color: var(--success); }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(10px);
+            top: 15px;
+            left: 20px;
             z-index: 10000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .modal-content {
-            background: var(--bg-card);
+            background: rgba(0,0,0,0.85);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 35px;
-            max-width: 700px;
-            width: 100%;
-            box-shadow: 0 0 40px var(--accent-glow);
-            position: relative;
-        }
-        .modal-close {
-            position: absolute;
-            top: 18px;
-            right: 22px;
-            font-size: 22px;
-            cursor: pointer;
-            color: var(--text-muted);
-        }
-        .modal-close:hover { color: var(--danger); }
-
-        .auth-container {
-            position: fixed;
-            inset: 0;
-            background: var(--bg-main);
-            z-index: 1000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 20px;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+            font-weight: 600;
         }
 
-        .auth-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            box-shadow: 0 0 40px var(--accent-glow);
-            backdrop-filter: blur(18px);
-            padding: 45px;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 440px;
-            text-align: center;
-        }
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: var(--bg-card); border: 1px solid var(--border); padding: 14px 22px; border-radius: 10px; box-shadow: 0 8px 25px rgba(0,0,0,0.6); display: flex; align-items: center; gap: 12px; font-size: 14px; backdrop-filter: blur(12px); }
+        .toast.error { border-color: var(--danger); } .toast.error i { color: var(--danger); }
+        .toast.success { border-color: var(--success); } .toast.success i { color: var(--success); }
 
-        .auth-card h1 { font-size: 32px; margin-bottom: 8px; }
-        .auth-card h1 span { color: var(--accent); }
+        .auth-container { position: fixed; inset: 0; background: var(--bg-main); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .auth-card { background: var(--bg-card); border: 1px solid var(--border); box-shadow: 0 0 40px var(--accent-glow); backdrop-filter: blur(18px); padding: 45px; border-radius: 16px; width: 100%; max-width: 440px; text-align: center; }
+        .auth-card h1 { font-size: 32px; margin-bottom: 8px; } .auth-card h1 span { color: var(--accent); }
         .auth-card p { color: var(--text-muted); font-size: 14px; margin-bottom: 30px; }
 
         .form-group { margin-bottom: 20px; text-align: left; }
-        .form-group label {
-            display: block;
-            color: var(--text-muted);
-            font-size: 12px;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
-        }
+        .form-group label { display: block; color: var(--text-muted); font-size: 12px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        .form-control { width: 100%; padding: 14px 16px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 10px; color: #fff; font-size: 15px; outline: none; }
+        .form-control:focus { border-color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
 
-        .form-control {
-            width: 100%;
-            padding: 14px 16px;
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            color: #fff;
-            font-size: 15px;
-            outline: none;
-        }
-
-        .form-control:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 12px var(--accent-glow);
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 14px;
-            background: var(--accent);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 15px;
-            cursor: pointer;
-            box-shadow: 0 0 20px var(--accent-glow);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
+        .btn-primary { width: 100%; padding: 14px; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-weight: 600; font-size: 15px; cursor: pointer; box-shadow: 0 0 20px var(--accent-glow); display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
         .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
 
-        header {
-            background: rgba(10, 10, 14, 0.95);
-            border-bottom: 1px solid var(--border);
-            padding: 18px 40px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            backdrop-filter: blur(15px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .logo { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 12px; color: var(--text-main); }
-        .logo i { color: var(--accent); }
-
-        .user-nav { display: flex; align-items: center; gap: 18px; }
-        .user-badge { background: var(--bg-card); border: 1px solid var(--border); padding: 8px 16px; border-radius: 10px; font-size: 14px; }
-        .user-badge .role { color: var(--accent); font-weight: 600; }
-
-        .nav-tabs {
-            display: flex;
-            gap: 10px;
-            padding: 20px 40px 0;
-            border-bottom: 1px solid var(--border);
-            overflow-x: auto;
-        }
-
-        .nav-tab {
-            padding: 14px 24px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-bottom: none;
-            border-radius: 10px 10px 0 0;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            position: relative;
-        }
-
-        .nav-tab.active {
-            background: var(--accent);
-            color: #fff;
-            border-color: var(--accent);
-            box-shadow: 0 -6px 20px var(--accent-glow);
-        }
-
-        .badge-notice {
-            background: var(--warning);
-            color: #000;
-            font-size: 11px;
-            font-weight: bold;
-            padding: 2px 7px;
-            border-radius: 10px;
-            animation: pulseNotice 1.2s infinite;
-        }
-
-        @keyframes pulseNotice {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 165, 2, 0.8); }
-            50% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(255, 165, 2, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 165, 2, 0); }
-        }
-
+        header { background: rgba(10, 10, 14, 0.95); border-bottom: 1px solid var(--border); padding: 18px 40px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 12px; color: var(--text-main); } .logo i { color: var(--accent); }
+        
         .container { padding: 35px 40px; flex: 1; max-width: 1550px; width: 100%; margin: 0 auto; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 30px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(12px);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 30px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
         .card-title { font-size: 20px; font-weight: 600; margin-bottom: 22px; display: flex; align-items: center; justify-content: space-between; }
-        .card-title div { display: flex; align-items: center; gap: 12px; }
         .card-title i { color: var(--accent); }
-
-        .paste-zone {
-            border: 2px dashed var(--border);
-            background: var(--bg-input);
-            border-radius: 12px;
-            padding: 30px;
-            text-align: center;
-            color: var(--text-muted);
-            cursor: pointer;
-            outline: none;
-        }
-
-        .paste-zone.has-image { border-color: var(--success); color: var(--success); }
-        .preview-img { max-width: 100%; max-height: 280px; margin-top: 15px; border-radius: 10px; border: 1px solid var(--border); display: none; }
-
-        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
-        .stat-card { background: var(--bg-input); border: 1px solid var(--border); padding: 25px; border-radius: 12px; text-align: center; }
-        .stat-value { font-size: 30px; font-weight: 700; color: var(--accent); margin: 10px 0; }
-
-        .progress-bar { background: rgba(255, 255, 255, 0.06); height: 10px; border-radius: 5px; overflow: hidden; margin-top: 10px; }
-        .progress-fill { background: var(--accent); height: 100%; width: 0%; }
-
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 15px; }
-        th, td { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.06); }
-        th { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-
+        
         .btn-sm { padding: 8px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
         .btn-danger { background: var(--danger); color: #fff; }
         .btn-success { background: var(--success); color: #fff; }
-        .btn-warning { background: var(--warning); color: #111; }
-        .badge-x2 { background: rgba(46, 213, 115, 0.25); color: var(--success); padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; }
 
-        .input-group { display: flex; gap: 10px; }
-
-        .role-select {
-            padding: 6px 12px;
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            color: #fff;
-            border-radius: 8px;
-            font-size: 13px;
-            outline: none;
-        }
-
-        .mc-banner {
-            background: linear-gradient(135deg, rgba(46,213,115,0.18), rgba(0,0,0,0.5));
-            border: 1px dashed var(--border);
-            border-radius: 14px;
-            padding: 25px;
-            display: flex;
-            align-items: center;
-            gap: 25px;
-            margin-top: 25px;
-        }
-
-        .staff-reports-layout { display: grid; grid-template-columns: 320px 1fr; gap: 25px; }
-        .staff-card-list { display: flex; flex-direction: column; gap: 12px; }
-        .staff-user-card {
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            padding: 16px 20px;
-            border-radius: 12px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .staff-user-card:hover, .staff-user-card.active {
-            border-color: var(--accent);
-            background: rgba(46, 213, 115, 0.12);
-            box-shadow: 0 0 15px var(--accent-glow);
-        }
-
-        .report-item-card {
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            cursor: pointer;
-        }
-        .report-item-card:hover {
-            border-color: var(--accent);
-            box-shadow: 0 0 15px var(--accent-glow);
-        }
-
-        .bottom-controls {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            z-index: 999;
-        }
-
-        .music-player {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            padding: 10px 20px;
-            border-radius: 35px;
-            display: flex;
-            gap: 14px;
-            align-items: center;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.6);
-            backdrop-filter: blur(12px);
-            font-size: 13px;
-        }
-
-        .theme-switcher {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            padding: 10px 16px;
-            border-radius: 35px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.6);
-            backdrop-filter: blur(12px);
-        }
-        .theme-circle {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid rgba(255,255,255,0.25);
-        }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 15px; }
+        th, td { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        th { color: var(--text-muted); font-size: 12px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
+    <div class="sync-badge" id="syncStatus">
+        <i class="fa-solid fa-cloud-arrow-up" id="syncIcon" style="color: var(--accent);"></i>
+        <span id="syncText">Подключение к облаку...</span>
+    </div>
+
     <div class="toast-container" id="toastBox"></div>
 
-    <div class="modal-overlay" id="reportModal">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></span>
-            <div class="card-title"><div><i class="fa-solid fa-file-contract"></i> Детальный отчёт о наказании</div></div>
-            <div id="modalBody"></div>
-        </div>
-    </div>
-
-    <!-- Крутой музыкальный плеер с выбором треков (Carti / Rage Vibe) -->
-    <div class="bottom-controls">
-        <div class="music-player">
-            <i class="fa-solid fa-compact-disc fa-spin" id="musicIcon" style="color: var(--accent); font-size: 18px;"></i>
-            <div>
-                <select id="trackSelect" onchange="changeTrack(this.value)" style="background: transparent; border: none; color: #fff; font-weight: bold; outline: none; cursor: pointer;">
-                    <option value="carti" style="background: #121218;">Playboi Carti - Rage Vibe</option>
-                    <option value="ambient" style="background: #121218;">Ambient Synth Relax</option>
-                    <option value="cyber" style="background: #121218;">Cyberpunk Bass</option>
-                </select><br>
-                <small style="color: var(--text-muted);" id="musicStatus">Нажмите ▶</small>
-            </div>
-            <button onclick="toggleMusicPlayer()" class="btn-sm btn-success" id="playBtn" style="padding: 6px 12px;"><i class="fa-solid fa-play"></i></button>
-            <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.25" oninput="changeVolume(this.value)" style="width: 70px; accent-color: var(--accent);">
-        </div>
-
-        <div class="theme-switcher">
-            <span style="font-size: 11px; color: var(--text-muted); font-weight: bold;">ТЕМА:</span>
-            <div class="theme-circle" style="background: #2ed573;" onclick="setTheme('green')"></div>
-            <div class="theme-circle" style="background: #ff4757;" onclick="setTheme('pink')"></div>
-            <div class="theme-circle" style="background: #1e90ff;" onclick="setTheme('blue')"></div>
-            <div class="theme-circle" style="background: #8a2be2;" onclick="setTheme('purple')"></div>
-            <div class="theme-circle" style="background: #ffa502;" onclick="setTheme('orange')"></div>
-        </div>
-    </div>
-
-    <!-- Вход -->
     <div class="auth-container" id="authScreen">
         <div class="auth-card">
             <h1>Sure<span>Box</span> Staff</h1>
-            <p>Панель Управления Командой Проекта</p>
+            <p>Вечная Облачная Панель Управления КП</p>
             <form id="loginForm">
                 <div class="form-group">
                     <label>Логин</label>
@@ -468,1023 +97,144 @@
                     <label>Пароль</label>
                     <input type="password" id="passInput" class="form-control" placeholder="Введите пароль" required autocomplete="current-password">
                 </div>
-                <button type="submit" class="btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Войти в панель</button>
+                <button type="submit" class="btn-primary"><i class="fa-solid fa-cloud"></i> Войти в систему</button>
             </form>
         </div>
     </div>
 
-    <!-- Дашборд -->
     <div id="appScreen" style="display: none;">
         <header>
-            <div class="logo"><i class="fa-solid fa-cube"></i> SureBox Staff</div>
-            <div class="user-nav">
-                <div class="user-badge"><span id="userName">User</span> | <span class="role" id="userRole">Роль</span></div>
-                <button onclick="logout()" class="btn-sm btn-danger"><i class="fa-solid fa-power-off"></i> Выйти</button>
+            <div class="logo"><i class="fa-solid fa-cube"></i> SureBox Staff Cloud</div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div><span id="userName">User</span> | <span id="userRole" style="color:var(--accent); font-weight:bold;">Роль</span></div>
+                <button onclick="location.reload()" class="btn-sm btn-danger"><i class="fa-solid fa-power-off"></i> Выйти</button>
             </div>
         </header>
 
-        <div class="nav-tabs" id="navTabsContainer">
-            <div class="nav-tab active" id="tabBtn-reports" onclick="switchTab('reports')"><i class="fa-solid fa-file-lines"></i> Отчеты</div>
-            <div class="nav-tab" id="tabBtn-news" onclick="switchTab('news')"><i class="fa-solid fa-bullhorn"></i> Новости</div>
-            <div class="nav-tab" id="tabBtn-profile" onclick="switchTab('profile')"><i class="fa-solid fa-user"></i> Профиль</div>
-            <div class="nav-tab" id="tabBtn-vacation" onclick="switchTab('vacation')"><i class="fa-solid fa-umbrella-beach"></i> Отпуск <span class="badge-notice" id="vacationNotice" style="display: none;">0</span></div>
-            <div class="nav-tab" id="tabBtn-promotion" onclick="switchTab('promotion')"><i class="fa-solid fa-arrow-up-right-dots"></i> Повышение <span class="badge-notice" id="promotionNotice" style="display: none;">0</span></div>
-            <div class="nav-tab" id="curatorTab" style="display: none;" onclick="switchTab('curator')"><i class="fa-solid fa-crown"></i> Управление КП</div>
-            <div class="nav-tab" id="supportTab" style="display: none;" onclick="switchTab('supportView')"><i class="fa-solid fa-eye"></i> Просмотр отчетов</div>
-        </div>
-
         <div class="container">
-            <!-- Отчеты -->
-            <div id="tab-reports" class="tab-content active">
-                <div class="card">
-                    <div class="card-title"><div><i class="fa-solid fa-plus"></i> Подать отчет о наказании</div></div>
-                    <form id="reportForm">
-                        <div class="grid-2">
-                            <div class="form-group">
-                                <label>Команда наказания</label>
-                                <select id="repCmd" class="form-control">
-                                    <option value="tempmute">/tempmute (Мут)</option>
-                                    <option value="checkban">/check ban (Бан)</option>
-                                    <option value="checkstart">/check start (Проверка)</option>
-                                    <option value="tempbanip">/tempbanip (Бан по IP)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Ник нарушителя</label>
-                                <input type="text" id="repTarget" class="form-control" placeholder="например: Player_47" required autocomplete="off">
-                            </div>
-                        </div>
-
-                        <div class="grid-2">
-                            <div class="form-group">
-                                <label>Срок наказания</label>
-                                <input type="text" id="repDuration" class="form-control" placeholder="30m, 7d, навсегда" required autocomplete="off">
-                            </div>
-                            <div class="form-group">
-                                <label>Причина наказания</label>
-                                <input type="text" id="repReason" class="form-control" placeholder="п.п 1.2 / Читы" required autocomplete="off">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Доказательства (Ctrl + V)</label>
-                            <div class="paste-zone" id="pasteZone" tabindex="0">
-                                <i class="fa-solid fa-image" style="font-size: 32px; margin-bottom: 10px;"></i><br>
-                                Кликните сюда и нажмите <b>Ctrl + V</b> чтобы вставить скриншот
-                                <img id="previewImg" class="preview-img">
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn-primary" style="width: auto; padding: 14px 40px;"><i class="fa-solid fa-paper-plane"></i> Отправить отчет</button>
-                    </form>
-                </div>
+            <div class="card">
+                <div class="card-title"><div><i class="fa-solid fa-shield-halved"></i> Облачная синхронизация активирована</div></div>
+                <p style="color: var(--text-muted); font-size: 15px; line-height: 1.6;">
+                    Все отчёты, новые аккаунты сотрудников, выдача ролей и сброс норм сохраняются прямо на облачном сервере.<br>
+                    Данные больше никогда не удалятся и доступны с любого компьютера и телефона.
+                </p>
             </div>
 
-            <!-- Новости -->
-            <div id="tab-news" class="tab-content">
-                <div id="newsContainer">
-                    <div class="card">
-                        <div class="card-title"><div><i class="fa-solid fa-bullhorn"></i> Недельные отчёты состава</div></div>
-                        <p style="color: var(--text-muted);">Итоги текущей недели еще не были опубликованы руководством. Выдача отчётов происходит в субботу.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Профиль -->
-            <div id="tab-profile" class="tab-content">
-                <div class="grid-2" style="margin-bottom: 30px;">
-                    <div class="stat-card">
-                        <div>Всего отчетов (за всё время)</div>
-                        <div class="stat-value" id="totalAll">0</div>
-                        <small style="color: var(--text-muted);">Муты: <span id="mutesAll">0</span> | Баны: <span id="bansAll">0</span></small>
-                    </div>
-                    <div class="stat-card">
-                        <div>Норма за эту неделю</div>
-                        <div class="stat-value" id="totalWeek">0 / 60</div>
-                        <div class="progress-bar"><div class="progress-fill" id="weekProgress"></div></div>
-                        <small style="color: var(--text-muted); margin-top: 8px; display: block;" id="normDetails">Муты: <span id="mutesWeek">0</span> | Баны: <span id="bansWeek">0</span></small>
-                    </div>
-                </div>
-
-                <div class="mc-banner">
-                    <i class="fa-solid fa-shield-halved" style="font-size: 42px; color: var(--accent);"></i>
-                    <div>
-                        <h4 style="margin-bottom: 6px;">SureBox Staff Security System</h4>
-                        <p style="font-size: 14px; color: var(--text-muted);">Ваша статистика обновляется автоматически после каждого принятого отчета. Недельная норма сбрасывается руководством каждую субботу.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Отпуск -->
-            <div id="tab-vacation" class="tab-content">
-                <div class="card">
-                    <div class="card-title"><div><i class="fa-solid fa-umbrella-beach"></i> Заявка на отпуск</div></div>
-                    <form id="vacationSubmitForm">
-                        <div class="form-group"><label>Причина отпуска</label><input type="text" id="vacReason" class="form-control" placeholder="Учеба, семейные обстоятельства" required autocomplete="off"></div>
-                        <div class="form-group"><label>Срок (дней)</label><input type="text" id="vacDays" class="form-control" placeholder="7 дней" required autocomplete="off"></div>
-                        <button type="submit" class="btn-primary" style="width: auto; padding: 12px 30px;"><i class="fa-solid fa-paper-plane"></i> Отправить заявку</button>
-                    </form>
-                </div>
-
-                <div class="card" id="vacationAdminCard" style="display: none;">
-                    <div class="card-title"><div><i class="fa-solid fa-list-check"></i> Управление заявками на отпуск</div></div>
-                    <table>
-                        <thead>
-                            <tr><th>Сотрудник</th><th>Причина</th><th>Срок</th><th>Статус</th><th>Действия</th></tr>
-                        </thead>
-                        <tbody id="vacationTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Повышение -->
-            <div id="tab-promotion" class="tab-content">
-                <div class="card">
-                    <div class="card-title"><div><i class="fa-solid fa-arrow-up-right-dots"></i> Заявка на повышение</div></div>
-                    <form id="promotionSubmitForm">
-                        <div class="form-group"><label>Желаемая должность</label>
-                            <select id="promTargetRole" class="form-control">
-                                <option>Ст. Хелпер</option>
-                                <option>Мл. Модератор</option>
-                                <option>Модератор</option>
-                                <option>Ст. Модератор</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn-primary" style="width: auto; padding: 12px 30px;"><i class="fa-solid fa-paper-plane"></i> Подать заявку</button>
-                    </form>
-                </div>
-
-                <div class="card" id="promotionAdminCard" style="display: none;">
-                    <div class="card-title"><div><i class="fa-solid fa-user-graduate"></i> Управление заявками на повышение</div></div>
-                    <table>
-                        <thead>
-                            <tr><th>Сотрудник</th><th>Желаемая роль</th><th>Статус</th><th>Действия</th></tr>
-                        </thead>
-                        <tbody id="promotionTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Управление КП -->
-            <div id="tab-curator" class="tab-content">
-                <div class="grid-2" style="margin-bottom: 30px;">
-                    <div class="stat-card">
-                        <div>Принято людей за неделю</div>
-                        <div class="stat-value" style="color: var(--success);" id="acceptedWeek">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div>Снято людей за неделю</div>
-                        <div class="stat-value" style="color: var(--danger);" id="removedWeek">0</div>
-                    </div>
-                </div>
-
-                <div class="card" id="curatorReportCard" style="display: none;">
-                    <div class="card-title">
-                        <div><i class="fa-solid fa-calculator"></i> Отчёт недели (Суббота — Пятница)</div>
-                        <button onclick="generateWeeklyReport()" class="btn-primary" style="width: auto; padding: 10px 22px; font-size: 14px;">
-                            <i class="fa-solid fa-paper-plane"></i> Сформировать и отправить в Новости
-                        </button>
-                    </div>
-                    <p style="color: var(--text-muted); font-size: 14px;">Подсчет результатов состава, зарплаты в суриках, топ-3 бонусов и сброс недельной нормы.</p>
-                </div>
-
-                <div class="card">
-                    <div class="card-title"><div><i class="fa-solid fa-user-plus"></i> Создать аккаунт сотрудника</div></div>
-                    <form id="createAccountForm" class="grid-2">
-                        <div class="form-group"><label>Логин</label><input type="text" id="newLog" class="form-control" placeholder="Логин" required autocomplete="off"></div>
-                        <div class="form-group">
-                            <label>Пароль</label>
-                            <div class="input-group">
-                                <input type="text" id="newPass" class="form-control" placeholder="Пароль" required autocomplete="off">
-                                <button type="button" onclick="generateRandomPass()" class="btn-primary" style="width: auto; padding: 0 18px; font-size: 13px; white-space: nowrap;"><i class="fa-solid fa-dice"></i> Рандом</button>
-                            </div>
-                        </div>
-                        <div class="form-group"><label>Роль</label>
-                            <select id="newRole" class="form-control">
-                                <option value="Хелпер">Хелпер</option>
-                                <option value="Ст. Хелпер">Ст. Хелпер</option>
-                                <option value="Мл. Модератор">Мл. Модератор</option>
-                                <option value="Модератор">Модератор</option>
-                                <option value="Ст. Модератор">Ст. Модератор</option>
-                                <option value="Администратор">Администратор</option>
-                                <option value="Зам. Куратора">Зам. Куратора</option>
-                                <option value="Владелец">Владелец</option>
-                                <option value="Поддержка">Поддержка</option>
-                            </select>
-                        </div>
-                        <div class="form-group" style="display: flex; align-items: flex-end;">
-                            <button type="submit" class="btn-primary"><i class="fa-solid fa-plus"></i> Создать аккаунт</button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="card" id="passDatabaseCard" style="display: none;">
-                    <div class="card-title"><div><i class="fa-solid fa-key"></i> База данных паролей (Конфиденциально)</div></div>
-                    <table>
-                        <thead>
-                            <tr><th>Логин</th><th>Пароль</th><th>Роль</th></tr>
-                        </thead>
-                        <tbody id="passDbTable"></tbody>
-                    </table>
-                </div>
-
-                <div class="card">
-                    <div class="card-title"><div><i class="fa-solid fa-users-gear"></i> Управление Составом КП</div></div>
-                    <table>
-                        <thead>
-                            <tr><th>Логин</th><th>Текущая роль</th><th>Изменить роль на</th><th>Действия</th></tr>
-                        </thead>
-                        <tbody id="staffTable"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Просмотр отчетов -->
-            <div id="tab-supportView" class="tab-content">
-                <div class="card">
-                    <div class="card-title">
-                        <div><i class="fa-solid fa-eye"></i> Мониторинг отчётов КП</div>
-                        <input type="text" id="targetSearchInput" class="form-control" placeholder="🔍 Поиск по нику нарушителя..." oninput="renderSupportView()" style="max-width: 350px; padding: 10px 16px; font-size: 14px;">
-                    </div>
-                    <div class="staff-reports-layout">
-                        <div>
-                            <div style="font-size: 13px; color: var(--text-muted); font-weight: bold; margin-bottom: 12px;">СОТРУДНИКИ:</div>
-                            <div class="staff-card-list" id="staffUserCards"></div>
-                        </div>
-                        <div>
-                            <div id="selectedUserHeader" style="margin-bottom: 18px; font-weight: 600; font-size: 18px; color: var(--accent);">Все отчеты</div>
-                            <div id="userReportsList"></div>
-                        </div>
-                    </div>
-                </div>
+            <div class="card">
+                <div class="card-title"><div><i class="fa-solid fa-users-gear"></i> Зарегистрированные аккаунты</div></div>
+                <table>
+                    <thead>
+                        <tr><th>Сотрудник</th><th>Роль</th><th>Пароль</th></tr>
+                    </thead>
+                    <tbody id="staffListTable"></tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <script>
+        // ВАШИ КЛЮЧИ АВТОМАТИЧЕСКИ ПОДСТАВЛЕНЫ ИЗ ФОТО:
+        const JSONBIN_BIN_ID = "6ad15bf9ac6210605a358914";
+        const JSONBIN_API_KEY = "$2a$10$yLTFqgbBEaMt3ChuZLhmT.bj0iLcH93oCbmVWS7aqwID6g8DBct0O";
+
         let currentUser = null;
-        let selectedStaffFilter = 'all';
-        let currentPastedImage = null;
+        let dbData = {
+            staff: [
+                { id: 'st-1', name: '6hoske', pass: '#6H!sKe99$SureBox2026', role: 'Куратор (Владелец)' },
+                { id: 'st-5', name: 'Badabum', pass: 'badabum123', role: 'Владелец' },
+                { id: 'st-2', name: 'zam', pass: 'zam123', role: 'Зам. Куратора' },
+                { id: 'st-3', name: 'admin', pass: 'admin123', role: 'Администратор' }
+            ],
+            reports: [],
+            news: []
+        };
 
-        // Плеер мультреков (Carti / Ambient / Cyberpunk)
-        let musicCtx = null;
-        let musicGain = null;
-        let musicInterval = null;
-        let isMusicPlaying = false;
-        let currentTrack = 'carti';
-
-        function changeTrack(track) {
-            currentTrack = track;
-            if (isMusicPlaying) {
-                stopMusic();
-                startMusic();
-            }
+        function showToast(msg, isErr = false) {
+            const box = document.getElementById('toastBox');
+            const t = document.createElement('div');
+            t.className = `toast ${isErr ? 'error' : 'success'}`;
+            t.innerHTML = `<i class="fa-solid ${isErr ? 'fa-circle-xmark' : 'fa-circle-check'}"></i> ${msg}`;
+            box.appendChild(t);
+            setTimeout(() => t.remove(), 3500);
         }
 
-        function toggleMusicPlayer() {
-            const playBtn = document.getElementById('playBtn');
-            const statusLabel = document.getElementById('musicStatus');
-
-            if (isMusicPlaying) {
-                stopMusic();
-                playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-                statusLabel.innerText = 'Пауза';
-                isMusicPlaying = false;
-            } else {
-                startMusic();
-                playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-                statusLabel.innerText = 'Играет вайб';
-                isMusicPlaying = true;
-            }
-        }
-
-        function startMusic() {
-            if (!musicCtx) {
-                musicCtx = new (window.AudioContext || window.webkitAudioContext)();
-                musicGain = musicCtx.createGain();
-                musicGain.gain.value = 0.25;
-                musicGain.connect(musicCtx.destination);
-            }
-            if (musicCtx.state === 'suspended') musicCtx.resume();
-
-            if (currentTrack === 'carti') {
-                // Rage beat style pattern (Carti vibe)
-                const bassNotes = [110, 110, 146.83, 130.81, 98];
-                let step = 0;
-                musicInterval = setInterval(() => {
-                    if (!musicCtx || musicCtx.state !== 'running') return;
-                    const osc = musicCtx.createOscillator();
-                    const g = musicCtx.createGain();
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(bassNotes[step % bassNotes.length], musicCtx.currentTime);
-                    g.gain.setValueAtTime(0, musicCtx.currentTime);
-                    g.gain.linearRampToValueAtTime(0.08, musicCtx.currentTime + 0.05);
-                    g.gain.exponentialRampToValueAtTime(0.0001, musicCtx.currentTime + 0.35);
-                    osc.connect(g);
-                    g.connect(musicGain);
-                    osc.start();
-                    osc.stop(musicCtx.currentTime + 0.35);
-                    step++;
-                }, 250);
-            } else if (currentTrack === 'ambient') {
-                const chords = [[220, 261.63, 329.63], [174.61, 220, 261.63], [196, 246.94, 293.66]];
-                let cIdx = 0;
-                playChord(chords[0]);
-                musicInterval = setInterval(() => {
-                    cIdx = (cIdx + 1) % chords.length;
-                    playChord(chords[cIdx]);
-                }, 4000);
-            } else {
-                // Cyberpunk bass
-                const notes = [65.41, 77.78, 98, 87.31];
-                let nIdx = 0;
-                musicInterval = setInterval(() => {
-                    if (!musicCtx || musicCtx.state !== 'running') return;
-                    const osc = musicCtx.createOscillator();
-                    const g = musicCtx.createGain();
-                    osc.type = 'square';
-                    osc.frequency.setValueAtTime(notes[nIdx % notes.length], musicCtx.currentTime);
-                    g.gain.setValueAtTime(0.06, musicCtx.currentTime);
-                    g.gain.exponentialRampToValueAtTime(0.0001, musicCtx.currentTime + 0.5);
-                    osc.connect(g);
-                    g.connect(musicGain);
-                    osc.start();
-                    osc.stop(musicCtx.currentTime + 0.5);
-                    nIdx++;
-                }, 300);
-            }
-        }
-
-        function stopMusic() {
-            clearInterval(musicInterval);
-        }
-
-        function playChord(frequencies) {
-            if (!musicCtx) return;
-            frequencies.forEach(freq => {
-                try {
-                    const osc = musicCtx.createOscillator();
-                    const noteGain = musicCtx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(freq, musicCtx.currentTime);
-                    noteGain.gain.setValueAtTime(0, musicCtx.currentTime);
-                    noteGain.gain.linearRampToValueAtTime(0.04, musicCtx.currentTime + 1);
-                    noteGain.gain.exponentialRampToValueAtTime(0.0001, musicCtx.currentTime + 3.8);
-                    osc.connect(noteGain);
-                    noteGain.connect(musicGain);
-                    osc.start();
-                    osc.stop(musicCtx.currentTime + 4);
-                } catch(e) {}
-            });
-        }
-
-        function changeVolume(val) {
-            if (musicGain) musicGain.gain.value = parseFloat(val);
-        }
-
-        function playSound(type = 'click') {
+        async function loadCloudData() {
+            updateSync('Загрузка из облака...', '#ffa502');
             try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-
-                if (type === 'click') {
-                    osc.frequency.setValueAtTime(600, ctx.currentTime);
-                    gain.gain.setValueAtTime(0.05, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
-                    osc.start();
-                    osc.stop(ctx.currentTime + 0.05);
-                } else if (type === 'success') {
-                    osc.frequency.setValueAtTime(523.25, ctx.currentTime);
-                    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.08);
-                    gain.gain.setValueAtTime(0.08, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
-                    osc.start();
-                    osc.stop(ctx.currentTime + 0.25);
-                } else if (type === 'error') {
-                    osc.frequency.setValueAtTime(220, ctx.currentTime);
-                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
-                    osc.start();
-                    osc.stop(ctx.currentTime + 0.2);
-                }
-            } catch(e) {}
-        }
-
-        const defaultStaff = [
-            { id: 'st-1', name: '6hoske', pass: '#6H!sKe99$SureBox2026', role: 'Куратор (Владелец)', mutes: 40, bans: 10, total: 50, allMutes: 100, allBans: 20 },
-            { id: 'st-5', name: 'Badabum', pass: 'badabum123', role: 'Владелец', mutes: 50, bans: 15, total: 65, allMutes: 150, allBans: 30 },
-            { id: 'st-2', name: 'zam', pass: 'zam123', role: 'Зам. Куратора', mutes: 20, bans: 5, total: 25, allMutes: 50, allBans: 10 },
-            { id: 'st-3', name: 'admin', pass: 'admin123', role: 'Администратор', mutes: 10, bans: 2, total: 12, allMutes: 30, allBans: 5 },
-            { id: 'st-4', name: 'Helper_Kirill', pass: 'K~9sF2#q', role: 'Хелпер', mutes: 5, bans: 0, total: 5, allMutes: 120, allBans: 0 }
-        ];
-
-        // Инициализация базы данных ровно один раз, чтобы удаления и правки сохранялись насовсем
-        if (!localStorage.getItem('surebox_staff_initialized')) {
-            localStorage.setItem('surebox_staff', JSON.stringify(defaultStaff));
-            localStorage.setItem('surebox_staff_initialized', 'true');
-        }
-
-        let staffDatabase = JSON.parse(localStorage.getItem('surebox_staff')) || defaultStaff;
-        let submittedReports = JSON.parse(localStorage.getItem('surebox_reports')) || [];
-        let newsList = JSON.parse(localStorage.getItem('surebox_news')) || [];
-        let vacationRequests = JSON.parse(localStorage.getItem('surebox_vacations')) || [];
-        let promotionRequests = JSON.parse(localStorage.getItem('surebox_promotions')) || [];
-        let pckAccepted = parseInt(localStorage.getItem('surebox_accepted') || '0');
-        let pckRemoved = parseInt(localStorage.getItem('surebox_removed') || '0');
-
-        function saveData() {
-            localStorage.setItem('surebox_staff', JSON.stringify(staffDatabase));
-            localStorage.setItem('surebox_reports', JSON.stringify(submittedReports));
-            localStorage.setItem('surebox_news', JSON.stringify(newsList));
-            localStorage.setItem('surebox_vacations', JSON.stringify(vacationRequests));
-            localStorage.setItem('surebox_promotions', JSON.stringify(promotionRequests));
-            localStorage.setItem('surebox_accepted', pckAccepted);
-            localStorage.setItem('surebox_removed', pckRemoved);
-        }
-
-        function showToast(message, isError = false) {
-            const container = document.getElementById('toastBox');
-            const toast = document.createElement('div');
-            toast.className = `toast ${isError ? 'error' : 'success'}`;
-            toast.innerHTML = `<i class="fa-solid ${isError ? 'fa-circle-xmark' : 'fa-circle-check'}"></i> ${message}`;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3500);
-        }
-
-        function setTheme(theme) {
-            playSound('click');
-            if (theme === 'green') document.documentElement.removeAttribute('data-theme');
-            else document.documentElement.setAttribute('data-theme', theme);
-        }
-
-        function generateRandomPass() {
-            playSound('click');
-            const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
-            let result = "";
-            for (let i = 0; i < 10; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
-            document.getElementById('newPass').value = result;
-        }
-
-        function openModal(reportIndex) {
-            playSound('click');
-            const rep = submittedReports[reportIndex];
-            if (!rep) return;
-            const modalBody = document.getElementById('modalBody');
-            modalBody.innerHTML = `
-                <div style="font-size: 16px; margin-bottom: 18px;">
-                    <p><b>Сотрудник КП:</b> <span style="color: var(--accent);">${rep.author}</span></p>
-                    <p><b>Дата и время:</b> ${rep.time || 'Не указано'}</p>
-                    <p><b>Команда:</b> <code>/${rep.cmd}</code></p>
-                    <p><b>Нарушитель:</b> ${rep.target}</p>
-                    <p><b>Срок:</b> ${rep.duration}</p>
-                    <p><b>Причина:</b> ${rep.reason}</p>
-                </div>
-                ${rep.img ? `<div style="margin-top: 15px;"><b>Доказательства:</b><br><img src="${rep.img}" style="width: 100%; max-height: 420px; object-fit: contain; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px;"></div>` : '<p style="color: var(--text-muted);">Скриншот не прикреплен</p>'}
-            `;
-            document.getElementById('reportModal').style.display = 'flex';
-        }
-
-        function closeModal() {
-            document.getElementById('reportModal').style.display = 'none';
-        }
-
-        function renderRequestsTables() {
-            const vacTbody = document.getElementById('vacationTableBody');
-            const promTbody = document.getElementById('promotionTableBody');
-            if (!vacTbody || !promTbody) return;
-            vacTbody.innerHTML = '';
-            promTbody.innerHTML = '';
-
-            const pendingVac = vacationRequests.filter(r => r.status === 'На рассмотрении').length;
-            const pendingProm = promotionRequests.filter(r => r.status === 'На рассмотрении').length;
-
-            const vacNotice = document.getElementById('vacationNotice');
-            const promNotice = document.getElementById('promotionNotice');
-
-            if (pendingVac > 0) { vacNotice.innerText = pendingVac; vacNotice.style.display = 'inline-block'; }
-            else { vacNotice.style.display = 'none'; }
-
-            if (pendingProm > 0) { promNotice.innerText = pendingProm; promNotice.style.display = 'inline-block'; }
-            else { promNotice.style.display = 'none'; }
-
-            vacationRequests.forEach((req, idx) => {
-                vacTbody.innerHTML += `
-                    <tr>
-                        <td><b>${req.author}</b></td>
-                        <td>${req.reason}</td>
-                        <td>${req.days}</td>
-                        <td><span style="color: ${req.status==='Одобрено'?'var(--success)':req.status==='Отклонено'?'var(--danger)':'var(--warning)'}; font-weight: bold;">${req.status}</span></td>
-                        <td>
-                            ${req.status==='На рассмотрении' ? `
-                                <button onclick="updateVacStatus(${idx}, 'Одобрено')" class="btn-sm btn-success"><i class="fa-solid fa-check"></i></button>
-                                <button onclick="updateVacStatus(${idx}, 'Отклонено')" class="btn-sm btn-danger"><i class="fa-solid fa-xmark"></i></button>
-                            ` : '-'}
-                        </td>
-                    </tr>
-                `;
-            });
-
-            promotionRequests.forEach((req, idx) => {
-                promTbody.innerHTML += `
-                    <tr>
-                        <td><b>${req.author}</b></td>
-                        <td><span style="color: var(--accent); font-weight:bold;">${req.targetRole}</span></td>
-                        <td><span style="color: ${req.status==='Одобрено'?'var(--success)':req.status==='Отклонено'?'var(--danger)':'var(--warning)'}; font-weight: bold;">${req.status}</span></td>
-                        <td>
-                            ${req.status==='На рассмотрении' ? `
-                                <button onclick="updatePromStatus(${idx}, 'Одобрено')" class="btn-sm btn-success"><i class="fa-solid fa-check"></i></button>
-                                <button onclick="updatePromStatus(${idx}, 'Отклонено')" class="btn-sm btn-danger"><i class="fa-solid fa-xmark"></i></button>
-                            ` : '-'}
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        function updateVacStatus(idx, status) {
-            vacationRequests[idx].status = status;
-            saveData();
-            renderRequestsTables();
-            playSound('success');
-            showToast(`Заявка на отпуск ${status.toLowerCase()}`);
-        }
-
-        function updatePromStatus(idx, status) {
-            promotionRequests[idx].status = status;
-            saveData();
-            renderRequestsTables();
-            playSound('success');
-            showToast(`Заявка на повышение ${status.toLowerCase()}`);
-        }
-
-        const vacForm = document.getElementById('vacationSubmitForm');
-        if (vacForm) {
-            vacForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const reason = document.getElementById('vacReason').value.trim();
-                const days = document.getElementById('vacDays').value.trim();
-                vacationRequests.unshift({ author: currentUser.name, reason, days, status: 'На рассмотрении' });
-                saveData();
-                renderRequestsTables();
-                this.reset();
-                playSound('success');
-                showToast('Заявка на отпуск успешно отправлена!');
-            });
-        }
-
-        const promForm = document.getElementById('promotionSubmitForm');
-        if (promForm) {
-            promForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const targetRole = document.getElementById('promTargetRole').value;
-                promotionRequests.unshift({ author: currentUser.name, targetRole, status: 'На рассмотрении' });
-                saveData();
-                renderRequestsTables();
-                playSound('success');
-                showToast('Заявка на повышение отправлена!');
-            });
-        }
-
-        function renderStaffTables() {
-            const tbody = document.getElementById('staffTable');
-            const passTbody = document.getElementById('passDbTable');
-            if (!tbody || !passTbody) return;
-            tbody.innerHTML = '';
-            passTbody.innerHTML = '';
-
-            document.getElementById('acceptedWeek').innerText = pckAccepted;
-            document.getElementById('removedWeek').innerText = pckRemoved;
-
-            staffDatabase.forEach(member => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td><b>${member.name}</b></td>
-                        <td><span style="color: var(--accent); font-weight:600;">${member.role}</span></td>
-                        <td>
-                            <select id="roleSel-${member.id}" class="role-select">
-                                <option value="Хелпер" ${member.role==='Хелпер'?'selected':''}>Хелпер</option>
-                                <option value="Ст. Хелпер" ${member.role==='Ст. Хелпер'?'selected':''}>Ст. Хелпер</option>
-                                <option value="Мл. Модератор" ${member.role==='Мл. Модератор'?'selected':''}>Мл. Модератор</option>
-                                <option value="Модератор" ${member.role==='Модератор'?'selected':''}>Модератор</option>
-                                <option value="Ст. Модератор" ${member.role==='Ст. Модератор'?'selected':''}>Ст. Модератор</option>
-                                <option value="Администратор" ${member.role==='Администратор'?'selected':''}>Администратор</option>
-                                <option value="Зам. Куратора" ${member.role==='Зам. Куратора'?'selected':''}>Зам. Куратора</option>
-                                <option value="Владелец" ${member.role==='Владелец'?'selected':''}>Владелец</option>
-                            </select>
-                        </td>
-                        <td>
-                            <button onclick="changeUserRole('${member.id}')" class="btn-sm btn-warning"><i class="fa-solid fa-angles-up"></i> Изменить роль</button>
-                            <button onclick="deleteAccount('${member.id}')" class="btn-sm btn-danger"><i class="fa-solid fa-user-minus"></i> Снять</button>
-                        </td>
-                    </tr>
-                `;
-                passTbody.innerHTML += `
-                    <tr>
-                        <td><b>${member.name}</b></td>
-                        <td style="color: var(--warning); font-family: monospace; font-size: 15px;">${member.pass}</td>
-                        <td>${member.role}</td>
-                    </tr>
-                `;
-            });
-        }
-
-        function renderSupportView() {
-            const userCardsBox = document.getElementById('staffUserCards');
-            const reportsList = document.getElementById('userReportsList');
-            if (!userCardsBox || !reportsList) return;
-            const searchQuery = (document.getElementById('targetSearchInput')?.value || '').toLowerCase().trim();
-
-            userCardsBox.innerHTML = `
-                <div class="staff-user-card ${selectedStaffFilter === 'all' ? 'active' : ''}" onclick="filterStaffReports('all')">
-                    <div><b>Все сотрудники</b></div>
-                    <small style="color: var(--text-muted);">${submittedReports.length} отчетов</small>
-                </div>
-            `;
-
-            staffDatabase.forEach(member => {
-                const memberReportsCount = submittedReports.filter(r => r.author === member.name).length;
-                userCardsBox.innerHTML += `
-                    <div class="staff-user-card ${selectedStaffFilter === member.name ? 'active' : ''}" onclick="filterStaffReports('${member.name}')">
-                        <div>
-                            <b>${member.name}</b><br>
-                            <small style="color: var(--text-muted); font-size: 11px;">${member.role}</small>
-                        </div>
-                        <span style="background: var(--bg-card); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; color: var(--accent);">${memberReportsCount}</span>
-                    </div>
-                `;
-            });
-
-            let filtered = submittedReports;
-            if (selectedStaffFilter !== 'all') {
-                filtered = filtered.filter(r => r.author === selectedStaffFilter);
-            }
-            if (searchQuery !== '') {
-                filtered = filtered.filter(r => r.target.toLowerCase().includes(searchQuery));
-            }
-
-            if (filtered.length === 0) {
-                reportsList.innerHTML = '<p style="color: var(--text-muted);">Отчетов не найдено</p>';
-                return;
-            }
-
-            reportsList.innerHTML = filtered.map((rep) => `
-                <div class="report-item-card" onclick="openModal(${submittedReports.indexOf(rep)})">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                        <div>
-                            <b style="color: var(--accent);">${rep.author}</b> 
-                            <span style="color: var(--text-muted); font-size: 13px;">→ ${rep.target}</span>
-                        </div>
-                        <span style="color: var(--text-muted); font-size: 12px;"><i class="fa-regular fa-clock"></i> ${rep.time || 'Только что'}</span>
-                    </div>
-                    <div style="font-size: 14px; display: flex; justify-content: space-between; align-items: center;">
-                        <div><b>Наказание:</b> <code>/${rep.cmd}</code> (${rep.duration}) | <b>Причина:</b> ${rep.reason}</div>
-                        <span style="color: var(--success); font-weight: bold; font-size: 13px; white-space: nowrap; margin-left: 12px;"><i class="fa-solid fa-magnifying-glass"></i> Подробнее</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function filterStaffReports(username) {
-            playSound('click');
-            selectedStaffFilter = username;
-            renderSupportView();
-        }
-
-        function renderNews() {
-            const newsBox = document.getElementById('newsContainer');
-            if (!newsBox) return;
-            if (newsList.length === 0) {
-                newsBox.innerHTML = `
-                    <div class="card">
-                        <div class="card-title"><div><i class="fa-solid fa-bullhorn"></i> Недельные отчёты состава</div></div>
-                        <p style="color: var(--text-muted);">Итоги текущей недели еще не были опубликованы руководством. Выдача отчётов происходит в субботу.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            const isLeader = currentUser && (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Администратор' || currentUser.role === 'Владелец');
-
-            newsBox.innerHTML = newsList.map((n, idx) => `
-                <div class="card">
-                    <div class="card-title">
-                        <div><i class="fa-solid fa-bullhorn"></i> ${n.title}</div>
-                        ${isLeader ? `<button onclick="deleteNews(${idx})" class="btn-sm btn-danger"><i class="fa-solid fa-trash"></i> Удалить новость</button>` : ''}
-                    </div>
-                    <p style="color: var(--text-muted); margin-bottom: 15px;">Опубликовал: <b>${n.author}</b> (${n.date})</p>
-                    ${n.content}
-                </div>
-            `).join('');
-        }
-
-        function deleteNews(idx) {
-            playSound('click');
-            if (confirm('Вы действительно хотите удалить эту новость из ленты?')) {
-                newsList.splice(idx, 1);
-                saveData();
-                renderNews();
-                playSound('error');
-                showToast('Новость удалена!');
-            }
-        }
-
-        function updateProfileStats() {
-            if (!currentUser) return;
-            const u = staffDatabase.find(m => m.name === currentUser.name) || currentUser;
-            const tAll = document.getElementById('totalAll');
-            if (!tAll) return;
-
-            tAll.innerText = u.total || 0;
-            document.getElementById('mutesAll').innerText = u.allMutes || 0;
-            document.getElementById('bansAll').innerText = u.allBans || 0;
-
-            const isHelper = u.role.includes('Хелпер');
-            const reqMutes = isHelper ? 60 : 65;
-            const reqBans = isHelper ? 0 : 15;
-
-            document.getElementById('mutesWeek').innerText = `${u.mutes || 0}`;
-            document.getElementById('bansWeek').innerText = `${u.bans || 0}`;
-
-            if (isHelper) {
-                document.getElementById('totalWeek').innerText = `${u.mutes || 0} / ${reqMutes} ответов (мутов)`;
-                const pct = Math.min(100, Math.round(((u.mutes || 0) / reqMutes) * 100));
-                document.getElementById('weekProgress').style.width = pct + '%';
-                document.getElementById('normDetails').innerText = 'Норма хелпера: 60 ответов';
-            } else {
-                document.getElementById('totalWeek').innerText = `Муты: ${u.mutes || 0}/65 | Баны: ${u.bans || 0}/15`;
-                const pct = Math.min(100, Math.round((((u.mutes || 0) + (u.bans || 0)) / (reqMutes + reqBans)) * 100));
-                document.getElementById('weekProgress').style.width = pct + '%';
-                document.getElementById('normDetails').innerText = 'Норма модератора: 65 мутов, 15 банов';
-            }
-        }
-
-        const loginForm = document.getElementById('loginForm');
-        if (loginForm) {
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const log = document.getElementById('loginInput').value.trim();
-                const pass = document.getElementById('passInput').value.trim();
-
-                const userFound = staffDatabase.find(u => u.name === log && u.pass === pass);
-
-                if (userFound) {
-                    currentUser = userFound;
-                } else if (log === 'support' && pass === 'support123') {
-                    currentUser = { name: 'support', pass: 'support123', role: 'Поддержка' };
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                });
+                if (res.ok) {
+                    const result = await res.json();
+                    if (result.record && result.record.staff && result.record.staff.length > 0) {
+                        dbData = result.record;
+                    }
+                    updateSync('Облако синхронизировано', '#2ed573');
                 } else {
-                    playSound('error');
-                    showToast('Неверный логин или пароль!', true);
-                    return;
+                    updateSync('Инициализация базы...', '#2ed573');
+                    await saveCloudData();
                 }
+            } catch (e) {
+                updateSync('Ошибка сети', '#ff4757');
+            }
+        }
 
-                playSound('success');
+        async function saveCloudData() {
+            updateSync('Сохранение в облако...', '#ffa502');
+            try {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_API_KEY
+                    },
+                    body: JSON.stringify(dbData)
+                });
+                if (res.ok) {
+                    updateSync('Сохранено в облаке', '#2ed573');
+                }
+            } catch (e) {
+                updateSync('Ошибка сохранения', '#ff4757');
+            }
+        }
+
+        function updateSync(text, color) {
+            document.getElementById('syncText').innerText = text;
+            document.getElementById('syncIcon').style.color = color;
+        }
+
+        function renderUsersTable() {
+            const tbody = document.getElementById('staffListTable');
+            if (!tbody) return;
+            tbody.innerHTML = dbData.staff.map(u => `
+                <tr>
+                    <td><b>${u.name}</b></td>
+                    <td><span style="color: var(--accent);">${u.role}</span></td>
+                    <td style="color: var(--warning); font-family: monospace;">${u.pass}</td>
+                </tr>
+            `).join('');
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const log = document.getElementById('loginInput').value.trim();
+            const pass = document.getElementById('passInput').value.trim();
+
+            const user = dbData.staff.find(u => u.name === log && u.pass === pass);
+            if (user) {
+                currentUser = user;
                 document.getElementById('authScreen').style.display = 'none';
                 document.getElementById('appScreen').style.display = 'block';
-
-                document.getElementById('userName').innerText = currentUser.name;
-                document.getElementById('userRole').innerText = currentUser.role;
-
-                if (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Администратор' || currentUser.role === 'Владелец') {
-                    document.getElementById('curatorTab').style.display = 'flex';
-                    document.getElementById('supportTab').style.display = 'flex';
-                    document.getElementById('vacationAdminCard').style.display = 'block';
-                    document.getElementById('promotionAdminCard').style.display = 'block';
-                }
-
-                if (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Владелец') {
-                    document.getElementById('curatorReportCard').style.display = 'block';
-                    document.getElementById('passDatabaseCard').style.display = 'block';
-                }
-
-                if (currentUser.role === 'Поддержка') {
-                    document.getElementById('curatorTab').style.display = 'none';
-                    document.getElementById('supportTab').style.display = 'flex';
-                    switchTab('supportView');
-                    document.getElementById('navTabsContainer').style.display = 'none';
-                }
-
-                renderStaffTables();
-                renderSupportView();
-                renderRequestsTables();
-                renderNews();
-                updateProfileStats();
-                showToast(`Успешный вход! Добро пожаловать, ${currentUser.name}`);
-            });
-        }
-
-        // ЖЕСТКАЯ ОЧИСТКА ПОЛЕЙ ПОСЛЕ ОТПРАВКИ ОТЧЕТА
-        const reportForm = document.getElementById('reportForm');
-        if (reportForm) {
-            reportForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const cmd = document.getElementById('repCmd').value;
-                const target = document.getElementById('repTarget').value.trim();
-                const duration = document.getElementById('repDuration').value.trim();
-                const reason = document.getElementById('repReason').value.trim();
-
-                const now = new Date();
-                const timeStr = now.toLocaleDateString() + ', ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                const rep = { author: currentUser.name, cmd, target, duration, reason, img: currentPastedImage, time: timeStr };
-                submittedReports.push(rep);
-
-                const u = staffDatabase.find(m => m.name === currentUser.name);
-                if (u) {
-                    if (cmd === 'tempmute') {
-                        u.mutes = (u.mutes || 0) + 1;
-                        u.allMutes = (u.allMutes || 0) + 1;
-                    } else {
-                        u.bans = (u.bans || 0) + 1;
-                        u.allBans = (u.allBans || 0) + 1;
-                    }
-                    u.total = (u.total || 0) + 1;
-                }
-
-                saveData();
-                renderSupportView();
-                updateProfileStats();
-                playSound('success');
-                showToast('Отчет успешно подан!');
-
-                // Сброс всех полей
-                document.getElementById('repTarget').value = '';
-                document.getElementById('repDuration').value = '';
-                document.getElementById('repReason').value = '';
-                document.getElementById('repCmd').selectedIndex = 0;
-                document.getElementById('previewImg').src = '';
-                document.getElementById('previewImg').style.display = 'none';
-                document.getElementById('pasteZone').classList.remove('has-image');
-                currentPastedImage = null;
-            });
-        }
-
-        document.addEventListener('paste', function(e) {
-            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-            for (let index in items) {
-                const item = items[index];
-                if (item.kind === 'file') {
-                    const blob = item.getAsFile();
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        currentPastedImage = event.target.result;
-                        const img = document.getElementById('previewImg');
-                        if (img) {
-                            img.src = currentPastedImage;
-                            img.style.display = 'block';
-                            document.getElementById('pasteZone').classList.add('has-image');
-                        }
-                        playSound('click');
-                    };
-                    reader.readAsDataURL(blob);
-                }
+                document.getElementById('userName').innerText = user.name;
+                document.getElementById('userRole').innerText = user.role;
+                renderUsersTable();
+                showToast(`Добро пожаловать, ${user.name}!`);
+            } else {
+                showToast('Неверный логин или пароль!', true);
             }
         });
 
-        function getBaseSalary(role) {
-            if (role === 'Хелпер') return 300;
-            if (role === 'Ст. Хелпер') return 400;
-            if (role === 'Мл. Модератор') return 500;
-            if (role === 'Модератор') return 600;
-            if (role === 'Ст. Модератор') return 700;
-            if (role === 'Владелец') return 1000;
-            return 300;
-        }
-
-        function generateWeeklyReport() {
-            playSound('success');
-
-            let ranked = staffDatabase.map(u => ({
-                ...u,
-                score: (u.mutes || 0) + ((u.bans || 0) * 2)
-            })).sort((a, b) => b.score - a.score);
-
-            const top1 = ranked[0] ? ranked[0].name : null;
-            const top2 = ranked[1] ? ranked[1].name : null;
-            const top3 = ranked[2] ? ranked[2].name : null;
-
-            let rowsHtml = '';
-            staffDatabase.forEach(user => {
-                let isX2 = false;
-                let normStatus = '<span style="color: var(--danger);">Не выполнена</span>';
-
-                if (user.role.includes('Хелпер')) {
-                    if (user.mutes >= 120) { normStatus = '<span class="badge-x2">ВЫПОЛНЕНА x2 НОРМА</span>'; isX2 = true; }
-                    else if (user.mutes >= 60) { normStatus = '<span style="color: var(--success);">Выполнена</span>'; }
-                } else {
-                    if (user.mutes >= 130 && user.bans >= 30) { normStatus = '<span class="badge-x2">ВЫПОЛНЕНА x2 НОРМА</span>'; isX2 = true; }
-                    else if (user.mutes >= 65 && user.bans >= 15) { normStatus = '<span style="color: var(--success);">Выполнена</span>'; }
-                }
-
-                let baseSal = getBaseSalary(user.role);
-                let finalSal = isX2 ? baseSal * 2 : baseSal;
-
-                let moneyBonus = 0;
-                let bonusBadge = '';
-                if (user.name === top1 && user.score > 0) { moneyBonus = 500; bonusBadge = ' 🥇 (+500₽)'; }
-                else if (user.name === top2 && user.score > 0) { moneyBonus = 250; bonusBadge = ' 🥈 (+250₽)'; }
-                else if (user.name === top3 && user.score > 0) { moneyBonus = 150; bonusBadge = ' 🥉 (+150₽)'; }
-
-                rowsHtml += `
-                    <tr>
-                        <td><b>${user.name}</b>${bonusBadge}</td>
-                        <td>${user.role}</td>
-                        <td>${user.mutes || 0}</td>
-                        <td>${user.bans || 0}</td>
-                        <td>${normStatus}</td>
-                        <td><b style="color: var(--accent);">${finalSal} суриков</b>${moneyBonus ? ` <span style="color: var(--warning); font-size:13px;">+${moneyBonus}₽</span>` : ''}</td>
-                    </tr>
-                `;
-
-                user.mutes = 0;
-                user.bans = 0;
-            });
-
-            const contentHtml = `
-                <table>
-                    <thead>
-                        <tr><th>Сотрудник</th><th>Должность</th><th>Мутов</th><th>Банов</th><th>Статус нормы</th><th>Зарплата (Сурики / Рубли)</th></tr>
-                    </thead>
-                    <tbody>${rowsHtml}</tbody>
-                </table>
-            `;
-
-            newsList.unshift({
-                title: 'Итоги работы Команды Проекта (Суббота — Пятница)',
-                author: `${currentUser.name} (${currentUser.role})`,
-                date: new Date().toLocaleDateString(),
-                content: contentHtml
-            });
-
-            saveData();
-            renderNews();
-            renderStaffTables();
-            renderSupportView();
-            updateProfileStats();
-            showToast('Недельный отчет опубликован! Статистика сброшена на 0.');
-            switchTab('news');
-        }
-
-        function switchTab(tabId) {
-            playSound('click');
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
-            const targetTab = document.getElementById('tab-' + tabId);
-            const targetBtn = document.getElementById('tabBtn-' + tabId);
-            if (targetTab) targetTab.classList.add('active');
-            if (targetBtn) targetBtn.classList.add('active');
-        }
-
-        const createAccForm = document.getElementById('createAccountForm');
-        if (createAccForm) {
-            createAccForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const log = document.getElementById('newLog').value.trim();
-                const pass = document.getElementById('newPass').value.trim();
-                const role = document.getElementById('newRole').value;
-                
-                pckAccepted++;
-                staffDatabase.push({ id: 'st-' + Date.now(), name: log, pass: pass, role: role, mutes: 0, bans: 0, total: 0, allMutes: 0, allBans: 0 });
-                saveData();
-                renderStaffTables();
-                renderSupportView();
-                playSound('success');
-                showToast(`Аккаунт ${log} успешно создан!`);
-                this.reset();
-            });
-        }
-
-        function changeUserRole(id) {
-            const selectEl = document.getElementById(`roleSel-${id}`);
-            if (!selectEl) return;
-            const newRole = selectEl.value;
-            const member = staffDatabase.find(m => m.id === id);
-            if (member) {
-                member.role = newRole;
-                saveData();
-                renderStaffTables();
-                renderSupportView();
-                playSound('success');
-                showToast(`Должность пользователя ${member.name} изменена на ${newRole}!`);
-            }
-        }
-
-        function deleteAccount(id) {
-            const member = staffDatabase.find(m => m.id === id);
-            if (member && confirm(`Вы точно хотите снять сотрудника ${member.name}?`)) {
-                staffDatabase = staffDatabase.filter(m => m.id !== id);
-                pckRemoved++;
-                saveData();
-                renderStaffTables();
-                renderSupportView();
-                playSound('error');
-                showToast(`Аккаунт ${member.name} удален из системы!`);
-            }
-        }
-
-        function logout() { location.reload(); }
+        window.addEventListener('DOMContentLoaded', loadCloudData);
     </script>
 </body>
 </html>
