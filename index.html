@@ -426,7 +426,7 @@
         </div>
     </div>
 
-    <!-- Плеер релакс-музыки -->
+    <!-- Плеер эмбиента -->
     <div class="bottom-controls">
         <div class="music-player">
             <i class="fa-solid fa-music" id="musicIcon" style="color: var(--accent); font-size: 15px;"></i>
@@ -534,7 +534,7 @@
                 </div>
             </div>
 
-            <!-- Новости с возможностью удаления -->
+            <!-- Новости -->
             <div id="tab-news" class="tab-content">
                 <div id="newsContainer">
                     <div class="card">
@@ -897,6 +897,7 @@
         function renderRequestsTables() {
             const vacTbody = document.getElementById('vacationTableBody');
             const promTbody = document.getElementById('promotionTableBody');
+            if (!vacTbody || !promTbody) return;
             vacTbody.innerHTML = '';
             promTbody.innerHTML = '';
 
@@ -962,31 +963,38 @@
             showToast(`Заявка на повышение ${status.toLowerCase()}`);
         }
 
-        document.getElementById('vacationSubmitForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const reason = document.getElementById('vacReason').value.trim();
-            const days = document.getElementById('vacDays').value.trim();
-            vacationRequests.unshift({ author: currentUser.name, reason, days, status: 'На рассмотрении' });
-            saveData();
-            renderRequestsTables();
-            this.reset();
-            playSound('success');
-            showToast('Заявка на отпуск успешно отправлена!');
-        });
+        const vacForm = document.getElementById('vacationSubmitForm');
+        if (vacForm) {
+            vacForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const reason = document.getElementById('vacReason').value.trim();
+                const days = document.getElementById('vacDays').value.trim();
+                vacationRequests.unshift({ author: currentUser.name, reason, days, status: 'На рассмотрении' });
+                saveData();
+                renderRequestsTables();
+                this.reset();
+                playSound('success');
+                showToast('Заявка на отпуск успешно отправлена!');
+            });
+        }
 
-        document.getElementById('promotionSubmitForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const targetRole = document.getElementById('promTargetRole').value;
-            promotionRequests.unshift({ author: currentUser.name, targetRole, status: 'На рассмотрении' });
-            saveData();
-            renderRequestsTables();
-            playSound('success');
-            showToast('Заявка на повышение отправлена!');
-        });
+        const promForm = document.getElementById('promotionSubmitForm');
+        if (promForm) {
+            promForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const targetRole = document.getElementById('promTargetRole').value;
+                promotionRequests.unshift({ author: currentUser.name, targetRole, status: 'На рассмотрении' });
+                saveData();
+                renderRequestsTables();
+                playSound('success');
+                showToast('Заявка на повышение отправлена!');
+            });
+        }
 
         function renderStaffTables() {
             const tbody = document.getElementById('staffTable');
             const passTbody = document.getElementById('passDbTable');
+            if (!tbody || !passTbody) return;
             tbody.innerHTML = '';
             passTbody.innerHTML = '';
 
@@ -1028,6 +1036,7 @@
         function renderSupportView() {
             const userCardsBox = document.getElementById('staffUserCards');
             const reportsList = document.getElementById('userReportsList');
+            if (!userCardsBox || !reportsList) return;
             const searchQuery = (document.getElementById('targetSearchInput')?.value || '').toLowerCase().trim();
 
             userCardsBox.innerHTML = `
@@ -1063,7 +1072,7 @@
                 return;
             }
 
-            reportsList.innerHTML = filtered.map((rep, idx) => `
+            reportsList.innerHTML = filtered.map((rep) => `
                 <div class="report-item-card" onclick="openModal(${submittedReports.indexOf(rep)})">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                         <div>
@@ -1086,9 +1095,9 @@
             renderSupportView();
         }
 
-        // Рендер новостей с кнопкой удаления для руководство
         function renderNews() {
             const newsBox = document.getElementById('newsContainer');
+            if (!newsBox) return;
             if (newsList.length === 0) {
                 newsBox.innerHTML = `
                     <div class="card">
@@ -1127,7 +1136,10 @@
         function updateProfileStats() {
             if (!currentUser) return;
             const u = staffDatabase.find(m => m.name === currentUser.name) || currentUser;
-            document.getElementById('totalAll').innerText = u.total || 0;
+            const tAll = document.getElementById('totalAll');
+            if (!tAll) return;
+
+            tAll.innerText = u.total || 0;
             document.getElementById('mutesAll').innerText = u.allMutes || 0;
             document.getElementById('bansAll').innerText = u.allBans || 0;
 
@@ -1151,37 +1163,267 @@
             }
         }
 
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const log = document.getElementById('loginInput').value.trim();
-            const pass = document.getElementById('passInput').value.trim();
+        const loginForm = document.getElementById('loginForm');
+        if (loginForm) {
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const log = document.getElementById('loginInput').value.trim();
+                const pass = document.getElementById('passInput').value.trim();
 
-            const userFound = staffDatabase.find(u => u.name === log && u.pass === pass);
+                const userFound = staffDatabase.find(u => u.name === log && u.pass === pass);
 
-            if (userFound) {
-                currentUser = userFound;
-            } else if (log === 'support' && pass === 'support123') {
-                currentUser = { name: 'support', pass: 'support123', role: 'Поддержка' };
-            } else {
-                playSound('error');
-                showToast('Неверный логин или пароль!', true);
-                return;
+                if (userFound) {
+                    currentUser = userFound;
+                } else if (log === 'support' && pass === 'support123') {
+                    currentUser = { name: 'support', pass: 'support123', role: 'Поддержка' };
+                } else {
+                    playSound('error');
+                    showToast('Неверный логин или пароль!', true);
+                    return;
+                }
+
+                playSound('success');
+                document.getElementById('authScreen').style.display = 'none';
+                document.getElementById('appScreen').style.display = 'block';
+
+                document.getElementById('userName').innerText = currentUser.name;
+                document.getElementById('userRole').innerText = currentUser.role;
+
+                if (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Администратор') {
+                    document.getElementById('curatorTab').style.display = 'flex';
+                    document.getElementById('supportTab').style.display = 'flex';
+                    document.getElementById('vacationAdminCard').style.display = 'block';
+                    document.getElementById('promotionAdminCard').style.display = 'block';
+                }
+
+                if (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора') {
+                    document.getElementById('curatorReportCard').style.display = 'block';
+                    document.getElementById('passDatabaseCard').style.display = 'block';
+                }
+
+                if (currentUser.role === 'Поддержка') {
+                    document.getElementById('curatorTab').style.display = 'none';
+                    document.getElementById('supportTab').style.display = 'flex';
+                    switchTab('supportView');
+                    document.getElementById('navTabsContainer').style.display = 'none';
+                }
+
+                renderStaffTables();
+                renderSupportView();
+                renderRequestsTables();
+                renderNews();
+                updateProfileStats();
+                showToast(`Успешный вход! Добро пожаловать, ${currentUser.name}`);
+            });
+        }
+
+        const reportForm = document.getElementById('reportForm');
+        if (reportForm) {
+            reportForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const cmd = document.getElementById('repCmd').value;
+                const target = document.getElementById('repTarget').value.trim();
+                const duration = document.getElementById('repDuration').value.trim();
+                const reason = document.getElementById('repReason').value.trim();
+
+                const now = new Date();
+                const timeStr = now.toLocaleDateString() + ', ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                const rep = { author: currentUser.name, cmd, target, duration, reason, img: currentPastedImage, time: timeStr };
+                submittedReports.push(rep);
+
+                const u = staffDatabase.find(m => m.name === currentUser.name);
+                if (u) {
+                    if (cmd === 'tempmute') {
+                        u.mutes = (u.mutes || 0) + 1;
+                        u.allMutes = (u.allMutes || 0) + 1;
+                    } else {
+                        u.bans = (u.bans || 0) + 1;
+                        u.allBans = (u.allBans || 0) + 1;
+                    }
+                    u.total = (u.total || 0) + 1;
+                }
+
+                saveData();
+                renderSupportView();
+                updateProfileStats();
+                playSound('success');
+                showToast('Отчет успешно подан!');
+
+                document.getElementById('repTarget').value = '';
+                document.getElementById('repDuration').value = '';
+                document.getElementById('repReason').value = '';
+                document.getElementById('repCmd').selectedIndex = 0;
+                document.getElementById('previewImg').src = '';
+                document.getElementById('previewImg').style.display = 'none';
+                document.getElementById('pasteZone').classList.remove('has-image');
+                currentPastedImage = null;
+            });
+        }
+
+        document.addEventListener('paste', function(e) {
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let index in items) {
+                const item = items[index];
+                if (item.kind === 'file') {
+                    const blob = item.getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        currentPastedImage = event.target.result;
+                        const img = document.getElementById('previewImg');
+                        if (img) {
+                            img.src = currentPastedImage;
+                            img.style.display = 'block';
+                            document.getElementById('pasteZone').classList.add('has-image');
+                        }
+                        playSound('click');
+                    };
+                    reader.readAsDataURL(blob);
+                }
             }
+        });
 
+        function getBaseSalary(role) {
+            if (role === 'Хелпер') return 300;
+            if (role === 'Ст. Хелпер') return 400;
+            if (role === 'Мл. Модератор') return 500;
+            if (role === 'Модератор') return 600;
+            if (role === 'Ст. Модератор') return 700;
+            return 300;
+        }
+
+        function generateWeeklyReport() {
             playSound('success');
-            document.getElementById('authScreen').style.display = 'none';
-            document.getElementById('appScreen').style.display = 'block';
 
-            document.getElementById('userName').innerText = currentUser.name;
-            document.getElementById('userRole').innerText = currentUser.role;
+            let ranked = staffDatabase.map(u => ({
+                ...u,
+                score: (u.mutes || 0) + ((u.bans || 0) * 2)
+            })).sort((a, b) => b.score - a.score);
 
-            if (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Администратор') {
-                document.getElementById('curatorTab').style.display = 'flex';
-                document.getElementById('supportTab').style.display = 'flex';
-                document.getElementById('vacationAdminCard').style.display = 'block';
-                document.getElementById('promotionAdminCard').style.display = 'block';
+            const top1 = ranked[0] ? ranked[0].name : null;
+            const top2 = ranked[1] ? ranked[1].name : null;
+            const top3 = ranked[2] ? ranked[2].name : null;
+
+            let rowsHtml = '';
+            staffDatabase.forEach(user => {
+                let isX2 = false;
+                let normStatus = '<span style="color: var(--danger);">Не выполнена</span>';
+
+                if (user.role.includes('Хелпер')) {
+                    if (user.mutes >= 120) { normStatus = '<span class="badge-x2">ВЫПОЛНЕНА x2 НОРМА</span>'; isX2 = true; }
+                    else if (user.mutes >= 60) { normStatus = '<span style="color: var(--success);">Выполнена</span>'; }
+                } else {
+                    if (user.mutes >= 130 && user.bans >= 30) { normStatus = '<span class="badge-x2">ВЫПОЛНЕНА x2 НОРМА</span>'; isX2 = true; }
+                    else if (user.mutes >= 65 && user.bans >= 15) { normStatus = '<span style="color: var(--success);">Выполнена</span>'; }
+                }
+
+                let baseSal = getBaseSalary(user.role);
+                let finalSal = isX2 ? baseSal * 2 : baseSal;
+
+                let moneyBonus = 0;
+                let bonusBadge = '';
+                if (user.name === top1 && user.score > 0) { moneyBonus = 500; bonusBadge = ' 🥇 (+500₽)'; }
+                else if (user.name === top2 && user.score > 0) { moneyBonus = 250; bonusBadge = ' 🥈 (+250₽)'; }
+                else if (user.name === top3 && user.score > 0) { moneyBonus = 150; bonusBadge = ' 🥉 (+150₽)'; }
+
+                rowsHtml += `
+                    <tr>
+                        <td><b>${user.name}</b>${bonusBadge}</td>
+                        <td>${user.role}</td>
+                        <td>${user.mutes || 0}</td>
+                        <td>${user.bans || 0}</td>
+                        <td>${normStatus}</td>
+                        <td><b style="color: var(--accent);">${finalSal} суриков</b>${moneyBonus ? ` <span style="color: var(--warning); font-size:12px;">+${moneyBonus}₽</span>` : ''}</td>
+                    </tr>
+                `;
+
+                user.mutes = 0;
+                user.bans = 0;
+            });
+
+            const contentHtml = `
+                <table>
+                    <thead>
+                        <tr><th>Сотрудник</th><th>Должность</th><th>Мутов</th><th>Банов</th><th>Статус нормы</th><th>Зарплата (Сурики / Рубли)</th></tr>
+                    </thead>
+                    <tbody>${rowsHtml}</tbody>
+                </table>
+            `;
+
+            newsList.unshift({
+                title: 'Итоги работы Команды Проекта (Суббота — Пятница)',
+                author: `${currentUser.name} (${currentUser.role})`,
+                date: new Date().toLocaleDateString(),
+                content: contentHtml
+            });
+
+            saveData();
+            renderNews();
+            renderStaffTables();
+            renderSupportView();
+            updateProfileStats();
+            showToast('Недельный отчет опубликован! Статистика сброшена на 0.');
+            switchTab('news');
+        }
+
+        function switchTab(tabId) {
+            playSound('click');
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            const targetTab = document.getElementById('tab-' + tabId);
+            const targetBtn = document.getElementById('tabBtn-' + tabId);
+            if (targetTab) targetTab.classList.add('active');
+            if (targetBtn) targetBtn.classList.add('active');
+        }
+
+        const createAccForm = document.getElementById('createAccountForm');
+        if (createAccForm) {
+            createAccForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const log = document.getElementById('newLog').value.trim();
+                const pass = document.getElementById('newPass').value.trim();
+                const role = document.getElementById('newRole').value;
+                
+                pckAccepted++;
+                staffDatabase.push({ id: 'st-' + Date.now(), name: log, pass: pass, role: role, mutes: 0, bans: 0, total: 0, allMutes: 0, allBans: 0 });
+                saveData();
+                renderStaffTables();
+                renderSupportView();
+                playSound('success');
+                showToast(`Аккаунт ${log} успешно создан!`);
+                this.reset();
+            });
+        }
+
+        function changeUserRole(id) {
+            const selectEl = document.getElementById(`roleSel-${id}`);
+            if (!selectEl) return;
+            const newRole = selectEl.value;
+            const member = staffDatabase.find(m => m.id === id);
+            if (member) {
+                member.role = newRole;
+                saveData();
+                renderStaffTables();
+                renderSupportView();
+                playSound('success');
+                showToast(`Должность пользователя ${member.name} изменена на ${newRole}!`);
             }
+        }
 
-            if (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора') {
-                document.getElementById('curatorReportCard').style.display = 'block';
-                document.getElementById('passDatabase
+        function deleteAccount(id) {
+            const member = staffDatabase.find(m => m.id === id);
+            if (member && confirm(`Вы точно хотите снять сотрудника ${member.name}?`)) {
+                staffDatabase = staffDatabase.filter(m => m.id !== id);
+                pckRemoved++;
+                saveData();
+                renderStaffTables();
+                renderSupportView();
+                playSound('error');
+                showToast(`Аккаунт ${member.name} удален из системы!`);
+            }
+        }
+
+        function logout() { location.reload(); }
+    </script>
+</body>
+</html>
