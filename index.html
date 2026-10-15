@@ -251,7 +251,7 @@
             box-shadow: 0 -4px 15px var(--accent-glow);
         }
 
-        /* Оранжевый мигающий бейдж новых заявок */
+        /* Мигающий оранжевый бейдж */
         .badge-notice {
             background: var(--warning);
             color: #000;
@@ -259,13 +259,13 @@
             font-weight: bold;
             padding: 2px 6px;
             border-radius: 10px;
-            animation: pulseNotice 1.5s infinite;
+            animation: pulseNotice 1.2s infinite;
         }
 
         @keyframes pulseNotice {
-            0% { box-shadow: 0 0 0 0 rgba(255, 165, 2, 0.7); }
-            70% { box-shadow: 0 0 0 8px rgba(255, 165, 2, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 165, 2, 0); }
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 165, 2, 0.8); }
+            50% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(255, 165, 2, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 165, 2, 0); }
         }
 
         .container { padding: 30px; flex: 1; max-width: 1300px; width: 100%; margin: 0 auto; }
@@ -372,7 +372,6 @@
             box-shadow: 0 0 12px var(--accent-glow);
         }
 
-        /* Виджет музыки и тема */
         .bottom-controls {
             position: fixed;
             bottom: 20px;
@@ -428,13 +427,13 @@
         </div>
     </div>
 
-    <!-- Нижняя панель: Переключатель тем и Музыкальный плеер -->
+    <!-- Музыка и темы -->
     <div class="bottom-controls">
         <div class="music-player">
-            <i class="fa-solid fa-compact-disc" id="musicIcon" style="color: var(--accent); font-size: 16px;"></i>
+            <i class="fa-solid fa-music" id="musicIcon" style="color: var(--accent); font-size: 15px;"></i>
             <div>
-                <b id="trackTitle">Relax Lo-Fi Mix</b><br>
-                <small style="color: var(--text-muted);" id="trackArtist">SureBox Radio</small>
+                <b>Lofi Relax Mix</b><br>
+                <small style="color: var(--text-muted);">SureBox Stream</small>
             </div>
             <button onclick="toggleMusic()" class="btn-sm btn-success" id="playBtn" style="padding: 4px 10px;"><i class="fa-solid fa-play"></i></button>
             <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.3" oninput="changeVolume(this.value)" style="width: 60px; accent-color: var(--accent);">
@@ -469,7 +468,7 @@
         </div>
     </div>
 
-    <!-- Основной дашборд -->
+    <!-- Дашборд -->
     <div id="appScreen" style="display: none;">
         <header>
             <div class="logo"><i class="fa-solid fa-cube"></i> SureBox Staff</div>
@@ -582,9 +581,8 @@
                     </form>
                 </div>
 
-                <!-- Управление заявками на отпуск для администрации -->
                 <div class="card" id="vacationAdminCard" style="display: none;">
-                    <div class="card-title"><div><i class="fa-solid fa-list-check"></i> Поданные заявки на отпуск</div></div>
+                    <div class="card-title"><div><i class="fa-solid fa-list-check"></i> Управление заявками на отпуск</div></div>
                     <table>
                         <thead>
                             <tr><th>Сотрудник</th><th>Причина</th><th>Срок</th><th>Статус</th><th>Действия</th></tr>
@@ -611,9 +609,8 @@
                     </form>
                 </div>
 
-                <!-- Управление заявками на повышение -->
                 <div class="card" id="promotionAdminCard" style="display: none;">
-                    <div class="card-title"><div><i class="fa-solid fa-user-graduate"></i> Поданные заявки на повышение</div></div>
+                    <div class="card-title"><div><i class="fa-solid fa-user-graduate"></i> Управление заявками на повышение</div></div>
                     <table>
                         <thead>
                             <tr><th>Сотрудник</th><th>Желаемая роль</th><th>Статус</th><th>Действия</th></tr>
@@ -696,7 +693,7 @@
                 </div>
             </div>
 
-            <!-- Просмотр отчетов с поиском -->
+            <!-- Просмотр отчетов -->
             <div id="tab-supportView" class="tab-content">
                 <div class="card">
                     <div class="card-title">
@@ -718,7 +715,7 @@
         </div>
     </div>
 
-    <!-- Аудиопоток релакс музыки -->
+    <!-- Стабильный фоновый аудиоплеер (Lofi / Chill) -->
     <audio id="bgAudio" loop src="https://stream.zeno.fm/f3v62880y8quv"></audio>
 
     <script>
@@ -730,15 +727,12 @@
         function toggleMusic() {
             const audio = document.getElementById('bgAudio');
             const btn = document.getElementById('playBtn');
-            const icon = document.getElementById('musicIcon');
             if (isPlaying) {
                 audio.pause();
                 btn.innerHTML = '<i class="fa-solid fa-play"></i>';
-                icon.style.animation = 'none';
             } else {
                 audio.play();
                 btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-                icon.style.animation = 'spin 3s linear infinite';
             }
             isPlaying = !isPlaying;
         }
@@ -782,7 +776,7 @@
             { id: 'st-1', name: '6hoske', pass: '#6H!sKe99$SureBox2026', role: 'Куратор (Владелец)', mutes: 40, bans: 10, total: 50, allMutes: 100, allBans: 20 },
             { id: 'st-2', name: 'zam', pass: 'zam123', role: 'Зам. Куратора', mutes: 20, bans: 5, total: 25, allMutes: 50, allBans: 10 },
             { id: 'st-3', name: 'admin', pass: 'admin123', role: 'Администратор', mutes: 10, bans: 2, total: 12, allMutes: 30, allBans: 5 },
-            { id: 'st-4', name: 'Helper_Kirill', pass: 'K~9sF2#q', role: 'Хелпер', mutes: 65, bans: 0, total: 65, allMutes: 120, allBans: 0 }
+            { id: 'st-4', name: 'Helper_Kirill', pass: 'K~9sF2#q', role: 'Хелпер', mutes: 5, bans: 0, total: 5, allMutes: 120, allBans: 0 }
         ];
 
         let staffDatabase = JSON.parse(localStorage.getItem('surebox_staff')) || defaultStaff;
@@ -904,14 +898,16 @@
             vacationRequests[idx].status = status;
             saveData();
             renderRequestsTables();
-            playSound('click');
+            playSound('success');
+            showToast(`Заявка на отпуск ${status.toLowerCase()}`);
         }
 
         function updatePromStatus(idx, status) {
             promotionRequests[idx].status = status;
             saveData();
             renderRequestsTables();
-            playSound('click');
+            playSound('success');
+            showToast(`Заявка на повышение ${status.toLowerCase()}`);
         }
 
         document.getElementById('vacationSubmitForm').addEventListener('submit', function(e) {
@@ -1122,7 +1118,7 @@
             showToast(`Успешный вход! Добро пожаловать, ${currentUser.name}`);
         });
 
-        // Гарантированная очистка всей формы после отправки
+        // Жесткая очистка полей формы отчета и звуковое оповещение
         document.getElementById('reportForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const cmd = document.getElementById('repCmd').value;
@@ -1151,7 +1147,7 @@
             playSound('success');
             showToast('Отчет успешно подан!');
 
-            // ПОЛНАЯ ОЧИСТКА ВСЕХ ПОЛЕЙ
+            // СБРОС ВСЕХ ПОЛЕЙ
             document.getElementById('repTarget').value = '';
             document.getElementById('repDuration').value = '';
             document.getElementById('repReason').value = '';
@@ -1190,7 +1186,6 @@
             return 300;
         }
 
-        // Гарантированный сброс недельной нормы при генерации отчета
         function generateWeeklyReport() {
             playSound('success');
 
@@ -1236,7 +1231,7 @@
                     </tr>
                 `;
 
-                // ПОЛНЫЙ СБРОС НЕДЕЛЬНОЙ СТАТИСТИКИ У ВСЕХ
+                // СБРОС НЕДЕЛИ НА 0 ДЛЯ ВСЕХ
                 user.mutes = 0;
                 user.bans = 0;
             });
@@ -1262,7 +1257,7 @@
             renderStaffTables();
             renderSupportView();
             updateProfileStats();
-            showToast('Недельный отчет опубликован! Статистика недели сброшена на 0.');
+            showToast('Недельный отчет опубликован! Статистика сброшена на 0.');
             switchTab('news');
         }
 
