@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SureBox | Панель Управления КП (Full Edition)</title>
+    <title>SureBox | Панель Управления КП (Permanent Storage)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -131,7 +131,6 @@
         .report-item-card:hover { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
 
         .bottom-controls { position: fixed; bottom: 25px; right: 25px; display: flex; gap: 15px; align-items: center; z-index: 999; }
-        .music-player { background: var(--bg-card); border: 1px solid var(--border); padding: 10px 20px; border-radius: 35px; display: flex; gap: 14px; align-items: center; box-shadow: 0 8px 25px rgba(0,0,0,0.6); backdrop-filter: blur(12px); font-size: 13px; }
         .theme-switcher { background: var(--bg-card); border: 1px solid var(--border); padding: 10px 16px; border-radius: 35px; display: flex; gap: 10px; align-items: center; box-shadow: 0 8px 25px rgba(0,0,0,0.6); backdrop-filter: blur(12px); }
         .theme-circle { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.25); }
     </style>
@@ -139,8 +138,8 @@
 <body>
 
     <div class="sync-badge" id="syncStatus">
-        <i class="fa-brands fa-spotify" id="syncIcon" style="color: var(--accent); font-size: 16px;"></i>
-        <span id="syncText">Spotify Cloud Connected</span>
+        <i class="fa-solid fa-cloud" id="syncIcon" style="color: var(--accent); font-size: 16px;"></i>
+        <span id="syncText">Cloud Database Synced</span>
     </div>
 
     <div class="toast-container" id="toastBox"></div>
@@ -153,24 +152,8 @@
         </div>
     </div>
 
-    <!-- Плеер со скриншотов -->
+    <!-- Переключатель тем внизу -->
     <div class="bottom-controls">
-        <div class="music-player">
-            <i class="fa-brands fa-spotify" style="color: var(--accent); font-size: 20px;"></i>
-            <div>
-                <select id="trackSelect" onchange="playClickSound(); changeTrack(this.value)" style="background: transparent; border: none; color: #fff; font-weight: bold; outline: none; cursor: pointer; max-width: 220px;">
-                    <option value="mist" style="background: #121218;">Charbo - Mist (Slowed)</option>
-                    <option value="addiction" style="background: #121218;">LONOWN - addiction (Slowed)</option>
-                    <option value="fucklove" style="background: #121218;">XXXTENTACION - Fuck Love</option>
-                    <option value="track10" style="background: #121218;">sweetiele - Track 10</option>
-                    <option value="meow" style="background: #121218;">PLAYBOY02 - Meow</option>
-                </select><br>
-                <small style="color: var(--text-muted);" id="musicStatus">Нажмите ▶</small>
-            </div>
-            <button onclick="playClickSound(); toggleMusicPlayer()" class="btn-sm btn-success" id="playBtn" style="padding: 6px 12px;"><i class="fa-solid fa-play"></i></button>
-            <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.3" oninput="changeVolume(this.value)" style="width: 70px; accent-color: var(--accent);">
-        </div>
-
         <div class="theme-switcher">
             <span style="font-size: 11px; color: var(--text-muted); font-weight: bold;">ТЕМА:</span>
             <div class="theme-circle" style="background: #1db954;" onclick="playClickSound(); setTheme('green')"></div>
@@ -185,7 +168,7 @@
     <div class="auth-container" id="authScreen">
         <div class="auth-card">
             <h1>Sure<span>Box</span></h1>
-            <p>Spotify Cloud Staff Panel</p>
+            <p>Cloud Staff Management Panel</p>
             <form id="loginForm" onsubmit="handleLogin(event)" style="display: flex; flex-direction: column; gap: 20px;">
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>Логин</label>
@@ -458,6 +441,7 @@
         let selectedStaffFilter = 'all';
         let currentPastedImage = null;
 
+        // Базовые данные только если облако абсолютно чистое
         let dbData = {
             staff: [
                 { id: 'st-1', name: '6hoske', pass: '#6H!sKe99$SureBox2026', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0 },
@@ -490,74 +474,29 @@
             } catch(e) {}
         }
 
-        let audioElement = new Audio();
-        audioElement.loop = true;
-        let isMusicPlaying = false;
-
-        const tracks = {
-            'mist': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
-            'addiction': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-            'fucklove': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3',
-            'track10': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
-            'meow': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
-        };
-
-        function changeTrack(trackKey) {
-            audioElement.src = tracks[trackKey] || tracks['mist'];
-            if (isMusicPlaying) {
-                audioElement.play().catch(e => console.log(e));
-            }
-        }
-
-        function toggleMusicPlayer() {
-            const playBtn = document.getElementById('playBtn');
-            const statusLabel = document.getElementById('musicStatus');
-            const trackSelect = document.getElementById('trackSelect').value;
-
-            if (!audioElement.src) {
-                audioElement.src = tracks[trackSelect];
-            }
-
-            if (isMusicPlaying) {
-                audioElement.pause();
-                playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-                statusLabel.innerText = 'Пауза';
-                isMusicPlaying = false;
-            } else {
-                audioElement.play().then(() => {
-                    playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-                    statusLabel.innerText = 'Играет трек';
-                    isMusicPlaying = true;
-                }).catch(err => {
-                    showToast('Нажмите еще раз для старта аудио', true);
-                });
-            }
-        }
-
-        function changeVolume(val) {
-            audioElement.volume = parseFloat(val);
-        }
-
+        // АБСОЛЮТНО НАДЕЖНАЯ ЗАГРУЗКА ИЗ ОБЛАКА БЕЗ ПЕРЕЗАПИСИ
         async function loadCloudData() {
-            updateSync('Загрузка из облака...', '#ffa502');
+            updateSync('Синхронизация с облаком...', '#ffa502');
             try {
                 const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
-                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY },
+                    cache: 'no-store'
                 });
                 if (res.ok) {
                     const result = await res.json();
                     if (result.record && result.record.staff && result.record.staff.length > 0) {
                         dbData = result.record;
                     }
-                    updateSync('Spotify Cloud Connected', '#1db954');
+                    updateSync('Cloud Database Synced', '#1db954');
                 }
             } catch (e) {
-                updateSync('Ошибка облака', '#ff4757');
+                updateSync('Ошибка синхронизации', '#ff4757');
             }
         }
 
+        // ЖЕСТКОЕ СОХРАНЕНИЕ В ОБЛАКО
         async function saveCloudData() {
-            updateSync('Синхронизация...', '#ffa502');
+            updateSync('Сохранение в облако...', '#ffa502');
             try {
                 const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
                     method: 'PUT',
@@ -568,10 +507,12 @@
                     body: JSON.stringify(dbData)
                 });
                 if (res.ok) {
-                    updateSync('Spotify Cloud Connected', '#1db954');
+                    updateSync('Cloud Database Synced', '#1db954');
+                } else {
+                    updateSync('Ошибка сохранения', '#ff4757');
                 }
             } catch (e) {
-                updateSync('Ошибка сохранения', '#ff4757');
+                updateSync('Ошибка сети', '#ff4757');
             }
         }
 
@@ -883,6 +824,7 @@
             }
         }
 
+        // АВТОРИЗАЦИЯ С ОБНОВЛЕНИЕМ ДАННЫХ ИЗ ОБЛАКА
         async function handleLogin(e) {
             if (e) e.preventDefault();
             const log = document.getElementById('loginInput').value.trim();
