@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SureBox | Панель Управления КП (Spotify & Hits Edition)</title>
+    <title>SureBox | Панель Управления КП (Full Edition)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --bg-main: #070709;
             --bg-card: rgba(18, 18, 24, 0.95);
             --bg-input: #0f0f14;
-            --accent: #1db954; /* Spotify Green */
+            --accent: #1db954;
             --accent-hover: #1ed760;
             --accent-glow: rgba(29, 185, 84, 0.4);
             --text-main: #f8f9fa;
@@ -117,7 +117,6 @@
         .btn-danger { background: var(--danger); color: #fff; }
         .btn-success { background: var(--success); color: #fff; }
         .btn-warning { background: var(--warning); color: #111; }
-        .badge-x2 { background: rgba(29, 185, 84, 0.25); color: var(--success); padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; }
 
         .input-group { display: flex; gap: 10px; }
         .role-select { padding: 6px 12px; background: var(--bg-input); border: 1px solid var(--border); color: #fff; border-radius: 8px; font-size: 13px; outline: none; }
@@ -148,77 +147,77 @@
 
     <div class="modal-overlay" id="reportModal">
         <div class="modal-content">
-            <span class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></span>
+            <span class="modal-close" onclick="playClickSound(); closeModal()"><i class="fa-solid fa-xmark"></i></span>
             <div class="card-title"><div><i class="fa-solid fa-file-contract"></i> Детальный отчёт о наказании</div></div>
             <div id="modalBody"></div>
         </div>
     </div>
 
-    <!-- Spotify Плеер -->
+    <!-- Плеер со скриншотов -->
     <div class="bottom-controls">
         <div class="music-player">
             <i class="fa-brands fa-spotify" style="color: var(--accent); font-size: 20px;"></i>
             <div>
-                <select id="trackSelect" onchange="changeTrack(this.value)" style="background: transparent; border: none; color: #fff; font-weight: bold; outline: none; cursor: pointer; max-width: 200px;">
-                    <option value="thug" style="background: #121218;">FRIENDLY THUG 52 NGG - Vibe</option>
-                    <option value="travis" style="background: #121218;">Travis Scott - FE!N / Type Vibe</option>
-                    <option value="carti" style="background: #121218;">Playboi Carti - Vamp Anthem / Rage</option>
-                    <option value="tsoi" style="background: #121218;">Виктор Цой - Группа крови</option>
-                    <option value="lofi" style="background: #121218;">Spotify Lofi Ambient Beats</option>
+                <select id="trackSelect" onchange="playClickSound(); changeTrack(this.value)" style="background: transparent; border: none; color: #fff; font-weight: bold; outline: none; cursor: pointer; max-width: 220px;">
+                    <option value="mist" style="background: #121218;">Charbo - Mist (Slowed)</option>
+                    <option value="addiction" style="background: #121218;">LONOWN - addiction (Slowed)</option>
+                    <option value="fucklove" style="background: #121218;">XXXTENTACION - Fuck Love</option>
+                    <option value="track10" style="background: #121218;">sweetiele - Track 10</option>
+                    <option value="meow" style="background: #121218;">PLAYBOY02 - Meow</option>
                 </select><br>
                 <small style="color: var(--text-muted);" id="musicStatus">Нажмите ▶</small>
             </div>
-            <button onclick="toggleMusicPlayer()" class="btn-sm btn-success" id="playBtn" style="padding: 6px 12px;"><i class="fa-solid fa-play"></i></button>
+            <button onclick="playClickSound(); toggleMusicPlayer()" class="btn-sm btn-success" id="playBtn" style="padding: 6px 12px;"><i class="fa-solid fa-play"></i></button>
             <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.3" oninput="changeVolume(this.value)" style="width: 70px; accent-color: var(--accent);">
         </div>
 
         <div class="theme-switcher">
             <span style="font-size: 11px; color: var(--text-muted); font-weight: bold;">ТЕМА:</span>
-            <div class="theme-circle" style="background: #1db954;" onclick="setTheme('green')"></div>
-            <div class="theme-circle" style="background: #ff4757;" onclick="setTheme('pink')"></div>
-            <div class="theme-circle" style="background: #1e90ff;" onclick="setTheme('blue')"></div>
-            <div class="theme-circle" style="background: #8a2be2;" onclick="setTheme('purple')"></div>
-            <div class="theme-circle" style="background: #ffa502;" onclick="setTheme('orange')"></div>
+            <div class="theme-circle" style="background: #1db954;" onclick="playClickSound(); setTheme('green')"></div>
+            <div class="theme-circle" style="background: #ff4757;" onclick="playClickSound(); setTheme('pink')"></div>
+            <div class="theme-circle" style="background: #1e90ff;" onclick="playClickSound(); setTheme('blue')"></div>
+            <div class="theme-circle" style="background: #8a2be2;" onclick="playClickSound(); setTheme('purple')"></div>
+            <div class="theme-circle" style="background: #ffa502;" onclick="playClickSound(); setTheme('orange')"></div>
         </div>
     </div>
 
-    <!-- Вход -->
+    <!-- Экран Входа -->
     <div class="auth-container" id="authScreen">
         <div class="auth-card">
             <h1>Sure<span>Box</span></h1>
             <p>Spotify Cloud Staff Panel</p>
-            <div id="loginForm" style="display: flex; flex-direction: column; gap: 20px;">
+            <form id="loginForm" onsubmit="handleLogin(event)" style="display: flex; flex-direction: column; gap: 20px;">
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>Логин</label>
-                    <input type="text" id="loginInput" class="form-control" placeholder="Введите логин" autocomplete="off">
+                    <input type="text" id="loginInput" class="form-control" placeholder="Введите логин" required autocomplete="off">
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>Пароль</label>
-                    <input type="password" id="passInput" class="form-control" placeholder="Введите пароль" autocomplete="current-password">
+                    <input type="password" id="passInput" class="form-control" placeholder="Введите пароль" required autocomplete="current-password">
                 </div>
-                <button type="button" onclick="handleLogin()" class="btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Войти в панель</button>
-            </div>
+                <button type="submit" onclick="playClickSound()" class="btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Войти в панель</button>
+            </form>
         </div>
     </div>
 
-    <!-- Дашборд -->
+    <!-- Основное Окно -->
     <div id="appScreen" style="display: none;">
         <header>
             <div class="logo"><i class="fa-solid fa-cube"></i> SureBox Staff</div>
             <div class="user-nav">
                 <div class="user-badge"><span id="userName">User</span> | <span class="role" id="userRole">Роль</span></div>
-                <button onclick="logout()" class="btn-sm btn-danger"><i class="fa-solid fa-power-off"></i> Выйти</button>
+                <button onclick="playClickSound(); logout()" class="btn-sm btn-danger"><i class="fa-solid fa-power-off"></i> Выйти</button>
             </div>
         </header>
 
         <div class="nav-tabs" id="navTabsContainer">
-            <div class="nav-tab active" id="tabBtn-reports" onclick="switchTab('reports')"><i class="fa-solid fa-file-lines"></i> Отчеты</div>
-            <div class="nav-tab" id="tabBtn-news" onclick="switchTab('news')"><i class="fa-solid fa-bullhorn"></i> Новости</div>
-            <div class="nav-tab" id="tabBtn-profile" onclick="switchTab('profile')"><i class="fa-solid fa-user"></i> Профиль</div>
-            <div class="nav-tab" id="tabBtn-vacation" onclick="switchTab('vacation')"><i class="fa-solid fa-umbrella-beach"></i> Отпуск <span class="badge-notice" id="vacationNotice" style="display: none;">0</span></div>
-            <div class="nav-tab" id="tabBtn-promotion" onclick="switchTab('promotion')"><i class="fa-solid fa-arrow-up-right-dots"></i> Повышение <span class="badge-notice" id="promotionNotice" style="display: none;">0</span></div>
-            <div class="nav-tab" id="curatorTab" style="display: none;" onclick="switchTab('curator')"><i class="fa-solid fa-crown"></i> Управление КП</div>
-            <div class="nav-tab" id="supportTab" style="display: none;" onclick="switchTab('supportView')"><i class="fa-solid fa-eye"></i> Просмотр отчетов</div>
+            <div class="nav-tab active" id="tabBtn-reports" onclick="playClickSound(); switchTab('reports')"><i class="fa-solid fa-file-lines"></i> Отчеты</div>
+            <div class="nav-tab" id="tabBtn-news" onclick="playClickSound(); switchTab('news')"><i class="fa-solid fa-bullhorn"></i> Новости</div>
+            <div class="nav-tab" id="tabBtn-profile" onclick="playClickSound(); switchTab('profile')"><i class="fa-solid fa-user"></i> Профиль</div>
+            <div class="nav-tab" id="tabBtn-vacation" onclick="playClickSound(); switchTab('vacation')"><i class="fa-solid fa-umbrella-beach"></i> Отпуск <span class="badge-notice" id="vacationNotice" style="display: none;">0</span></div>
+            <div class="nav-tab" id="tabBtn-promotion" onclick="playClickSound(); switchTab('promotion')"><i class="fa-solid fa-arrow-up-right-dots"></i> Повышение <span class="badge-notice" id="promotionNotice" style="display: none;">0</span></div>
+            <div class="nav-tab" id="curatorTab" style="display: none;" onclick="playClickSound(); switchTab('curator')"><i class="fa-solid fa-crown"></i> Управление КП</div>
+            <div class="nav-tab" id="supportTab" style="display: none;" onclick="playClickSound(); switchTab('supportView')"><i class="fa-solid fa-eye"></i> Просмотр отчетов</div>
         </div>
 
         <div class="container">
@@ -226,7 +225,7 @@
             <div id="tab-reports" class="tab-content active">
                 <div class="card">
                     <div class="card-title"><div><i class="fa-solid fa-plus"></i> Подать отчет о наказании</div></div>
-                    <div id="reportForm" style="display: flex; flex-direction: column; gap: 20px;">
+                    <form id="reportForm" onsubmit="submitReport(event)" style="display: flex; flex-direction: column; gap: 20px;">
                         <div class="grid-2">
                             <div class="form-group" style="margin-bottom:0;">
                                 <label>Команда наказания</label>
@@ -239,18 +238,18 @@
                             </div>
                             <div class="form-group" style="margin-bottom:0;">
                                 <label>Ник нарушителя</label>
-                                <input type="text" id="repTarget" class="form-control" placeholder="например: Player_47" autocomplete="off">
+                                <input type="text" id="repTarget" class="form-control" placeholder="например: Player_47" required autocomplete="off">
                             </div>
                         </div>
 
                         <div class="grid-2">
                             <div class="form-group" style="margin-bottom:0;">
                                 <label>Срок наказания</label>
-                                <input type="text" id="repDuration" class="form-control" placeholder="30m, 7d, навсегда" autocomplete="off">
+                                <input type="text" id="repDuration" class="form-control" placeholder="30m, 7d, навсегда" required autocomplete="off">
                             </div>
                             <div class="form-group" style="margin-bottom:0;">
                                 <label>Причина наказания</label>
-                                <input type="text" id="repReason" class="form-control" placeholder="п.п 1.2 / Читы" autocomplete="off">
+                                <input type="text" id="repReason" class="form-control" placeholder="п.п 1.2 / Читы" required autocomplete="off">
                             </div>
                         </div>
 
@@ -264,9 +263,9 @@
                         </div>
 
                         <div>
-                            <button type="button" onclick="submitReport()" class="btn-primary" style="width: auto; padding: 14px 40px;"><i class="fa-solid fa-paper-plane"></i> Отправить отчет</button>
+                            <button type="submit" onclick="playClickSound()" class="btn-primary" style="width: auto; padding: 14px 40px;"><i class="fa-solid fa-paper-plane"></i> Отправить отчет</button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
 
@@ -309,11 +308,11 @@
             <div id="tab-vacation" class="tab-content">
                 <div class="card">
                     <div class="card-title"><div><i class="fa-solid fa-umbrella-beach"></i> Заявка на отпуск</div></div>
-                    <div id="vacationSubmitForm" style="display: flex; flex-direction: column; gap: 20px;">
-                        <div class="form-group" style="margin-bottom:0;"><label>Причина отпуска</label><input type="text" id="vacReason" class="form-control" placeholder="Учеба, семейные обстоятельства" autocomplete="off"></div>
-                        <div class="form-group" style="margin-bottom:0;"><label>Срок (дней)</label><input type="text" id="vacDays" class="form-control" placeholder="7 дней" autocomplete="off"></div>
-                        <div><button type="button" onclick="submitVacation()" class="btn-primary" style="width: auto; padding: 12px 30px;"><i class="fa-solid fa-paper-plane"></i> Отправить заявку</button></div>
-                    </div>
+                    <form id="vacationSubmitForm" onsubmit="submitVacation(event)" style="display: flex; flex-direction: column; gap: 20px;">
+                        <div class="form-group" style="margin-bottom:0;"><label>Причина отпуска</label><input type="text" id="vacReason" class="form-control" placeholder="Учеба, семейные обстоятельства" required autocomplete="off"></div>
+                        <div class="form-group" style="margin-bottom:0;"><label>Срок (дней)</label><input type="text" id="vacDays" class="form-control" placeholder="7 дней" required autocomplete="off"></div>
+                        <div><button type="submit" onclick="playClickSound()" class="btn-primary" style="width: auto; padding: 12px 30px;"><i class="fa-solid fa-paper-plane"></i> Отправить заявку</button></div>
+                    </form>
                 </div>
 
                 <div class="card" id="vacationAdminCard" style="display: none;">
@@ -331,7 +330,7 @@
             <div id="tab-promotion" class="tab-content">
                 <div class="card">
                     <div class="card-title"><div><i class="fa-solid fa-arrow-up-right-dots"></i> Заявка на повышение</div></div>
-                    <div id="promotionSubmitForm" style="display: flex; flex-direction: column; gap: 20px;">
+                    <form id="promotionSubmitForm" onsubmit="submitPromotion(event)" style="display: flex; flex-direction: column; gap: 20px;">
                         <div class="form-group" style="margin-bottom:0;"><label>Желаемая должность</label>
                             <select id="promTargetRole" class="form-control">
                                 <option>Ст. Хелпер</option>
@@ -340,8 +339,8 @@
                                 <option>Ст. Модератор</option>
                             </select>
                         </div>
-                        <div><button type="button" onclick="submitPromotion()" class="btn-primary" style="width: auto; padding: 12px 30px;"><i class="fa-solid fa-paper-plane"></i> Подать заявку</button></div>
-                    </div>
+                        <div><button type="submit" onclick="playClickSound()" class="btn-primary" style="width: auto; padding: 12px 30px;"><i class="fa-solid fa-paper-plane"></i> Подать заявку</button></div>
+                    </form>
                 </div>
 
                 <div class="card" id="promotionAdminCard" style="display: none;">
@@ -371,7 +370,7 @@
                 <div class="card" id="curatorReportCard" style="display: none;">
                     <div class="card-title">
                         <div><i class="fa-solid fa-calculator"></i> Отчёт недели (Суббота — Пятница)</div>
-                        <button onclick="generateWeeklyReport()" class="btn-primary" style="width: auto; padding: 10px 22px; font-size: 14px;">
+                        <button onclick="playClickSound(); generateWeeklyReport()" class="btn-primary" style="width: auto; padding: 10px 22px; font-size: 14px;">
                             <i class="fa-solid fa-paper-plane"></i> Сформировать и отправить в Новости
                         </button>
                     </div>
@@ -380,13 +379,13 @@
 
                 <div class="card">
                     <div class="card-title"><div><i class="fa-solid fa-user-plus"></i> Создать аккаунт сотрудника</div></div>
-                    <div id="createAccountForm" class="grid-2">
-                        <div class="form-group" style="margin-bottom:0;"><label>Логин</label><input type="text" id="newLog" class="form-control" placeholder="Логин" autocomplete="off"></div>
+                    <form id="createAccountForm" onsubmit="createAccount(event)" class="grid-2">
+                        <div class="form-group" style="margin-bottom:0;"><label>Логин</label><input type="text" id="newLog" class="form-control" placeholder="Логин" required autocomplete="off"></div>
                         <div class="form-group" style="margin-bottom:0;">
                             <label>Пароль</label>
                             <div class="input-group">
-                                <input type="text" id="newPass" class="form-control" placeholder="Пароль" autocomplete="off">
-                                <button type="button" onclick="generateRandomPass()" class="btn-primary" style="width: auto; padding: 0 18px; font-size: 13px; white-space: nowrap;"><i class="fa-solid fa-dice"></i> Рандом</button>
+                                <input type="text" id="newPass" class="form-control" placeholder="Пароль" required autocomplete="off">
+                                <button type="button" onclick="playClickSound(); generateRandomPass()" class="btn-primary" style="width: auto; padding: 0 18px; font-size: 13px; white-space: nowrap;"><i class="fa-solid fa-dice"></i> Рандом</button>
                             </div>
                         </div>
                         <div class="form-group" style="margin-bottom:0;"><label>Роль</label>
@@ -403,9 +402,9 @@
                             </select>
                         </div>
                         <div class="form-group" style="display: flex; align-items: flex-end; margin-bottom:0;">
-                            <button type="button" onclick="createAccount()" class="btn-primary"><i class="fa-solid fa-plus"></i> Создать аккаунт</button>
+                            <button type="submit" onclick="playClickSound()" class="btn-primary"><i class="fa-solid fa-plus"></i> Создать аккаунт</button>
                         </div>
-                    </div>
+                    </form>
                 </div>
 
                 <div class="card" id="passDatabaseCard" style="display: none;">
@@ -461,11 +460,10 @@
 
         let dbData = {
             staff: [
-                { id: 'st-1', name: '6hoske', pass: '#6H!sKe99$SureBox2026', role: 'Куратор (Владелец)', mutes: 40, bans: 10, total: 50, allMutes: 100, allBans: 20 },
-                { id: 'st-5', name: 'Badabum', pass: 'badabum123', role: 'Владелец', mutes: 50, bans: 15, total: 65, allMutes: 150, allBans: 30 },
-                { id: 'st-2', name: 'zam', pass: 'zam123', role: 'Зам. Куратора', mutes: 20, bans: 5, total: 25, allMutes: 50, allBans: 10 },
-                { id: 'st-3', name: 'admin', pass: 'admin123', role: 'Администратор', mutes: 10, bans: 2, total: 12, allMutes: 30, allBans: 5 },
-                { id: 'st-4', name: 'Helper_Kirill', pass: 'K~9sF2#q', role: 'Хелпер', mutes: 5, bans: 0, total: 5, allMutes: 120, allBans: 0 }
+                { id: 'st-1', name: '6hoske', pass: '#6H!sKe99$SureBox2026', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0 },
+                { id: 'st-5', name: 'Badabum', pass: 'badabum123', role: 'Владелец', mutes: 0, bans: 0, total: 0 },
+                { id: 'st-2', name: 'zam', pass: 'zam123', role: 'Зам. Куратора', mutes: 0, bans: 0, total: 0 },
+                { id: 'st-3', name: 'admin', pass: 'admin123', role: 'Администратор', mutes: 0, bans: 0, total: 0 }
             ],
             reports: [],
             news: [],
@@ -475,21 +473,37 @@
             removed: 0
         };
 
-        // АУДИОПЛЕЕР
+        function playClickSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.04);
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.04);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.04);
+            } catch(e) {}
+        }
+
         let audioElement = new Audio();
         audioElement.loop = true;
         let isMusicPlaying = false;
 
         const tracks = {
-            'thug': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
-            'travis': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3',
-            'carti': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-            'tsoi': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-            'lofi': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
+            'mist': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
+            'addiction': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+            'fucklove': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3',
+            'track10': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
+            'meow': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
         };
 
         function changeTrack(trackKey) {
-            audioElement.src = tracks[trackKey] || tracks['thug'];
+            audioElement.src = tracks[trackKey] || tracks['mist'];
             if (isMusicPlaying) {
                 audioElement.play().catch(e => console.log(e));
             }
@@ -532,7 +546,7 @@
                 });
                 if (res.ok) {
                     const result = await res.json();
-                    if (result.record && result.record.staff) {
+                    if (result.record && result.record.staff && result.record.staff.length > 0) {
                         dbData = result.record;
                     }
                     updateSync('Spotify Cloud Connected', '#1db954');
@@ -618,6 +632,9 @@
             vacTbody.innerHTML = '';
             promTbody.innerHTML = '';
 
+            if (!dbData.vacations) dbData.vacations = [];
+            if (!dbData.promotions) dbData.promotions = [];
+
             const pendingVac = dbData.vacations.filter(r => r.status === 'На рассмотрении').length;
             const pendingProm = dbData.promotions.filter(r => r.status === 'На рассмотрении').length;
 
@@ -636,8 +653,8 @@
                         <td><span style="color: ${req.status==='Одобрено'?'var(--success)':req.status==='Отклонено'?'var(--danger)':'var(--warning)'}; font-weight: bold;">${req.status}</span></td>
                         <td>
                             ${req.status==='На рассмотрении' ? `
-                                <button onclick="updateVacStatus(${idx}, 'Одобрено')" class="btn-sm btn-success"><i class="fa-solid fa-check"></i></button>
-                                <button onclick="updateVacStatus(${idx}, 'Отклонено')" class="btn-sm btn-danger"><i class="fa-solid fa-xmark"></i></button>
+                                <button onclick="playClickSound(); updateVacStatus(${idx}, 'Одобрено')" class="btn-sm btn-success"><i class="fa-solid fa-check"></i></button>
+                                <button onclick="playClickSound(); updateVacStatus(${idx}, 'Отклонено')" class="btn-sm btn-danger"><i class="fa-solid fa-xmark"></i></button>
                             ` : '-'}
                         </td>
                     </tr>
@@ -652,8 +669,8 @@
                         <td><span style="color: ${req.status==='Одобрено'?'var(--success)':req.status==='Отклонено'?'var(--danger)':'var(--warning)'}; font-weight: bold;">${req.status}</span></td>
                         <td>
                             ${req.status==='На рассмотрении' ? `
-                                <button onclick="updatePromStatus(${idx}, 'Одобрено')" class="btn-sm btn-success"><i class="fa-solid fa-check"></i></button>
-                                <button onclick="updatePromStatus(${idx}, 'Отклонено')" class="btn-sm btn-danger"><i class="fa-solid fa-xmark"></i></button>
+                                <button onclick="playClickSound(); updatePromStatus(${idx}, 'Одобрено')" class="btn-sm btn-success"><i class="fa-solid fa-check"></i></button>
+                                <button onclick="playClickSound(); updatePromStatus(${idx}, 'Отклонено')" class="btn-sm btn-danger"><i class="fa-solid fa-xmark"></i></button>
                             ` : '-'}
                         </td>
                     </tr>
@@ -675,7 +692,8 @@
             showToast(`Заявка на повышение ${status.toLowerCase()}`);
         }
 
-        async function submitVacation() {
+        async function submitVacation(e) {
+            if (e) e.preventDefault();
             const reason = document.getElementById('vacReason').value.trim();
             const days = document.getElementById('vacDays').value.trim();
             if (!reason || !days) { showToast('Заполните все поля заявки!', true); return; }
@@ -687,7 +705,8 @@
             showToast('Заявка на отпуск отправлена!');
         }
 
-        async function submitPromotion() {
+        async function submitPromotion(e) {
+            if (e) e.preventDefault();
             const targetRole = document.getElementById('promTargetRole').value;
             dbData.promotions.unshift({ author: currentUser.name, targetRole, status: 'На рассмотрении' });
             await saveCloudData();
@@ -723,8 +742,8 @@
                             </select>
                         </td>
                         <td>
-                            <button onclick="changeUserRole('${member.id}')" class="btn-sm btn-warning"><i class="fa-solid fa-angles-up"></i> Изменить роль</button>
-                            <button onclick="deleteAccount('${member.id}')" class="btn-sm btn-danger"><i class="fa-solid fa-user-minus"></i> Снять</button>
+                            <button onclick="playClickSound(); changeUserRole('${member.id}')" class="btn-sm btn-warning"><i class="fa-solid fa-angles-up"></i> Изменить роль</button>
+                            <button onclick="playClickSound(); deleteAccount('${member.id}')" class="btn-sm btn-danger"><i class="fa-solid fa-user-minus"></i> Снять</button>
                         </td>
                     </tr>
                 `;
@@ -744,8 +763,10 @@
             if (!userCardsBox || !reportsList) return;
             const searchQuery = (document.getElementById('targetSearchInput')?.value || '').toLowerCase().trim();
 
+            if (!dbData.reports) dbData.reports = [];
+
             userCardsBox.innerHTML = `
-                <div class="staff-user-card ${selectedStaffFilter === 'all' ? 'active' : ''}" onclick="filterStaffReports('all')">
+                <div class="staff-user-card ${selectedStaffFilter === 'all' ? 'active' : ''}" onclick="playClickSound(); filterStaffReports('all')">
                     <div><b>Все сотрудники</b></div>
                     <small style="color: var(--text-muted);">${dbData.reports.length} отчетов</small>
                 </div>
@@ -754,7 +775,7 @@
             dbData.staff.forEach(member => {
                 const count = dbData.reports.filter(r => r.author === member.name).length;
                 userCardsBox.innerHTML += `
-                    <div class="staff-user-card ${selectedStaffFilter === member.name ? 'active' : ''}" onclick="filterStaffReports('${member.name}')">
+                    <div class="staff-user-card ${selectedStaffFilter === member.name ? 'active' : ''}" onclick="playClickSound(); filterStaffReports('${member.name}')">
                         <div>
                             <b>${member.name}</b><br>
                             <small style="color: var(--text-muted); font-size: 11px;">${member.role}</small>
@@ -774,7 +795,7 @@
             }
 
             reportsList.innerHTML = filtered.map((rep) => `
-                <div class="report-item-card" onclick="openModal(${dbData.reports.indexOf(rep)})">
+                <div class="report-item-card" onclick="playClickSound(); openModal(${dbData.reports.indexOf(rep)})">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                         <div>
                             <b style="color: var(--accent);">${rep.author}</b> 
@@ -798,6 +819,7 @@
         function renderNews() {
             const newsBox = document.getElementById('newsContainer');
             if (!newsBox) return;
+            if (!dbData.news) dbData.news = [];
             if (dbData.news.length === 0) {
                 newsBox.innerHTML = `
                     <div class="card">
@@ -814,7 +836,7 @@
                 <div class="card">
                     <div class="card-title">
                         <div><i class="fa-solid fa-bullhorn"></i> ${n.title}</div>
-                        ${isLeader ? `<button onclick="deleteNews(${idx})" class="btn-sm btn-danger"><i class="fa-solid fa-trash"></i> Удалить новость</button>` : ''}
+                        ${isLeader ? `<button onclick="playClickSound(); deleteNews(${idx})" class="btn-sm btn-danger"><i class="fa-solid fa-trash"></i> Удалить новость</button>` : ''}
                     </div>
                     <p style="color: var(--text-muted); margin-bottom: 15px;">Опубликовал: <b>${n.author}</b> (${n.date})</p>
                     ${n.content}
@@ -861,10 +883,12 @@
             }
         }
 
-        // ВХОД В СИСТЕМУ
-        function handleLogin() {
+        async function handleLogin(e) {
+            if (e) e.preventDefault();
             const log = document.getElementById('loginInput').value.trim();
             const pass = document.getElementById('passInput').value.trim();
+
+            await loadCloudData();
 
             const userFound = dbData.staff.find(u => u.name === log && u.pass === pass);
             if (userFound) {
@@ -909,8 +933,8 @@
             showToast(`Добро пожаловать, ${currentUser.name}!`);
         }
 
-        // ОТПРАВКА ОТЧЕТА С ПОЛНОЙ ОЧИСТКОЙ
-        async function submitReport() {
+        async function submitReport(e) {
+            if (e) e.preventDefault();
             const cmd = document.getElementById('repCmd').value;
             const target = document.getElementById('repTarget').value.trim();
             const duration = document.getElementById('repDuration').value.trim();
@@ -924,6 +948,7 @@
             const now = new Date();
             const timeStr = now.toLocaleDateString() + ', ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+            if (!dbData.reports) dbData.reports = [];
             const rep = { author: currentUser.name, cmd, target, duration, reason, img: currentPastedImage, time: timeStr };
             dbData.reports.push(rep);
 
@@ -944,7 +969,6 @@
             updateProfileStats();
             showToast('Отчет успешно отправлен и сохранен!');
 
-            // Сброс всех полей и скриншота в ноль
             document.getElementById('repTarget').value = '';
             document.getElementById('repDuration').value = '';
             document.getElementById('repReason').value = '';
@@ -984,6 +1008,7 @@
                 user.mutes = 0; user.bans = 0;
             });
 
+            if (!dbData.news) dbData.news = [];
             dbData.news.unshift({
                 title: 'Итоги недели КП',
                 author: currentUser.name,
@@ -998,7 +1023,8 @@
             switchTab('news');
         }
 
-        async function createAccount() {
+        async function createAccount(e) {
+            if (e) e.preventDefault();
             const log = document.getElementById('newLog').value.trim();
             const pass = document.getElementById('newPass').value.trim();
             const role = document.getElementById('newRole').value;
