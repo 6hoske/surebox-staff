@@ -7,15 +7,15 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --bg-main: #0a0a0c;
-            --bg-card: rgba(22, 22, 29, 0.9);
-            --bg-input: #121218;
+            --bg-main: #070709;
+            --bg-card: rgba(18, 18, 24, 0.95);
+            --bg-input: #0f0f14;
             --accent: #2ed573;
             --accent-hover: #26af5d;
-            --accent-glow: rgba(46, 213, 115, 0.35);
-            --text-main: #f1f1f5;
-            --text-muted: #8e8e9f;
-            --border: rgba(46, 213, 115, 0.25);
+            --accent-glow: rgba(46, 213, 115, 0.4);
+            --text-main: #f8f9fa;
+            --text-muted: #9494a0;
+            --border: rgba(46, 213, 115, 0.3);
             --danger: #ff4757;
             --success: #2ed573;
             --warning: #ffa502;
@@ -24,26 +24,26 @@
         [data-theme="pink"] {
             --accent: #ff4757;
             --accent-hover: #ff6b81;
-            --accent-glow: rgba(255, 71, 87, 0.35);
-            --border: rgba(255, 71, 87, 0.25);
+            --accent-glow: rgba(255, 71, 87, 0.4);
+            --border: rgba(255, 71, 87, 0.3);
         }
         [data-theme="blue"] {
             --accent: #1e90ff;
             --accent-hover: #3742fa;
-            --accent-glow: rgba(30, 144, 255, 0.35);
-            --border: rgba(30, 144, 255, 0.25);
+            --accent-glow: rgba(30, 144, 255, 0.4);
+            --border: rgba(30, 144, 255, 0.3);
         }
         [data-theme="purple"] {
             --accent: #8a2be2;
             --accent-hover: #9d4edd;
-            --accent-glow: rgba(138, 43, 226, 0.35);
-            --border: rgba(138, 43, 226, 0.25);
+            --accent-glow: rgba(138, 43, 226, 0.4);
+            --border: rgba(138, 43, 226, 0.3);
         }
         [data-theme="orange"] {
             --accent: #ffa502;
             --accent-hover: #ff7f00;
-            --accent-glow: rgba(255, 165, 2, 0.35);
-            --border: rgba(255, 165, 2, 0.25);
+            --accent-glow: rgba(255, 165, 2, 0.4);
+            --border: rgba(255, 165, 2, 0.3);
         }
 
         * {
@@ -61,8 +61,8 @@
             display: flex;
             flex-direction: column;
             background-image: 
-                radial-gradient(circle at 10% 10%, var(--accent-glow) 0%, transparent 40%),
-                radial-gradient(circle at 90% 90%, rgba(0,0,0,0.5) 0%, transparent 40%);
+                radial-gradient(circle at 15% 15%, var(--accent-glow) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(138, 43, 226, 0.15) 0%, transparent 45%);
         }
 
         .toast-container {
@@ -77,14 +77,14 @@
         .toast {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            padding: 14px 22px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.6);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             font-size: 14px;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
             animation: slideIn 0.3s ease;
         }
         .toast.error { border-color: var(--danger); }
@@ -101,7 +101,7 @@
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(10px);
             z-index: 10000;
             display: none;
             align-items: center;
@@ -111,18 +111,18 @@
         .modal-content {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 30px;
-            max-width: 650px;
+            border-radius: 16px;
+            padding: 35px;
+            max-width: 700px;
             width: 100%;
-            box-shadow: 0 0 30px var(--accent-glow);
+            box-shadow: 0 0 40px var(--accent-glow);
             position: relative;
         }
         .modal-close {
             position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 20px;
+            top: 18px;
+            right: 22px;
+            font-size: 22px;
             cursor: pointer;
             color: var(--text-muted);
         }
@@ -142,25 +142,25 @@
         .auth-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            box-shadow: 0 0 35px var(--accent-glow);
-            backdrop-filter: blur(16px);
-            padding: 40px;
-            border-radius: 14px;
+            box-shadow: 0 0 40px var(--accent-glow);
+            backdrop-filter: blur(18px);
+            padding: 45px;
+            border-radius: 16px;
             width: 100%;
-            max-width: 420px;
+            max-width: 440px;
             text-align: center;
         }
 
-        .auth-card h1 { font-size: 28px; margin-bottom: 6px; }
+        .auth-card h1 { font-size: 32px; margin-bottom: 8px; }
         .auth-card h1 span { color: var(--accent); }
-        .auth-card p { color: var(--text-muted); font-size: 13px; margin-bottom: 25px; }
+        .auth-card p { color: var(--text-muted); font-size: 14px; margin-bottom: 30px; }
 
-        .form-group { margin-bottom: 18px; text-align: left; }
+        .form-group { margin-bottom: 20px; text-align: left; }
         .form-group label {
             display: block;
             color: var(--text-muted);
-            font-size: 11px;
-            margin-bottom: 6px;
+            font-size: 12px;
+            margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 1px;
             font-weight: 600;
@@ -168,79 +168,80 @@
 
         .form-control {
             width: 100%;
-            padding: 12px 14px;
+            padding: 14px 16px;
             background: var(--bg-input);
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: 10px;
             color: #fff;
-            font-size: 14px;
+            font-size: 15px;
             outline: none;
         }
 
         .form-control:focus {
             border-color: var(--accent);
-            box-shadow: 0 0 10px var(--accent-glow);
+            box-shadow: 0 0 12px var(--accent-glow);
         }
 
         .btn-primary {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             background: var(--accent);
             color: #fff;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: 600;
+            font-size: 15px;
             cursor: pointer;
-            box-shadow: 0 0 15px var(--accent-glow);
+            box-shadow: 0 0 20px var(--accent-glow);
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
 
         header {
-            background: rgba(10, 10, 12, 0.9);
+            background: rgba(10, 10, 14, 0.95);
             border-bottom: 1px solid var(--border);
-            padding: 15px 30px;
+            padding: 18px 40px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(15px);
             position: sticky;
             top: 0;
             z-index: 100;
         }
 
-        .logo { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; color: var(--text-main); }
+        .logo { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 12px; color: var(--text-main); }
         .logo i { color: var(--accent); }
 
-        .user-nav { display: flex; align-items: center; gap: 15px; }
-        .user-badge { background: var(--bg-card); border: 1px solid var(--border); padding: 6px 14px; border-radius: 8px; font-size: 13px; }
+        .user-nav { display: flex; align-items: center; gap: 18px; }
+        .user-badge { background: var(--bg-card); border: 1px solid var(--border); padding: 8px 16px; border-radius: 10px; font-size: 14px; }
         .user-badge .role { color: var(--accent); font-weight: 600; }
 
         .nav-tabs {
             display: flex;
-            gap: 8px;
-            padding: 15px 30px 0;
+            gap: 10px;
+            padding: 20px 40px 0;
             border-bottom: 1px solid var(--border);
             overflow-x: auto;
         }
 
         .nav-tab {
-            padding: 12px 20px;
+            padding: 14px 24px;
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-bottom: none;
-            border-radius: 8px 8px 0 0;
+            border-radius: 10px 10px 0 0;
             color: var(--text-muted);
             cursor: pointer;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             position: relative;
         }
 
@@ -248,15 +249,15 @@
             background: var(--accent);
             color: #fff;
             border-color: var(--accent);
-            box-shadow: 0 -4px 15px var(--accent-glow);
+            box-shadow: 0 -6px 20px var(--accent-glow);
         }
 
         .badge-notice {
             background: var(--warning);
             color: #000;
-            font-size: 10px;
+            font-size: 11px;
             font-weight: bold;
-            padding: 2px 6px;
+            padding: 2px 7px;
             border-radius: 10px;
             animation: pulseNotice 1.2s infinite;
         }
@@ -267,30 +268,31 @@
             100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 165, 2, 0); }
         }
 
-        .container { padding: 30px; flex: 1; max-width: 1300px; width: 100%; margin: 0 auto; }
+        .container { padding: 35px 40px; flex: 1; max-width: 1550px; width: 100%; margin: 0 auto; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 25px;
-            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(12px);
             position: relative;
             overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        .card-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
-        .card-title div { display: flex; align-items: center; gap: 10px; }
+        .card-title { font-size: 20px; font-weight: 600; margin-bottom: 22px; display: flex; align-items: center; justify-content: space-between; }
+        .card-title div { display: flex; align-items: center; gap: 12px; }
         .card-title i { color: var(--accent); }
 
         .paste-zone {
             border: 2px dashed var(--border);
             background: var(--bg-input);
-            border-radius: 10px;
-            padding: 25px;
+            border-radius: 12px;
+            padding: 30px;
             text-align: center;
             color: var(--text-muted);
             cursor: pointer;
@@ -298,55 +300,55 @@
         }
 
         .paste-zone.has-image { border-color: var(--success); color: var(--success); }
-        .preview-img { max-width: 100%; max-height: 250px; margin-top: 15px; border-radius: 8px; border: 1px solid var(--border); display: none; }
+        .preview-img { max-width: 100%; max-height: 280px; margin-top: 15px; border-radius: 10px; border: 1px solid var(--border); display: none; }
 
-        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        .stat-card { background: var(--bg-input); border: 1px solid var(--border); padding: 20px; border-radius: 10px; text-align: center; }
-        .stat-value { font-size: 26px; font-weight: 700; color: var(--accent); margin: 8px 0; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+        .stat-card { background: var(--bg-input); border: 1px solid var(--border); padding: 25px; border-radius: 12px; text-align: center; }
+        .stat-value { font-size: 30px; font-weight: 700; color: var(--accent); margin: 10px 0; }
 
-        .progress-bar { background: rgba(255, 255, 255, 0.05); height: 8px; border-radius: 4px; overflow: hidden; margin-top: 8px; }
+        .progress-bar { background: rgba(255, 255, 255, 0.06); height: 10px; border-radius: 5px; overflow: hidden; margin-top: 10px; }
         .progress-fill { background: var(--accent); height: 100%; width: 0%; }
 
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
-        th, td { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        th { color: var(--text-muted); font-size: 11px; text-transform: uppercase; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 15px; }
+        th, td { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        th { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .btn-sm { padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-sm { padding: 8px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
         .btn-danger { background: var(--danger); color: #fff; }
         .btn-success { background: var(--success); color: #fff; }
         .btn-warning { background: var(--warning); color: #111; }
-        .badge-x2 { background: rgba(46, 213, 115, 0.2); color: var(--success); padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; }
+        .badge-x2 { background: rgba(46, 213, 115, 0.25); color: var(--success); padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; }
 
-        .input-group { display: flex; gap: 8px; }
+        .input-group { display: flex; gap: 10px; }
 
         .role-select {
-            padding: 4px 8px;
+            padding: 6px 12px;
             background: var(--bg-input);
             border: 1px solid var(--border);
             color: #fff;
-            border-radius: 6px;
-            font-size: 12px;
+            border-radius: 8px;
+            font-size: 13px;
             outline: none;
         }
 
         .mc-banner {
-            background: linear-gradient(135deg, rgba(46,213,115,0.15), rgba(0,0,0,0.4));
+            background: linear-gradient(135deg, rgba(46,213,115,0.18), rgba(0,0,0,0.5));
             border: 1px dashed var(--border);
-            border-radius: 12px;
-            padding: 20px;
+            border-radius: 14px;
+            padding: 25px;
             display: flex;
             align-items: center;
-            gap: 20px;
-            margin-top: 20px;
+            gap: 25px;
+            margin-top: 25px;
         }
 
-        .staff-reports-layout { display: grid; grid-template-columns: 280px 1fr; gap: 20px; }
-        .staff-card-list { display: flex; flex-direction: column; gap: 10px; }
+        .staff-reports-layout { display: grid; grid-template-columns: 320px 1fr; gap: 25px; }
+        .staff-card-list { display: flex; flex-direction: column; gap: 12px; }
         .staff-user-card {
             background: var(--bg-input);
             border: 1px solid var(--border);
-            padding: 14px 18px;
-            border-radius: 10px;
+            padding: 16px 20px;
+            border-radius: 12px;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
@@ -354,27 +356,27 @@
         }
         .staff-user-card:hover, .staff-user-card.active {
             border-color: var(--accent);
-            background: rgba(46, 213, 115, 0.1);
-            box-shadow: 0 0 10px var(--accent-glow);
+            background: rgba(46, 213, 115, 0.12);
+            box-shadow: 0 0 15px var(--accent-glow);
         }
 
         .report-item-card {
             background: var(--bg-input);
             border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 18px;
-            margin-bottom: 12px;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
             cursor: pointer;
         }
         .report-item-card:hover {
             border-color: var(--accent);
-            box-shadow: 0 0 12px var(--accent-glow);
+            box-shadow: 0 0 15px var(--accent-glow);
         }
 
         .bottom-controls {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 25px;
+            right: 25px;
             display: flex;
             gap: 15px;
             align-items: center;
@@ -384,33 +386,33 @@
         .music-player {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            padding: 8px 16px;
-            border-radius: 30px;
+            padding: 10px 20px;
+            border-radius: 35px;
             display: flex;
-            gap: 12px;
+            gap: 14px;
             align-items: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-            backdrop-filter: blur(10px);
-            font-size: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+            backdrop-filter: blur(12px);
+            font-size: 13px;
         }
 
         .theme-switcher {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            padding: 8px 14px;
-            border-radius: 30px;
+            padding: 10px 16px;
+            border-radius: 35px;
             display: flex;
             gap: 10px;
             align-items: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+            backdrop-filter: blur(12px);
         }
         .theme-circle {
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             cursor: pointer;
-            border: 2px solid rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.25);
         }
     </style>
 </head>
@@ -426,16 +428,20 @@
         </div>
     </div>
 
-    <!-- Плеер эмбиента -->
+    <!-- Крутой музыкальный плеер с выбором треков (Carti / Rage Vibe) -->
     <div class="bottom-controls">
         <div class="music-player">
-            <i class="fa-solid fa-music" id="musicIcon" style="color: var(--accent); font-size: 15px;"></i>
+            <i class="fa-solid fa-compact-disc fa-spin" id="musicIcon" style="color: var(--accent); font-size: 18px;"></i>
             <div>
-                <b>Ambient Synth Lofi</b><br>
+                <select id="trackSelect" onchange="changeTrack(this.value)" style="background: transparent; border: none; color: #fff; font-weight: bold; outline: none; cursor: pointer;">
+                    <option value="carti" style="background: #121218;">Playboi Carti - Rage Vibe</option>
+                    <option value="ambient" style="background: #121218;">Ambient Synth Relax</option>
+                    <option value="cyber" style="background: #121218;">Cyberpunk Bass</option>
+                </select><br>
                 <small style="color: var(--text-muted);" id="musicStatus">Нажмите ▶</small>
             </div>
-            <button onclick="toggleSynthMusic()" class="btn-sm btn-success" id="playBtn" style="padding: 4px 10px;"><i class="fa-solid fa-play"></i></button>
-            <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.25" oninput="changeSynthVolume(this.value)" style="width: 60px; accent-color: var(--accent);">
+            <button onclick="toggleMusicPlayer()" class="btn-sm btn-success" id="playBtn" style="padding: 6px 12px;"><i class="fa-solid fa-play"></i></button>
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.25" oninput="changeVolume(this.value)" style="width: 70px; accent-color: var(--accent);">
         </div>
 
         <div class="theme-switcher">
@@ -523,13 +529,13 @@
                         <div class="form-group">
                             <label>Доказательства (Ctrl + V)</label>
                             <div class="paste-zone" id="pasteZone" tabindex="0">
-                                <i class="fa-solid fa-image" style="font-size: 28px; margin-bottom: 8px;"></i><br>
+                                <i class="fa-solid fa-image" style="font-size: 32px; margin-bottom: 10px;"></i><br>
                                 Кликните сюда и нажмите <b>Ctrl + V</b> чтобы вставить скриншот
                                 <img id="previewImg" class="preview-img">
                             </div>
                         </div>
 
-                        <button type="submit" class="btn-primary" style="width: auto; padding: 12px 35px;"><i class="fa-solid fa-paper-plane"></i> Отправить отчет</button>
+                        <button type="submit" class="btn-primary" style="width: auto; padding: 14px 40px;"><i class="fa-solid fa-paper-plane"></i> Отправить отчет</button>
                     </form>
                 </div>
             </div>
@@ -546,7 +552,7 @@
 
             <!-- Профиль -->
             <div id="tab-profile" class="tab-content">
-                <div class="grid-2" style="margin-bottom: 25px;">
+                <div class="grid-2" style="margin-bottom: 30px;">
                     <div class="stat-card">
                         <div>Всего отчетов (за всё время)</div>
                         <div class="stat-value" id="totalAll">0</div>
@@ -556,15 +562,15 @@
                         <div>Норма за эту неделю</div>
                         <div class="stat-value" id="totalWeek">0 / 60</div>
                         <div class="progress-bar"><div class="progress-fill" id="weekProgress"></div></div>
-                        <small style="color: var(--text-muted); margin-top: 6px; display: block;" id="normDetails">Муты: <span id="mutesWeek">0</span> | Баны: <span id="bansWeek">0</span></small>
+                        <small style="color: var(--text-muted); margin-top: 8px; display: block;" id="normDetails">Муты: <span id="mutesWeek">0</span> | Баны: <span id="bansWeek">0</span></small>
                     </div>
                 </div>
 
                 <div class="mc-banner">
-                    <i class="fa-solid fa-shield-halved" style="font-size: 38px; color: var(--accent);"></i>
+                    <i class="fa-solid fa-shield-halved" style="font-size: 42px; color: var(--accent);"></i>
                     <div>
-                        <h4 style="margin-bottom: 4px;">SureBox Staff Security System</h4>
-                        <p style="font-size: 13px; color: var(--text-muted);">Ваша статистика обновляется автоматически после каждого принятого отчета. Недельная норма сбрасывается руководством каждую субботу.</p>
+                        <h4 style="margin-bottom: 6px;">SureBox Staff Security System</h4>
+                        <p style="font-size: 14px; color: var(--text-muted);">Ваша статистика обновляется автоматически после каждого принятого отчета. Недельная норма сбрасывается руководством каждую субботу.</p>
                     </div>
                 </div>
             </div>
@@ -576,7 +582,7 @@
                     <form id="vacationSubmitForm">
                         <div class="form-group"><label>Причина отпуска</label><input type="text" id="vacReason" class="form-control" placeholder="Учеба, семейные обстоятельства" required autocomplete="off"></div>
                         <div class="form-group"><label>Срок (дней)</label><input type="text" id="vacDays" class="form-control" placeholder="7 дней" required autocomplete="off"></div>
-                        <button type="submit" class="btn-primary" style="width: auto; padding: 10px 25px;"><i class="fa-solid fa-paper-plane"></i> Отправить заявку</button>
+                        <button type="submit" class="btn-primary" style="width: auto; padding: 12px 30px;"><i class="fa-solid fa-paper-plane"></i> Отправить заявку</button>
                     </form>
                 </div>
 
@@ -604,7 +610,7 @@
                                 <option>Ст. Модератор</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn-primary" style="width: auto; padding: 10px 25px;"><i class="fa-solid fa-paper-plane"></i> Подать заявку</button>
+                        <button type="submit" class="btn-primary" style="width: auto; padding: 12px 30px;"><i class="fa-solid fa-paper-plane"></i> Подать заявку</button>
                     </form>
                 </div>
 
@@ -621,7 +627,7 @@
 
             <!-- Управление КП -->
             <div id="tab-curator" class="tab-content">
-                <div class="grid-2" style="margin-bottom: 25px;">
+                <div class="grid-2" style="margin-bottom: 30px;">
                     <div class="stat-card">
                         <div>Принято людей за неделю</div>
                         <div class="stat-value" style="color: var(--success);" id="acceptedWeek">0</div>
@@ -635,11 +641,11 @@
                 <div class="card" id="curatorReportCard" style="display: none;">
                     <div class="card-title">
                         <div><i class="fa-solid fa-calculator"></i> Отчёт недели (Суббота — Пятница)</div>
-                        <button onclick="generateWeeklyReport()" class="btn-primary" style="width: auto; padding: 8px 18px; font-size: 13px;">
+                        <button onclick="generateWeeklyReport()" class="btn-primary" style="width: auto; padding: 10px 22px; font-size: 14px;">
                             <i class="fa-solid fa-paper-plane"></i> Сформировать и отправить в Новости
                         </button>
                     </div>
-                    <p style="color: var(--text-muted); font-size: 13px;">Подсчет результатов состава, зарплаты в суриках, топ-3 бонусов и сброс недельной нормы.</p>
+                    <p style="color: var(--text-muted); font-size: 14px;">Подсчет результатов состава, зарплаты в суриках, топ-3 бонусов и сброс недельной нормы.</p>
                 </div>
 
                 <div class="card">
@@ -650,7 +656,7 @@
                             <label>Пароль</label>
                             <div class="input-group">
                                 <input type="text" id="newPass" class="form-control" placeholder="Пароль" required autocomplete="off">
-                                <button type="button" onclick="generateRandomPass()" class="btn-primary" style="width: auto; padding: 0 15px; font-size: 12px; white-space: nowrap;"><i class="fa-solid fa-dice"></i> Рандом</button>
+                                <button type="button" onclick="generateRandomPass()" class="btn-primary" style="width: auto; padding: 0 18px; font-size: 13px; white-space: nowrap;"><i class="fa-solid fa-dice"></i> Рандом</button>
                             </div>
                         </div>
                         <div class="form-group"><label>Роль</label>
@@ -662,6 +668,7 @@
                                 <option value="Ст. Модератор">Ст. Модератор</option>
                                 <option value="Администратор">Администратор</option>
                                 <option value="Зам. Куратора">Зам. Куратора</option>
+                                <option value="Владелец">Владелец</option>
                                 <option value="Поддержка">Поддержка</option>
                             </select>
                         </div>
@@ -697,15 +704,15 @@
                 <div class="card">
                     <div class="card-title">
                         <div><i class="fa-solid fa-eye"></i> Мониторинг отчётов КП</div>
-                        <input type="text" id="targetSearchInput" class="form-control" placeholder="🔍 Поиск по нику нарушителя..." oninput="renderSupportView()" style="max-width: 320px; padding: 8px 14px; font-size: 13px;">
+                        <input type="text" id="targetSearchInput" class="form-control" placeholder="🔍 Поиск по нику нарушителя..." oninput="renderSupportView()" style="max-width: 350px; padding: 10px 16px; font-size: 14px;">
                     </div>
                     <div class="staff-reports-layout">
                         <div>
-                            <div style="font-size: 12px; color: var(--text-muted); font-weight: bold; margin-bottom: 10px;">СОТРУДНИКИ:</div>
+                            <div style="font-size: 13px; color: var(--text-muted); font-weight: bold; margin-bottom: 12px;">СОТРУДНИКИ:</div>
                             <div class="staff-card-list" id="staffUserCards"></div>
                         </div>
                         <div>
-                            <div id="selectedUserHeader" style="margin-bottom: 15px; font-weight: 600; font-size: 16px; color: var(--accent);">Все отчеты</div>
+                            <div id="selectedUserHeader" style="margin-bottom: 18px; font-weight: 600; font-size: 18px; color: var(--accent);">Все отчеты</div>
                             <div id="userReportsList"></div>
                         </div>
                     </div>
@@ -719,77 +726,120 @@
         let selectedStaffFilter = 'all';
         let currentPastedImage = null;
 
-        // Плеер эмбиента
-        let synthCtx = null;
-        let synthGain = null;
-        let synthInterval = null;
-        let isSynthPlaying = false;
+        // Плеер мультреков (Carti / Ambient / Cyberpunk)
+        let musicCtx = null;
+        let musicGain = null;
+        let musicInterval = null;
+        let isMusicPlaying = false;
+        let currentTrack = 'carti';
 
-        function toggleSynthMusic() {
-            const playBtn = document.getElementById('playBtn');
-            const statusLabel = document.getElementById('musicStatus');
-
-            if (!synthCtx) {
-                synthCtx = new (window.AudioContext || window.webkitAudioContext)();
-                synthGain = synthCtx.createGain();
-                synthGain.gain.value = 0.25;
-                synthGain.connect(synthCtx.destination);
-            }
-
-            if (synthCtx.state === 'suspended') {
-                synthCtx.resume();
-            }
-
-            if (isSynthPlaying) {
-                clearInterval(synthInterval);
-                playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-                statusLabel.innerText = 'Пауза';
-                isSynthPlaying = false;
-            } else {
-                const chords = [
-                    [220, 261.63, 329.63],
-                    [174.61, 220, 261.63],
-                    [196, 246.94, 293.66],
-                    [164.81, 207.65, 246.94]
-                ];
-                let chordIndex = 0;
-
-                playChord(chords[0]);
-                synthInterval = setInterval(() => {
-                    chordIndex = (chordIndex + 1) % chords.length;
-                    playChord(chords[chordIndex]);
-                }, 4000);
-
-                playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-                statusLabel.innerText = 'Играет Ambient';
-                isSynthPlaying = true;
+        function changeTrack(track) {
+            currentTrack = track;
+            if (isMusicPlaying) {
+                stopMusic();
+                startMusic();
             }
         }
 
+        function toggleMusicPlayer() {
+            const playBtn = document.getElementById('playBtn');
+            const statusLabel = document.getElementById('musicStatus');
+
+            if (isMusicPlaying) {
+                stopMusic();
+                playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+                statusLabel.innerText = 'Пауза';
+                isMusicPlaying = false;
+            } else {
+                startMusic();
+                playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+                statusLabel.innerText = 'Играет вайб';
+                isMusicPlaying = true;
+            }
+        }
+
+        function startMusic() {
+            if (!musicCtx) {
+                musicCtx = new (window.AudioContext || window.webkitAudioContext)();
+                musicGain = musicCtx.createGain();
+                musicGain.gain.value = 0.25;
+                musicGain.connect(musicCtx.destination);
+            }
+            if (musicCtx.state === 'suspended') musicCtx.resume();
+
+            if (currentTrack === 'carti') {
+                // Rage beat style pattern (Carti vibe)
+                const bassNotes = [110, 110, 146.83, 130.81, 98];
+                let step = 0;
+                musicInterval = setInterval(() => {
+                    if (!musicCtx || musicCtx.state !== 'running') return;
+                    const osc = musicCtx.createOscillator();
+                    const g = musicCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(bassNotes[step % bassNotes.length], musicCtx.currentTime);
+                    g.gain.setValueAtTime(0, musicCtx.currentTime);
+                    g.gain.linearRampToValueAtTime(0.08, musicCtx.currentTime + 0.05);
+                    g.gain.exponentialRampToValueAtTime(0.0001, musicCtx.currentTime + 0.35);
+                    osc.connect(g);
+                    g.connect(musicGain);
+                    osc.start();
+                    osc.stop(musicCtx.currentTime + 0.35);
+                    step++;
+                }, 250);
+            } else if (currentTrack === 'ambient') {
+                const chords = [[220, 261.63, 329.63], [174.61, 220, 261.63], [196, 246.94, 293.66]];
+                let cIdx = 0;
+                playChord(chords[0]);
+                musicInterval = setInterval(() => {
+                    cIdx = (cIdx + 1) % chords.length;
+                    playChord(chords[cIdx]);
+                }, 4000);
+            } else {
+                // Cyberpunk bass
+                const notes = [65.41, 77.78, 98, 87.31];
+                let nIdx = 0;
+                musicInterval = setInterval(() => {
+                    if (!musicCtx || musicCtx.state !== 'running') return;
+                    const osc = musicCtx.createOscillator();
+                    const g = musicCtx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(notes[nIdx % notes.length], musicCtx.currentTime);
+                    g.gain.setValueAtTime(0.06, musicCtx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.0001, musicCtx.currentTime + 0.5);
+                    osc.connect(g);
+                    g.connect(musicGain);
+                    osc.start();
+                    osc.stop(musicCtx.currentTime + 0.5);
+                    nIdx++;
+                }, 300);
+            }
+        }
+
+        function stopMusic() {
+            clearInterval(musicInterval);
+        }
+
         function playChord(frequencies) {
-            if (!synthCtx || !isSynthPlaying && synthCtx.state !== 'running') return;
+            if (!musicCtx) return;
             frequencies.forEach(freq => {
                 try {
-                    const osc = synthCtx.createOscillator();
-                    const noteGain = synthCtx.createGain();
+                    const osc = musicCtx.createOscillator();
+                    const noteGain = musicCtx.createGain();
                     osc.type = 'sine';
-                    osc.frequency.setValueAtTime(freq, synthCtx.currentTime);
-
-                    noteGain.gain.setValueAtTime(0, synthCtx.currentTime);
-                    noteGain.gain.linearRampToValueAtTime(0.04, synthCtx.currentTime + 1);
-                    noteGain.gain.exponentialRampToValueAtTime(0.0001, synthCtx.currentTime + 3.8);
-
+                    osc.frequency.setValueAtTime(freq, musicCtx.currentTime);
+                    noteGain.gain.setValueAtTime(0, musicCtx.currentTime);
+                    noteGain.gain.linearRampToValueAtTime(0.04, musicCtx.currentTime + 1);
+                    noteGain.gain.exponentialRampToValueAtTime(0.0001, musicCtx.currentTime + 3.8);
                     osc.connect(noteGain);
-                    noteGain.connect(synthGain);
-
+                    noteGain.connect(musicGain);
                     osc.start();
-                    osc.stop(synthCtx.currentTime + 4);
+                    osc.stop(musicCtx.currentTime + 4);
                 } catch(e) {}
             });
         }
 
-        function changeSynthVolume(val) {
-            if (synthGain) synthGain.gain.value = parseFloat(val);
+        function changeVolume(val) {
+            if (musicGain) musicGain.gain.value = parseFloat(val);
         }
 
         function playSound(type = 'click') {
@@ -825,10 +875,17 @@
 
         const defaultStaff = [
             { id: 'st-1', name: '6hoske', pass: '#6H!sKe99$SureBox2026', role: 'Куратор (Владелец)', mutes: 40, bans: 10, total: 50, allMutes: 100, allBans: 20 },
+            { id: 'st-5', name: 'Badabum', pass: 'badabum123', role: 'Владелец', mutes: 50, bans: 15, total: 65, allMutes: 150, allBans: 30 },
             { id: 'st-2', name: 'zam', pass: 'zam123', role: 'Зам. Куратора', mutes: 20, bans: 5, total: 25, allMutes: 50, allBans: 10 },
             { id: 'st-3', name: 'admin', pass: 'admin123', role: 'Администратор', mutes: 10, bans: 2, total: 12, allMutes: 30, allBans: 5 },
             { id: 'st-4', name: 'Helper_Kirill', pass: 'K~9sF2#q', role: 'Хелпер', mutes: 5, bans: 0, total: 5, allMutes: 120, allBans: 0 }
         ];
+
+        // Инициализация базы данных ровно один раз, чтобы удаления и правки сохранялись насовсем
+        if (!localStorage.getItem('surebox_staff_initialized')) {
+            localStorage.setItem('surebox_staff', JSON.stringify(defaultStaff));
+            localStorage.setItem('surebox_staff_initialized', 'true');
+        }
 
         let staffDatabase = JSON.parse(localStorage.getItem('surebox_staff')) || defaultStaff;
         let submittedReports = JSON.parse(localStorage.getItem('surebox_reports')) || [];
@@ -877,7 +934,7 @@
             if (!rep) return;
             const modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = `
-                <div style="font-size: 15px; margin-bottom: 15px;">
+                <div style="font-size: 16px; margin-bottom: 18px;">
                     <p><b>Сотрудник КП:</b> <span style="color: var(--accent);">${rep.author}</span></p>
                     <p><b>Дата и время:</b> ${rep.time || 'Не указано'}</p>
                     <p><b>Команда:</b> <code>/${rep.cmd}</code></p>
@@ -885,7 +942,7 @@
                     <p><b>Срок:</b> ${rep.duration}</p>
                     <p><b>Причина:</b> ${rep.reason}</p>
                 </div>
-                ${rep.img ? `<div style="margin-top: 15px;"><b>Доказательства:</b><br><img src="${rep.img}" style="width: 100%; max-height: 400px; object-fit: contain; border-radius: 10px; border: 1px solid var(--border); margin-top: 8px;"></div>` : '<p style="color: var(--text-muted);">Скриншот не прикреплен</p>'}
+                ${rep.img ? `<div style="margin-top: 15px;"><b>Доказательства:</b><br><img src="${rep.img}" style="width: 100%; max-height: 420px; object-fit: contain; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px;"></div>` : '<p style="color: var(--text-muted);">Скриншот не прикреплен</p>'}
             `;
             document.getElementById('reportModal').style.display = 'flex';
         }
@@ -1015,6 +1072,7 @@
                                 <option value="Ст. Модератор" ${member.role==='Ст. Модератор'?'selected':''}>Ст. Модератор</option>
                                 <option value="Администратор" ${member.role==='Администратор'?'selected':''}>Администратор</option>
                                 <option value="Зам. Куратора" ${member.role==='Зам. Куратора'?'selected':''}>Зам. Куратора</option>
+                                <option value="Владелец" ${member.role==='Владелец'?'selected':''}>Владелец</option>
                             </select>
                         </td>
                         <td>
@@ -1054,7 +1112,7 @@
                             <b>${member.name}</b><br>
                             <small style="color: var(--text-muted); font-size: 11px;">${member.role}</small>
                         </div>
-                        <span style="background: var(--bg-card); padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; color: var(--accent);">${memberReportsCount}</span>
+                        <span style="background: var(--bg-card); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; color: var(--accent);">${memberReportsCount}</span>
                     </div>
                 `;
             });
@@ -1074,16 +1132,16 @@
 
             reportsList.innerHTML = filtered.map((rep) => `
                 <div class="report-item-card" onclick="openModal(${submittedReports.indexOf(rep)})">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                         <div>
                             <b style="color: var(--accent);">${rep.author}</b> 
-                            <span style="color: var(--text-muted); font-size: 12px;">→ ${rep.target}</span>
+                            <span style="color: var(--text-muted); font-size: 13px;">→ ${rep.target}</span>
                         </div>
-                        <span style="color: var(--text-muted); font-size: 11px;"><i class="fa-regular fa-clock"></i> ${rep.time || 'Только что'}</span>
+                        <span style="color: var(--text-muted); font-size: 12px;"><i class="fa-regular fa-clock"></i> ${rep.time || 'Только что'}</span>
                     </div>
-                    <div style="font-size: 13px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-size: 14px; display: flex; justify-content: space-between; align-items: center;">
                         <div><b>Наказание:</b> <code>/${rep.cmd}</code> (${rep.duration}) | <b>Причина:</b> ${rep.reason}</div>
-                        <span style="color: var(--success); font-weight: bold; font-size: 12px; white-space: nowrap; margin-left: 10px;"><i class="fa-solid fa-magnifying-glass"></i> Подробнее</span>
+                        <span style="color: var(--success); font-weight: bold; font-size: 13px; white-space: nowrap; margin-left: 12px;"><i class="fa-solid fa-magnifying-glass"></i> Подробнее</span>
                     </div>
                 </div>
             `).join('');
@@ -1108,7 +1166,7 @@
                 return;
             }
 
-            const isLeader = currentUser && (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Администратор');
+            const isLeader = currentUser && (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Администратор' || currentUser.role === 'Владелец');
 
             newsBox.innerHTML = newsList.map((n, idx) => `
                 <div class="card">
@@ -1189,14 +1247,14 @@
                 document.getElementById('userName').innerText = currentUser.name;
                 document.getElementById('userRole').innerText = currentUser.role;
 
-                if (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Администратор') {
+                if (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Администратор' || currentUser.role === 'Владелец') {
                     document.getElementById('curatorTab').style.display = 'flex';
                     document.getElementById('supportTab').style.display = 'flex';
                     document.getElementById('vacationAdminCard').style.display = 'block';
                     document.getElementById('promotionAdminCard').style.display = 'block';
                 }
 
-                if (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора') {
+                if (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Владелец') {
                     document.getElementById('curatorReportCard').style.display = 'block';
                     document.getElementById('passDatabaseCard').style.display = 'block';
                 }
@@ -1217,6 +1275,7 @@
             });
         }
 
+        // ЖЕСТКАЯ ОЧИСТКА ПОЛЕЙ ПОСЛЕ ОТПРАВКИ ОТЧЕТА
         const reportForm = document.getElementById('reportForm');
         if (reportForm) {
             reportForm.addEventListener('submit', function(e) {
@@ -1250,6 +1309,7 @@
                 playSound('success');
                 showToast('Отчет успешно подан!');
 
+                // Сброс всех полей
                 document.getElementById('repTarget').value = '';
                 document.getElementById('repDuration').value = '';
                 document.getElementById('repReason').value = '';
@@ -1289,6 +1349,7 @@
             if (role === 'Мл. Модератор') return 500;
             if (role === 'Модератор') return 600;
             if (role === 'Ст. Модератор') return 700;
+            if (role === 'Владелец') return 1000;
             return 300;
         }
 
@@ -1333,7 +1394,7 @@
                         <td>${user.mutes || 0}</td>
                         <td>${user.bans || 0}</td>
                         <td>${normStatus}</td>
-                        <td><b style="color: var(--accent);">${finalSal} суриков</b>${moneyBonus ? ` <span style="color: var(--warning); font-size:12px;">+${moneyBonus}₽</span>` : ''}</td>
+                        <td><b style="color: var(--accent);">${finalSal} суриков</b>${moneyBonus ? ` <span style="color: var(--warning); font-size:13px;">+${moneyBonus}₽</span>` : ''}</td>
                     </tr>
                 `;
 
