@@ -171,7 +171,6 @@
 
         .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
 
-        /* Шапка и Навигация */
         header {
             background: rgba(10, 10, 12, 0.9);
             border-bottom: 1px solid var(--border);
@@ -282,7 +281,33 @@
             outline: none;
         }
 
-        /* Переключатель тем в стиле BreakProject */
+        /* Стиль панели управления отчетами сотрудников */
+        .staff-reports-layout { display: grid; grid-template-columns: 280px 1fr; gap: 20px; }
+        .staff-card-list { display: flex; flex-direction: column; gap: 10px; }
+        .staff-user-card {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            padding: 14px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .staff-user-card:hover, .staff-user-card.active {
+            border-color: var(--accent);
+            background: rgba(46, 213, 115, 0.1);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .report-item-card {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
         .theme-switcher {
             position: fixed;
             bottom: 20px;
@@ -437,7 +462,7 @@
             <div id="tab-vacation" class="tab-content">
                 <div class="card">
                     <div class="card-title"><div><i class="fa-solid fa-umbrella-beach"></i> Заявка на отпуск</div></div>
-                    <form onsubmit="event.preventDefault(); showToast('Заявка на отпуск успешно отправлена!');">
+                    <form onsubmit="event.preventDefault(); playSound('success'); showToast('Заявка на отпуск успешно отправлена!');">
                         <div class="form-group"><label>Причина</label><input type="text" class="form-control" required></div>
                         <div class="form-group"><label>Срок (дней)</label><input type="text" class="form-control" required></div>
                         <button type="submit" class="btn-primary" style="width: auto; padding: 10px 25px;"><i class="fa-solid fa-paper-plane"></i> Отправить</button>
@@ -449,7 +474,7 @@
             <div id="tab-promotion" class="tab-content">
                 <div class="card">
                     <div class="card-title"><div><i class="fa-solid fa-arrow-up-right-dots"></i> Заявка на повышение</div></div>
-                    <form onsubmit="event.preventDefault(); showToast('Заявка на повышение отправлена!');">
+                    <form onsubmit="event.preventDefault(); playSound('success'); showToast('Заявка на повышение отправлена!');">
                         <div class="form-group"><label>Желаемая должность</label>
                             <select class="form-control">
                                 <option>Ст. Хелпер</option>
@@ -483,7 +508,7 @@
                             <i class="fa-solid fa-paper-plane"></i> Сформировать и отправить в Новости
                         </button>
                     </div>
-                    <p style="color: var(--text-muted); font-size: 13px;">Подсчет результатов состава, проверка x2 норм и публикация в общий доступ.</p>
+                    <p style="color: var(--text-muted); font-size: 13px;">Подсчет результатов состава, зарплаты в суриках, топ-3 бонусов и сброс недельной нормы.</p>
                 </div>
 
                 <div class="card">
@@ -539,13 +564,19 @@
             <!-- Просмотр отчетов -->
             <div id="tab-supportView" class="tab-content">
                 <div class="card">
-                    <div class="card-title"><div><i class="fa-solid fa-eye"></i> Все отчеты команды</div></div>
-                    <table>
-                        <thead>
-                            <tr><th>Сотрудник</th><th>Команда</th><th>Нарушитель</th><th>Срок</th><th>Причина</th><th>Статус</th></tr>
-                        </thead>
-                        <tbody id="allReportsTable"></tbody>
-                    </table>
+                    <div class="card-title"><div><i class="fa-solid fa-eye"></i> Мониторинг отчётов Команды Проекта</div></div>
+                    <div class="staff-reports-layout">
+                        <!-- Левая колонка с карточками логинов -->
+                        <div>
+                            <div style="font-size: 12px; color: var(--text-muted); font-weight: bold; margin-bottom: 10px;">СОТРУДНИКИ:</div>
+                            <div class="staff-card-list" id="staffUserCards"></div>
+                        </div>
+                        <!-- Правая колонка с отчетами выбранного человека -->
+                        <div>
+                            <div id="selectedUserHeader" style="margin-bottom: 15px; font-weight: 600; font-size: 16px; color: var(--accent);">Все отчеты</div>
+                            <div id="userReportsList"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -553,12 +584,45 @@
 
     <script>
         let currentUser = null;
+        let selectedStaffFilter = 'all';
+        let currentPastedImage = null;
+
+        function playSound(type = 'click') {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (type === 'click') {
+                    osc.frequency.setValueAtTime(600, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.05, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.05);
+                } else if (type === 'success') {
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+                    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.08);
+                    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.25);
+                } else if (type === 'error') {
+                    osc.frequency.setValueAtTime(220, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.2);
+                }
+            } catch(e) {}
+        }
 
         const defaultStaff = [
-            { id: 'st-1', name: '6hoske', pass: '#6H!sKe99$SureBox2026', role: 'Куратор (Владелец)', mutes: 40, bans: 10, total: 50 },
-            { id: 'st-2', name: 'zam', pass: 'zam123', role: 'Зам. Куратора', mutes: 20, bans: 5, total: 25 },
-            { id: 'st-3', name: 'admin', pass: 'admin123', role: 'Администратор', mutes: 10, bans: 2, total: 12 },
-            { id: 'st-4', name: 'Helper_Kirill', pass: 'K~9sF2#q', role: 'Хелпер', mutes: 45, bans: 0, total: 45 }
+            { id: 'st-1', name: '6hoske', pass: '#6H!sKe99$SureBox2026', role: 'Куратор (Владелец)', mutes: 40, bans: 10, total: 50, allMutes: 100, allBans: 20 },
+            { id: 'st-2', name: 'zam', pass: 'zam123', role: 'Зам. Куратора', mutes: 20, bans: 5, total: 25, allMutes: 50, allBans: 10 },
+            { id: 'st-3', name: 'admin', pass: 'admin123', role: 'Администратор', mutes: 10, bans: 2, total: 12, allMutes: 30, allBans: 5 },
+            { id: 'st-4', name: 'Helper_Kirill', pass: 'K~9sF2#q', role: 'Хелпер', mutes: 65, bans: 0, total: 65, allMutes: 120, allBans: 0 }
         ];
 
         let staffDatabase = JSON.parse(localStorage.getItem('surebox_staff')) || defaultStaff;
@@ -585,11 +649,13 @@
         }
 
         function setTheme(theme) {
+            playSound('click');
             if (theme === 'green') document.documentElement.removeAttribute('data-theme');
             else document.documentElement.setAttribute('data-theme', theme);
         }
 
         function generateRandomPass() {
+            playSound('click');
             const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
             let result = "";
             for (let i = 0; i < 10; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -637,25 +703,63 @@
             });
         }
 
-        function renderReportsTable() {
-            const tbody = document.getElementById('allReportsTable');
-            tbody.innerHTML = '';
-            if (submittedReports.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Пока нет отправленных отчетов</td></tr>';
-                return;
-            }
-            submittedReports.forEach(rep => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td><b>${rep.author}</b></td>
-                        <td><code>/${rep.cmd}</code></td>
-                        <td>${rep.target}</td>
-                        <td>${rep.duration}</td>
-                        <td>${rep.reason}</td>
-                        <td><span style="color: var(--success);"><i class="fa-solid fa-check"></i> Одобрен</span></td>
-                    </tr>
+        function renderSupportView() {
+            const userCardsBox = document.getElementById('staffUserCards');
+            const reportsList = document.getElementById('userReportsList');
+            userCardsBox.innerHTML = `
+                <div class="staff-user-card ${selectedStaffFilter === 'all' ? 'active' : ''}" onclick="filterStaffReports('all')">
+                    <div><b>Все сотрудники</b></div>
+                    <small style="color: var(--text-muted);">${submittedReports.length} отчетов</small>
+                </div>
+            `;
+
+            staffDatabase.forEach(member => {
+                const memberReportsCount = submittedReports.filter(r => r.author === member.name).length;
+                userCardsBox.innerHTML += `
+                    <div class="staff-user-card ${selectedStaffFilter === member.name ? 'active' : ''}" onclick="filterStaffReports('${member.name}')">
+                        <div>
+                            <b>${member.name}</b><br>
+                            <small style="color: var(--text-muted); font-size: 11px;">${member.role}</small>
+                        </div>
+                        <span style="background: var(--bg-card); padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; color: var(--accent);">${memberReportsCount}</span>
+                    </div>
                 `;
             });
+
+            let filtered = submittedReports;
+            if (selectedStaffFilter !== 'all') {
+                filtered = submittedReports.filter(r => r.author === selectedStaffFilter);
+                document.getElementById('selectedUserHeader').innerText = `Отчеты сотрудника: ${selectedStaffFilter}`;
+            } else {
+                document.getElementById('selectedUserHeader').innerText = 'Все отчеты команды';
+            }
+
+            if (filtered.length === 0) {
+                reportsList.innerHTML = '<p style="color: var(--text-muted);">Отчетов пока нет</p>';
+                return;
+            }
+
+            reportsList.innerHTML = filtered.map(rep => `
+                <div class="report-item-card">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div><b style="color: var(--accent);">${rep.author}</b> <span style="color: var(--text-muted); font-size: 12px;">выдал наказание</span></div>
+                        <span style="color: var(--success); font-weight: bold; font-size: 12px;"><i class="fa-solid fa-check-circle"></i> Одобрен</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; font-size: 13px; margin-bottom: 10px;">
+                        <div><b>Команда:</b> <code>/${rep.cmd}</code></div>
+                        <div><b>Нарушитель:</b> ${rep.target}</div>
+                        <div><b>Срок:</b> ${rep.duration}</div>
+                        <div><b>Причина:</b> ${rep.reason}</div>
+                    </div>
+                    ${rep.img ? `<div style="margin-top: 10px;"><b>Доказательства:</b><br><img src="${rep.img}" style="max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid var(--border); margin-top: 6px; cursor: pointer;" onclick="window.open('${rep.img}')"></div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function filterStaffReports(username) {
+            playSound('click');
+            selectedStaffFilter = username;
+            renderSupportView();
         }
 
         function renderNews() {
@@ -674,8 +778,8 @@
             if (!currentUser) return;
             const u = staffDatabase.find(m => m.name === currentUser.name) || currentUser;
             document.getElementById('totalAll').innerText = u.total || 0;
-            document.getElementById('mutesAll').innerText = u.mutes || 0;
-            document.getElementById('bansAll').innerText = u.bans || 0;
+            document.getElementById('mutesAll').innerText = u.allMutes || u.mutes || 0;
+            document.getElementById('bansAll').innerText = u.allBans || u.bans || 0;
 
             const isHelper = u.role.includes('Хелпер');
             const reqMutes = isHelper ? 60 : 65;
@@ -709,10 +813,12 @@
             } else if (log === 'support' && pass === 'support123') {
                 currentUser = { name: 'support', pass: 'support123', role: 'Поддержка' };
             } else {
+                playSound('error');
                 showToast('Неверный логин или пароль!', true);
                 return;
             }
 
+            playSound('success');
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('appScreen').style.display = 'block';
 
@@ -737,7 +843,7 @@
             }
 
             renderStaffTables();
-            renderReportsTable();
+            renderSupportView();
             renderNews();
             updateProfileStats();
             showToast(`Успешный вход! Добро пожаловать, ${currentUser.name}`);
@@ -750,23 +856,34 @@
             const duration = document.getElementById('repDuration').value.trim();
             const reason = document.getElementById('repReason').value.trim();
 
-            const rep = { author: currentUser.name, cmd, target, duration, reason };
+            const rep = { author: currentUser.name, cmd, target, duration, reason, img: currentPastedImage };
             submittedReports.push(rep);
 
             const u = staffDatabase.find(m => m.name === currentUser.name);
             if (u) {
-                if (cmd === 'tempmute') u.mutes = (u.mutes || 0) + 1;
-                else u.bans = (u.bans || 0) + 1;
+                if (cmd === 'tempmute') {
+                    u.mutes = (u.mutes || 0) + 1;
+                    u.allMutes = (u.allMutes || 0) + 1;
+                } else {
+                    u.bans = (u.bans || 0) + 1;
+                    u.allBans = (u.allBans || 0) + 1;
+                }
                 u.total = (u.total || 0) + 1;
             }
 
             saveData();
-            renderReportsTable();
+            renderSupportView();
             updateProfileStats();
-            showToast('Отчет успешно подан и сохранен!');
-            this.reset();
+            playSound('success');
+            showToast('Отчет успешно подан!');
+
+            document.getElementById('repTarget').value = '';
+            document.getElementById('repDuration').value = '';
+            document.getElementById('repReason').value = '';
+            document.getElementById('previewImg').src = '';
             document.getElementById('previewImg').style.display = 'none';
             document.getElementById('pasteZone').classList.remove('has-image');
+            currentPastedImage = null;
         });
 
         document.addEventListener('paste', function(e) {
@@ -777,44 +894,80 @@
                     const blob = item.getAsFile();
                     const reader = new FileReader();
                     reader.onload = function(event) {
+                        currentPastedImage = event.target.result;
                         const img = document.getElementById('previewImg');
-                        img.src = event.target.result;
+                        img.src = currentPastedImage;
                         img.style.display = 'block';
                         document.getElementById('pasteZone').classList.add('has-image');
+                        playSound('click');
                     };
                     reader.readAsDataURL(blob);
                 }
             }
         });
 
+        function getBaseSalary(role) {
+            if (role === 'Хелпер') return 300;
+            if (role === 'Ст. Хелпер') return 400;
+            if (role === 'Мл. Модератор') return 500;
+            if (role === 'Модератор') return 600;
+            if (role === 'Ст. Модератор') return 700;
+            return 300;
+        }
+
         function generateWeeklyReport() {
+            playSound('success');
+
+            let ranked = staffDatabase.map(u => ({
+                ...u,
+                score: (u.mutes || 0) + ((u.bans || 0) * 2)
+            })).sort((a, b) => b.score - a.score);
+
+            const top1 = ranked[0] ? ranked[0].name : null;
+            const top2 = ranked[1] ? ranked[1].name : null;
+            const top3 = ranked[2] ? ranked[2].name : null;
+
             let rowsHtml = '';
             staffDatabase.forEach(user => {
+                let isX2 = false;
                 let normStatus = '<span style="color: var(--danger);">Не выполнена</span>';
+
                 if (user.role.includes('Хелпер')) {
-                    if (user.mutes >= 120) normStatus = '<span class="badge-x2">ВЫПОЛНЕНА x2 НОРМА</span>';
-                    else if (user.mutes >= 60) normStatus = '<span style="color: var(--success);">Выполнена</span>';
+                    if (user.mutes >= 120) { normStatus = '<span class="badge-x2">ВЫПОЛНЕНА x2 НОРМА</span>'; isX2 = true; }
+                    else if (user.mutes >= 60) { normStatus = '<span style="color: var(--success);">Выполнена</span>'; }
                 } else {
-                    if (user.mutes >= 130 && user.bans >= 30) normStatus = '<span class="badge-x2">ВЫПОЛНЕНА x2 НОРМА</span>';
-                    else if (user.mutes >= 65 && user.bans >= 15) normStatus = '<span style="color: var(--success);">Выполнена</span>';
+                    if (user.mutes >= 130 && user.bans >= 30) { normStatus = '<span class="badge-x2">ВЫПОЛНЕНА x2 НОРМА</span>'; isX2 = true; }
+                    else if (user.mutes >= 65 && user.bans >= 15) { normStatus = '<span style="color: var(--success);">Выполнена</span>'; }
                 }
+
+                let baseSal = getBaseSalary(user.role);
+                let finalSal = isX2 ? baseSal * 2 : baseSal;
+
+                let moneyBonus = 0;
+                let bonusBadge = '';
+                if (user.name === top1 && user.score > 0) { moneyBonus = 500; bonusBadge = ' 🥇 (+500₽)'; }
+                else if (user.name === top2 && user.score > 0) { moneyBonus = 250; bonusBadge = ' 🥈 (+250₽)'; }
+                else if (user.name === top3 && user.score > 0) { moneyBonus = 150; bonusBadge = ' 🥉 (+150₽)'; }
 
                 rowsHtml += `
                     <tr>
-                        <td><b>${user.name}</b></td>
+                        <td><b>${user.name}</b>${bonusBadge}</td>
                         <td>${user.role}</td>
                         <td>${user.mutes || 0}</td>
                         <td>${user.bans || 0}</td>
-                        <td><b>${user.total || 0}</b></td>
                         <td>${normStatus}</td>
+                        <td><b style="color: var(--accent);">${finalSal} суриков</b>${moneyBonus ? ` <span style="color: var(--warning); font-size:12px;">+${moneyBonus}₽</span>` : ''}</td>
                     </tr>
                 `;
+
+                user.mutes = 0;
+                user.bans = 0;
             });
 
             const contentHtml = `
                 <table>
                     <thead>
-                        <tr><th>Сотрудник</th><th>Должность</th><th>Мутов</th><th>Банов</th><th>Всего отчётов</th><th>Статус нормы</th></tr>
+                        <tr><th>Сотрудник</th><th>Должность</th><th>Мутов</th><th>Банов</th><th>Статус нормы</th><th>Зарплата (Сурики / Рубли)</th></tr>
                     </thead>
                     <tbody>${rowsHtml}</tbody>
                 </table>
@@ -829,11 +982,15 @@
 
             saveData();
             renderNews();
-            showToast('Недельный отчет опубликован во вкладку Новости!');
+            renderStaffTables();
+            renderSupportView();
+            updateProfileStats();
+            showToast('Недельный отчет опубликован! Недельная статистика сброшена на 0.');
             switchTab('news');
         }
 
         function switchTab(tabId) {
+            playSound('click');
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
             document.getElementById('tab-' + tabId).classList.add('active');
@@ -848,9 +1005,11 @@
             const role = document.getElementById('newRole').value;
             
             pckAccepted++;
-            staffDatabase.push({ id: 'st-' + Date.now(), name: log, pass: pass, role: role, mutes: 0, bans: 0, total: 0 });
+            staffDatabase.push({ id: 'st-' + Date.now(), name: log, pass: pass, role: role, mutes: 0, bans: 0, total: 0, allMutes: 0, allBans: 0 });
             saveData();
             renderStaffTables();
+            renderSupportView();
+            playSound('success');
             showToast(`Аккаунт ${log} успешно создан!`);
             this.reset();
         });
@@ -862,17 +1021,21 @@
                 member.role = newRole;
                 saveData();
                 renderStaffTables();
+                renderSupportView();
+                playSound('success');
                 showToast(`Должность пользователя ${member.name} изменена на ${newRole}!`);
             }
         }
 
         function deleteAccount(id) {
             const member = staffDatabase.find(m => m.id === id);
-            if (member && confirm(`Вы точно хотите снять сотрудников ${member.name}?`)) {
+            if (member && confirm(`Вы точно хотите снять сотрудника ${member.name}?`)) {
                 staffDatabase = staffDatabase.filter(m => m.id !== id);
                 pckRemoved++;
                 saveData();
                 renderStaffTables();
+                renderSupportView();
+                playSound('error');
                 showToast(`Аккаунт ${member.name} удален из системы!`);
             }
         }
