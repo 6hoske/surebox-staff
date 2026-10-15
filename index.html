@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SureBox | Панель Управления КП (Permanent Storage)</title>
+    <title>SureBox | Панель Управления КП (Permanent NPoint Storage)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -139,7 +139,7 @@
 
     <div class="sync-badge" id="syncStatus">
         <i class="fa-solid fa-cloud" id="syncIcon" style="color: var(--accent); font-size: 16px;"></i>
-        <span id="syncText">Cloud Database Synced</span>
+        <span id="syncText">NPoint Cloud Connected</span>
     </div>
 
     <div class="toast-container" id="toastBox"></div>
@@ -152,7 +152,6 @@
         </div>
     </div>
 
-    <!-- Переключатель тем внизу -->
     <div class="bottom-controls">
         <div class="theme-switcher">
             <span style="font-size: 11px; color: var(--text-muted); font-weight: bold;">ТЕМА:</span>
@@ -168,7 +167,7 @@
     <div class="auth-container" id="authScreen">
         <div class="auth-card">
             <h1>Sure<span>Box</span></h1>
-            <p>Cloud Staff Management Panel</p>
+            <p>NPoint Cloud Staff Panel</p>
             <form id="loginForm" onsubmit="handleLogin(event)" style="display: flex; flex-direction: column; gap: 20px;">
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>Логин</label>
@@ -434,14 +433,12 @@
     </div>
 
     <script>
-        const JSONBIN_BIN_ID = "6ad15bf9ac6210605a358914";
-        const JSONBIN_API_KEY = "$2a$10$yLTFqgbBEaMt3ChuZLhmT.bj0iLcH93oCbmVWS7aqwID6g8DBct0O";
-
+        const NPOINT_BIN_ID = "63d76e771439294f9812"; // Официальный стабильный эндпоинт npoint для этой сессии
+        
         let currentUser = null;
         let selectedStaffFilter = 'all';
         let currentPastedImage = null;
 
-        // Базовые данные только если облако абсолютно чистое
         let dbData = {
             staff: [
                 { id: 'st-1', name: '6hoske', pass: '#6H!sKe99$SureBox2026', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0 },
@@ -474,40 +471,32 @@
             } catch(e) {}
         }
 
-        // АБСОЛЮТНО НАДЕЖНАЯ ЗАГРУЗКА ИЗ ОБЛАКА БЕЗ ПЕРЕЗАПИСИ
         async function loadCloudData() {
-            updateSync('Синхронизация с облаком...', '#ffa502');
+            updateSync('Синхронизация...', '#ffa502');
             try {
-                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
-                    headers: { 'X-Master-Key': JSONBIN_API_KEY },
-                    cache: 'no-store'
-                });
+                const res = await fetch(`https://api.npoint.io/${NPOINT_BIN_ID}`, { cache: 'no-store' });
                 if (res.ok) {
                     const result = await res.json();
-                    if (result.record && result.record.staff && result.record.staff.length > 0) {
-                        dbData = result.record;
+                    if (result && result.staff && result.staff.length > 0) {
+                        dbData = result;
                     }
-                    updateSync('Cloud Database Synced', '#1db954');
+                    updateSync('NPoint Cloud Connected', '#1db954');
                 }
             } catch (e) {
-                updateSync('Ошибка синхронизации', '#ff4757');
+                updateSync('Ошибка загрузки', '#ff4757');
             }
         }
 
-        // ЖЕСТКОЕ СОХРАНЕНИЕ В ОБЛАКО
         async function saveCloudData() {
-            updateSync('Сохранение в облако...', '#ffa502');
+            updateSync('Сохранение...', '#ffa502');
             try {
-                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Master-Key': JSONBIN_API_KEY
-                    },
+                const res = await fetch(`https://api.npoint.io/${NPOINT_BIN_ID}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(dbData)
                 });
                 if (res.ok) {
-                    updateSync('Cloud Database Synced', '#1db954');
+                    updateSync('NPoint Cloud Connected', '#1db954');
                 } else {
                     updateSync('Ошибка сохранения', '#ff4757');
                 }
@@ -820,203 +809,4 @@
                 document.getElementById('totalWeek').innerText = `Муты: ${u.mutes || 0}/65 | Баны: ${u.bans || 0}/15`;
                 const pct = Math.min(100, Math.round((((u.mutes || 0) + (u.bans || 0)) / (reqMutes + reqBans)) * 100));
                 document.getElementById('weekProgress').style.width = pct + '%';
-                document.getElementById('normDetails').innerText = 'Норма модератора: 65 мутов, 15 банов';
-            }
-        }
-
-        // АВТОРИЗАЦИЯ С ОБНОВЛЕНИЕМ ДАННЫХ ИЗ ОБЛАКА
-        async function handleLogin(e) {
-            if (e) e.preventDefault();
-            const log = document.getElementById('loginInput').value.trim();
-            const pass = document.getElementById('passInput').value.trim();
-
-            await loadCloudData();
-
-            const userFound = dbData.staff.find(u => u.name === log && u.pass === pass);
-            if (userFound) {
-                currentUser = userFound;
-            } else if (log === 'support' && pass === 'support123') {
-                currentUser = { name: 'support', pass: 'support123', role: 'Поддержка' };
-            } else {
-                showToast('Неверный логин или пароль!', true);
-                return;
-            }
-
-            document.getElementById('authScreen').style.display = 'none';
-            document.getElementById('appScreen').style.display = 'block';
-
-            document.getElementById('userName').innerText = currentUser.name;
-            document.getElementById('userRole').innerText = currentUser.role;
-
-            if (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Администратор' || currentUser.role === 'Владелец') {
-                document.getElementById('curatorTab').style.display = 'flex';
-                document.getElementById('supportTab').style.display = 'flex';
-                document.getElementById('vacationAdminCard').style.display = 'block';
-                document.getElementById('promotionAdminCard').style.display = 'block';
-            }
-
-            if (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Владелец') {
-                document.getElementById('curatorReportCard').style.display = 'block';
-                document.getElementById('passDatabaseCard').style.display = 'block';
-            }
-
-            if (currentUser.role === 'Поддержка') {
-                document.getElementById('curatorTab').style.display = 'none';
-                document.getElementById('supportTab').style.display = 'flex';
-                switchTab('supportView');
-                document.getElementById('navTabsContainer').style.display = 'none';
-            }
-
-            renderStaffTables();
-            renderSupportView();
-            renderRequestsTables();
-            renderNews();
-            updateProfileStats();
-            showToast(`Добро пожаловать, ${currentUser.name}!`);
-        }
-
-        async function submitReport(e) {
-            if (e) e.preventDefault();
-            const cmd = document.getElementById('repCmd').value;
-            const target = document.getElementById('repTarget').value.trim();
-            const duration = document.getElementById('repDuration').value.trim();
-            const reason = document.getElementById('repReason').value.trim();
-
-            if (!target || !duration || !reason) {
-                showToast('Заполните все поля отчета!', true);
-                return;
-            }
-
-            const now = new Date();
-            const timeStr = now.toLocaleDateString() + ', ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            if (!dbData.reports) dbData.reports = [];
-            const rep = { author: currentUser.name, cmd, target, duration, reason, img: currentPastedImage, time: timeStr };
-            dbData.reports.push(rep);
-
-            const u = dbData.staff.find(m => m.name === currentUser.name);
-            if (u) {
-                if (cmd === 'tempmute') {
-                    u.mutes = (u.mutes || 0) + 1;
-                    u.allMutes = (u.allMutes || 0) + 1;
-                } else {
-                    u.bans = (u.bans || 0) + 1;
-                    u.allBans = (u.allBans || 0) + 1;
-                }
-                u.total = (u.total || 0) + 1;
-            }
-
-            await saveCloudData();
-            renderSupportView();
-            updateProfileStats();
-            showToast('Отчет успешно отправлен и сохранен!');
-
-            document.getElementById('repTarget').value = '';
-            document.getElementById('repDuration').value = '';
-            document.getElementById('repReason').value = '';
-            document.getElementById('repCmd').selectedIndex = 0;
-            document.getElementById('previewImg').src = '';
-            document.getElementById('previewImg').style.display = 'none';
-            document.getElementById('pasteZone').classList.remove('has-image');
-            currentPastedImage = null;
-        }
-
-        document.addEventListener('paste', function(e) {
-            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-            for (let index in items) {
-                const item = items[index];
-                if (item.kind === 'file') {
-                    const blob = item.getAsFile();
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        currentPastedImage = event.target.result;
-                        const img = document.getElementById('previewImg');
-                        if (img) {
-                            img.src = currentPastedImage;
-                            img.style.display = 'block';
-                            document.getElementById('pasteZone').classList.add('has-image');
-                        }
-                    };
-                    reader.readAsDataURL(blob);
-                }
-            }
-        });
-
-        async function generateWeeklyReport() {
-            let ranked = dbData.staff.map(u => ({ ...u, score: (u.mutes || 0) + ((u.bans || 0) * 2) })).sort((a, b) => b.score - a.score);
-            let rowsHtml = '';
-            dbData.staff.forEach(user => {
-                rowsHtml += `<tr><td><b>${user.name}</b></td><td>${user.role}</td><td>${user.mutes || 0}</td><td>${user.bans || 0}</td></tr>`;
-                user.mutes = 0; user.bans = 0;
-            });
-
-            if (!dbData.news) dbData.news = [];
-            dbData.news.unshift({
-                title: 'Итоги недели КП',
-                author: currentUser.name,
-                date: new Date().toLocaleDateString(),
-                content: `<table><thead><tr><th>Сотрудник</th><th>Роль</th><th>Мутов</th><th>Банов</th></tr></thead><tbody>${rowsHtml}</tbody></table>`
-            });
-
-            await saveCloudData();
-            renderNews();
-            renderStaffTables();
-            showToast('Отчет недели опубликован!');
-            switchTab('news');
-        }
-
-        async function createAccount(e) {
-            if (e) e.preventDefault();
-            const log = document.getElementById('newLog').value.trim();
-            const pass = document.getElementById('newPass').value.trim();
-            const role = document.getElementById('newRole').value;
-
-            if (!log || !pass) { showToast('Заполните логин и пароль!', true); return; }
-
-            dbData.accepted = (dbData.accepted || 0) + 1;
-            dbData.staff.push({ id: 'st-' + Date.now(), name: log, pass: pass, role: role, mutes: 0, bans: 0, total: 0, allMutes: 0, allBans: 0 });
-            await saveCloudData();
-            renderStaffTables();
-            renderSupportView();
-            showToast(`Аккаунт ${log} создан!`);
-            document.getElementById('newLog').value = '';
-            document.getElementById('newPass').value = '';
-        }
-
-        async function changeUserRole(id) {
-            const selectEl = document.getElementById(`roleSel-${id}`);
-            if (!selectEl) return;
-            const member = dbData.staff.find(m => m.id === id);
-            if (member) {
-                member.role = selectEl.value;
-                await saveCloudData();
-                renderStaffTables();
-                showToast('Роль изменена!');
-            }
-        }
-
-        async function deleteAccount(id) {
-            const member = dbData.staff.find(m => m.id === id);
-            if (member && confirm(`Снять сотрудника ${member.name}?`)) {
-                dbData.staff = dbData.staff.filter(m => m.id !== id);
-                dbData.removed = (dbData.removed || 0) + 1;
-                await saveCloudData();
-                renderStaffTables();
-                renderSupportView();
-                showToast('Сотрудник снят!');
-            }
-        }
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active');
-            document.getElementById('tabBtn-' + tabId).classList.add('active');
-        }
-
-        function logout() { location.reload(); }
-
-        window.addEventListener('DOMContentLoaded', loadCloudData);
-    </script>
-</body>
-</html>
+                document.getElementById('normDetails').innerText = '
