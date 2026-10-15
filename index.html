@@ -3,25 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SureBox | Панель Управления КП (Cloud Edition)</title>
+    <title>SureBox | Панель Управления КП (Spotify & Hits Edition)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --bg-main: #070709;
             --bg-card: rgba(18, 18, 24, 0.95);
             --bg-input: #0f0f14;
-            --accent: #2ed573;
-            --accent-glow: rgba(46, 213, 115, 0.4);
+            --accent: #1db954; /* Spotify Green */
+            --accent-hover: #1ed760;
+            --accent-glow: rgba(29, 185, 84, 0.4);
             --text-main: #f8f9fa;
             --text-muted: #9494a0;
-            --border: rgba(46, 213, 115, 0.3);
+            --border: rgba(29, 185, 84, 0.3);
             --danger: #ff4757;
-            --success: #2ed573;
+            --success: #1db954;
             --warning: #ffa502;
         }
 
+        [data-theme="pink"] { --accent: #ff4757; --accent-glow: rgba(255, 71, 87, 0.4); --border: rgba(255, 71, 87, 0.3); }
+        [data-theme="blue"] { --accent: #1e90ff; --accent-glow: rgba(30, 144, 255, 0.4); --border: rgba(30, 144, 255, 0.3); }
+        [data-theme="purple"] { --accent: #8a2be2; --accent-glow: rgba(138, 43, 226, 0.4); --border: rgba(138, 43, 226, 0.3); }
+        [data-theme="orange"] { --accent: #ffa502; --accent-glow: rgba(255, 165, 2, 0.4); --border: rgba(255, 165, 2, 0.3); }
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; transition: all 0.2s ease; }
-        body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                radial-gradient(circle at 15% 15%, var(--accent-glow) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(0,0,0,0.8) 0%, transparent 45%);
+        }
 
         .sync-badge {
             position: fixed;
@@ -41,9 +57,16 @@
         }
 
         .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: var(--bg-card); border: 1px solid var(--border); padding: 14px 22px; border-radius: 10px; box-shadow: 0 8px 25px rgba(0,0,0,0.6); display: flex; align-items: center; gap: 12px; font-size: 14px; backdrop-filter: blur(12px); }
+        .toast { background: var(--bg-card); border: 1px solid var(--border); padding: 14px 22px; border-radius: 10px; box-shadow: 0 8px 25px rgba(0,0,0,0.6); display: flex; align-items: center; gap: 12px; font-size: 14px; backdrop-filter: blur(12px); animation: slideIn 0.3s ease; }
         .toast.error { border-color: var(--danger); } .toast.error i { color: var(--danger); }
         .toast.success { border-color: var(--success); } .toast.success i { color: var(--success); }
+
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 35px; max-width: 700px; width: 100%; box-shadow: 0 0 40px var(--accent-glow); position: relative; }
+        .modal-close { position: absolute; top: 18px; right: 22px; font-size: 22px; cursor: pointer; color: var(--text-muted); }
+        .modal-close:hover { color: var(--danger); }
 
         .auth-container { position: fixed; inset: 0; background: var(--bg-main); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .auth-card { background: var(--bg-card); border: 1px solid var(--border); box-shadow: 0 0 40px var(--accent-glow); backdrop-filter: blur(18px); padding: 45px; border-radius: 16px; width: 100%; max-width: 440px; text-align: center; }
@@ -58,36 +81,112 @@
         .btn-primary { width: 100%; padding: 14px; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-weight: 600; font-size: 15px; cursor: pointer; box-shadow: 0 0 20px var(--accent-glow); display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
         .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
 
-        header { background: rgba(10, 10, 14, 0.95); border-bottom: 1px solid var(--border); padding: 18px 40px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+        header { background: rgba(10, 10, 14, 0.95); border-bottom: 1px solid var(--border); padding: 18px 40px; display: flex; align-items: center; justify-content: space-between; backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 100; }
         .logo { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 12px; color: var(--text-main); } .logo i { color: var(--accent); }
-        
+        .user-nav { display: flex; align-items: center; gap: 18px; }
+        .user-badge { background: var(--bg-card); border: 1px solid var(--border); padding: 8px 16px; border-radius: 10px; font-size: 14px; }
+        .user-badge .role { color: var(--accent); font-weight: 600; }
+
+        .nav-tabs { display: flex; gap: 10px; padding: 20px 40px 0; border-bottom: 1px solid var(--border); overflow-x: auto; }
+        .nav-tab { padding: 14px 24px; background: var(--bg-card); border: 1px solid var(--border); border-bottom: none; border-radius: 10px 10px 0 0; color: var(--text-muted); cursor: pointer; font-size: 15px; font-weight: 500; display: flex; align-items: center; gap: 10px; position: relative; }
+        .nav-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 -6px 20px var(--accent-glow); }
+
+        .badge-notice { background: var(--warning); color: #000; font-size: 11px; font-weight: bold; padding: 2px 7px; border-radius: 10px; }
         .container { padding: 35px 40px; flex: 1; max-width: 1550px; width: 100%; margin: 0 auto; }
-        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 30px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .tab-content { display: none; } .tab-content.active { display: block; }
+
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 30px; margin-bottom: 30px; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
         .card-title { font-size: 20px; font-weight: 600; margin-bottom: 22px; display: flex; align-items: center; justify-content: space-between; }
-        .card-title i { color: var(--accent); }
-        
-        .btn-sm { padding: 8px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-danger { background: var(--danger); color: #fff; }
-        .btn-success { background: var(--success); color: #fff; }
+        .card-title div { display: flex; align-items: center; gap: 12px; } .card-title i { color: var(--accent); }
+
+        .paste-zone { border: 2px dashed var(--border); background: var(--bg-input); border-radius: 12px; padding: 30px; text-align: center; color: var(--text-muted); cursor: pointer; outline: none; }
+        .paste-zone.has-image { border-color: var(--success); color: var(--success); }
+        .preview-img { max-width: 100%; max-height: 280px; margin-top: 15px; border-radius: 10px; border: 1px solid var(--border); display: none; }
+
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+        .stat-card { background: var(--bg-input); border: 1px solid var(--border); padding: 25px; border-radius: 12px; text-align: center; }
+        .stat-value { font-size: 30px; font-weight: 700; color: var(--accent); margin: 10px 0; }
+        .progress-bar { background: rgba(255, 255, 255, 0.06); height: 10px; border-radius: 5px; overflow: hidden; margin-top: 10px; }
+        .progress-fill { background: var(--accent); height: 100%; width: 0%; }
 
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 15px; }
         th, td { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.06); }
         th { color: var(--text-muted); font-size: 12px; text-transform: uppercase; }
+
+        .btn-sm { padding: 8px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-warning { background: var(--warning); color: #111; }
+        .badge-x2 { background: rgba(29, 185, 84, 0.25); color: var(--success); padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; }
+
+        .input-group { display: flex; gap: 10px; }
+        .role-select { padding: 6px 12px; background: var(--bg-input); border: 1px solid var(--border); color: #fff; border-radius: 8px; font-size: 13px; outline: none; }
+
+        .mc-banner { background: linear-gradient(135deg, rgba(29,185,84,0.18), rgba(0,0,0,0.5)); border: 1px dashed var(--border); border-radius: 14px; padding: 25px; display: flex; align-items: center; gap: 25px; margin-top: 25px; }
+        .staff-reports-layout { display: grid; grid-template-columns: 320px 1fr; gap: 25px; }
+        .staff-card-list { display: flex; flex-direction: column; gap: 12px; }
+        .staff-user-card { background: var(--bg-input); border: 1px solid var(--border); padding: 16px 20px; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .staff-user-card:hover, .staff-user-card.active { border-color: var(--accent); background: rgba(29, 185, 84, 0.12); box-shadow: 0 0 15px var(--accent-glow); }
+
+        .report-item-card { background: var(--bg-input); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 15px; cursor: pointer; }
+        .report-item-card:hover { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+
+        .bottom-controls { position: fixed; bottom: 25px; right: 25px; display: flex; gap: 15px; align-items: center; z-index: 999; }
+        .music-player { background: var(--bg-card); border: 1px solid var(--border); padding: 10px 20px; border-radius: 35px; display: flex; gap: 14px; align-items: center; box-shadow: 0 8px 25px rgba(0,0,0,0.6); backdrop-filter: blur(12px); font-size: 13px; }
+        .theme-switcher { background: var(--bg-card); border: 1px solid var(--border); padding: 10px 16px; border-radius: 35px; display: flex; gap: 10px; align-items: center; box-shadow: 0 8px 25px rgba(0,0,0,0.6); backdrop-filter: blur(12px); }
+        .theme-circle { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.25); }
     </style>
 </head>
 <body>
 
     <div class="sync-badge" id="syncStatus">
-        <i class="fa-solid fa-cloud-arrow-up" id="syncIcon" style="color: var(--accent);"></i>
-        <span id="syncText">Подключение к облаку...</span>
+        <i class="fa-brands fa-spotify" id="syncIcon" style="color: var(--accent); font-size: 16px;"></i>
+        <span id="syncText">Spotify Cloud Connected</span>
     </div>
 
     <div class="toast-container" id="toastBox"></div>
 
+    <div class="modal-overlay" id="reportModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></span>
+            <div class="card-title"><div><i class="fa-solid fa-file-contract"></i> Детальный отчёт о наказании</div></div>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Spotify Плеер с треками Friendly Thug 52, Travis Scott, Playboi Carti, Цоя -->
+    <div class="bottom-controls">
+        <div class="music-player">
+            <i class="fa-brands fa-spotify" style="color: var(--accent); font-size: 20px;"></i>
+            <div>
+                <select id="trackSelect" onchange="changeTrack(this.value)" style="background: transparent; border: none; color: #fff; font-weight: bold; outline: none; cursor: pointer; max-width: 200px;">
+                    <option value="thug" style="background: #121218;">FRIENDLY THUG 52 NGG - Vibe</option>
+                    <option value="travis" style="background: #121218;">Travis Scott - FE!N / Type Vibe</option>
+                    <option value="carti" style="background: #121218;">Playboi Carti - Vamp Anthem / Rage</option>
+                    <option value="tsoi" style="background: #121218;">Виктор Цой - Группа крови</option>
+                    <option value="lofi" style="background: #121218;">Spotify Lofi Ambient Beats</option>
+                </select><br>
+                <small style="color: var(--text-muted);" id="musicStatus">Нажмите ▶</small>
+            </div>
+            <button onclick="toggleMusicPlayer()" class="btn-sm btn-success" id="playBtn" style="padding: 6px 12px;"><i class="fa-solid fa-play"></i></button>
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.3" oninput="changeVolume(this.value)" style="width: 70px; accent-color: var(--accent);">
+        </div>
+
+        <div class="theme-switcher">
+            <span style="font-size: 11px; color: var(--text-muted); font-weight: bold;">ТЕМА:</span>
+            <div class="theme-circle" style="background: #1db954;" onclick="setTheme('green')"></div>
+            <div class="theme-circle" style="background: #ff4757;" onclick="setTheme('pink')"></div>
+            <div class="theme-circle" style="background: #1e90ff;" onclick="setTheme('blue')"></div>
+            <div class="theme-circle" style="background: #8a2be2;" onclick="setTheme('purple')"></div>
+            <div class="theme-circle" style="background: #ffa502;" onclick="setTheme('orange')"></div>
+        </div>
+    </div>
+
+    <!-- Вход -->
     <div class="auth-container" id="authScreen">
         <div class="auth-card">
-            <h1>Sure<span>Box</span> Staff</h1>
-            <p>Вечная Облачная Панель Управления КП</p>
+            <h1>Sure<span>Box</span></h1>
+            <p>Spotify Cloud Staff Panel</p>
             <form id="loginForm">
                 <div class="form-group">
                     <label>Логин</label>
@@ -97,144 +196,118 @@
                     <label>Пароль</label>
                     <input type="password" id="passInput" class="form-control" placeholder="Введите пароль" required autocomplete="current-password">
                 </div>
-                <button type="submit" class="btn-primary"><i class="fa-solid fa-cloud"></i> Войти в систему</button>
+                <button type="submit" class="btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Войти в панель</button>
             </form>
         </div>
     </div>
 
+    <!-- Дашборд -->
     <div id="appScreen" style="display: none;">
         <header>
-            <div class="logo"><i class="fa-solid fa-cube"></i> SureBox Staff Cloud</div>
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <div><span id="userName">User</span> | <span id="userRole" style="color:var(--accent); font-weight:bold;">Роль</span></div>
-                <button onclick="location.reload()" class="btn-sm btn-danger"><i class="fa-solid fa-power-off"></i> Выйти</button>
+            <div class="logo"><i class="fa-solid fa-cube"></i> SureBox Staff</div>
+            <div class="user-nav">
+                <div class="user-badge"><span id="userName">User</span> | <span class="role" id="userRole">Роль</span></div>
+                <button onclick="logout()" class="btn-sm btn-danger"><i class="fa-solid fa-power-off"></i> Выйти</button>
             </div>
         </header>
 
-        <div class="container">
-            <div class="card">
-                <div class="card-title"><div><i class="fa-solid fa-shield-halved"></i> Облачная синхронизация активирована</div></div>
-                <p style="color: var(--text-muted); font-size: 15px; line-height: 1.6;">
-                    Все отчёты, новые аккаунты сотрудников, выдача ролей и сброс норм сохраняются прямо на облачном сервере.<br>
-                    Данные больше никогда не удалятся и доступны с любого компьютера и телефона.
-                </p>
-            </div>
-
-            <div class="card">
-                <div class="card-title"><div><i class="fa-solid fa-users-gear"></i> Зарегистрированные аккаунты</div></div>
-                <table>
-                    <thead>
-                        <tr><th>Сотрудник</th><th>Роль</th><th>Пароль</th></tr>
-                    </thead>
-                    <tbody id="staffListTable"></tbody>
-                </table>
-            </div>
+        <div class="nav-tabs" id="navTabsContainer">
+            <div class="nav-tab active" id="tabBtn-reports" onclick="switchTab('reports')"><i class="fa-solid fa-file-lines"></i> Отчеты</div>
+            <div class="nav-tab" id="tabBtn-news" onclick="switchTab('news')"><i class="fa-solid fa-bullhorn"></i> Новости</div>
+            <div class="nav-tab" id="tabBtn-profile" onclick="switchTab('profile')"><i class="fa-solid fa-user"></i> Профиль</div>
+            <div class="nav-tab" id="tabBtn-vacation" onclick="switchTab('vacation')"><i class="fa-solid fa-umbrella-beach"></i> Отпуск <span class="badge-notice" id="vacationNotice" style="display: none;">0</span></div>
+            <div class="nav-tab" id="tabBtn-promotion" onclick="switchTab('promotion')"><i class="fa-solid fa-arrow-up-right-dots"></i> Повышение <span class="badge-notice" id="promotionNotice" style="display: none;">0</span></div>
+            <div class="nav-tab" id="curatorTab" style="display: none;" onclick="switchTab('curator')"><i class="fa-solid fa-crown"></i> Управление КП</div>
+            <div class="nav-tab" id="supportTab" style="display: none;" onclick="switchTab('supportView')"><i class="fa-solid fa-eye"></i> Просмотр отчетов</div>
         </div>
-    </div>
 
-    <script>
-        // ВАШИ КЛЮЧИ АВТОМАТИЧЕСКИ ПОДСТАВЛЕНЫ ИЗ ФОТО:
-        const JSONBIN_BIN_ID = "6ad15bf9ac6210605a358914";
-        const JSONBIN_API_KEY = "$2a$10$yLTFqgbBEaMt3ChuZLhmT.bj0iLcH93oCbmVWS7aqwID6g8DBct0O";
+        <div class="container">
+            <!-- Отчеты -->
+            <div id="tab-reports" class="tab-content active">
+                <div class="card">
+                    <div class="card-title"><div><i class="fa-solid fa-plus"></i> Подать отчет о наказании</div></div>
+                    <form id="reportForm">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Команда наказания</label>
+                                <select id="repCmd" class="form-control">
+                                    <option value="tempmute">/tempmute (Мут)</option>
+                                    <option value="checkban">/check ban (Бан)</option>
+                                    <option value="checkstart">/check start (Проверка)</option>
+                                    <option value="tempbanip">/tempbanip (Бан по IP)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Ник нарушителя</label>
+                                <input type="text" id="repTarget" class="form-control" placeholder="например: Player_47" required autocomplete="off">
+                            </div>
+                        </div>
 
-        let currentUser = null;
-        let dbData = {
-            staff: [
-                { id: 'st-1', name: '6hoske', pass: '#6H!sKe99$SureBox2026', role: 'Куратор (Владелец)' },
-                { id: 'st-5', name: 'Badabum', pass: 'badabum123', role: 'Владелец' },
-                { id: 'st-2', name: 'zam', pass: 'zam123', role: 'Зам. Куратора' },
-                { id: 'st-3', name: 'admin', pass: 'admin123', role: 'Администратор' }
-            ],
-            reports: [],
-            news: []
-        };
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Срок наказания</label>
+                                <input type="text" id="repDuration" class="form-control" placeholder="30m, 7d, навсегда" required autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label>Причина наказания</label>
+                                <input type="text" id="repReason" class="form-control" placeholder="п.п 1.2 / Читы" required autocomplete="off">
+                            </div>
+                        </div>
 
-        function showToast(msg, isErr = false) {
-            const box = document.getElementById('toastBox');
-            const t = document.createElement('div');
-            t.className = `toast ${isErr ? 'error' : 'success'}`;
-            t.innerHTML = `<i class="fa-solid ${isErr ? 'fa-circle-xmark' : 'fa-circle-check'}"></i> ${msg}`;
-            box.appendChild(t);
-            setTimeout(() => t.remove(), 3500);
-        }
+                        <div class="form-group">
+                            <label>Доказательства (Ctrl + V)</label>
+                            <div class="paste-zone" id="pasteZone" tabindex="0">
+                                <i class="fa-solid fa-image" style="font-size: 32px; margin-bottom: 10px;"></i><br>
+                                Кликните сюда и нажмите <b>Ctrl + V</b> чтобы вставить скриншот
+                                <img id="previewImg" class="preview-img">
+                            </div>
+                        </div>
 
-        async function loadCloudData() {
-            updateSync('Загрузка из облака...', '#ffa502');
-            try {
-                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
-                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
-                });
-                if (res.ok) {
-                    const result = await res.json();
-                    if (result.record && result.record.staff && result.record.staff.length > 0) {
-                        dbData = result.record;
-                    }
-                    updateSync('Облако синхронизировано', '#2ed573');
-                } else {
-                    updateSync('Инициализация базы...', '#2ed573');
-                    await saveCloudData();
-                }
-            } catch (e) {
-                updateSync('Ошибка сети', '#ff4757');
-            }
-        }
+                        <button type="submit" class="btn-primary" style="width: auto; padding: 14px 40px;"><i class="fa-solid fa-paper-plane"></i> Отправить отчет</button>
+                    </form>
+                </div>
+            </div>
 
-        async function saveCloudData() {
-            updateSync('Сохранение в облако...', '#ffa502');
-            try {
-                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Master-Key': JSONBIN_API_KEY
-                    },
-                    body: JSON.stringify(dbData)
-                });
-                if (res.ok) {
-                    updateSync('Сохранено в облаке', '#2ed573');
-                }
-            } catch (e) {
-                updateSync('Ошибка сохранения', '#ff4757');
-            }
-        }
+            <!-- Новости -->
+            <div id="tab-news" class="tab-content">
+                <div id="newsContainer">
+                    <div class="card">
+                        <div class="card-title"><div><i class="fa-solid fa-bullhorn"></i> Недельные отчёты состава</div></div>
+                        <p style="color: var(--text-muted);">Итоги текущей недели еще не были опубликованы руководством. Выдача отчётов происходит в субботу.</p>
+                    </div>
+                </div>
+            </div>
 
-        function updateSync(text, color) {
-            document.getElementById('syncText').innerText = text;
-            document.getElementById('syncIcon').style.color = color;
-        }
+            <!-- Профиль -->
+            <div id="tab-profile" class="tab-content">
+                <div class="grid-2" style="margin-bottom: 30px;">
+                    <div class="stat-card">
+                        <div>Всего отчетов (за всё время)</div>
+                        <div class="stat-value" id="totalAll">0</div>
+                        <small style="color: var(--text-muted);">Муты: <span id="mutesAll">0</span> | Баны: <span id="bansAll">0</span></small>
+                    </div>
+                    <div class="stat-card">
+                        <div>Норма за эту неделю</div>
+                        <div class="stat-value" id="totalWeek">0 / 60</div>
+                        <div class="progress-bar"><div class="progress-fill" id="weekProgress"></div></div>
+                        <small style="color: var(--text-muted); margin-top: 8px; display: block;" id="normDetails">Муты: <span id="mutesWeek">0</span> | Баны: <span id="bansWeek">0</span></small>
+                    </div>
+                </div>
 
-        function renderUsersTable() {
-            const tbody = document.getElementById('staffListTable');
-            if (!tbody) return;
-            tbody.innerHTML = dbData.staff.map(u => `
-                <tr>
-                    <td><b>${u.name}</b></td>
-                    <td><span style="color: var(--accent);">${u.role}</span></td>
-                    <td style="color: var(--warning); font-family: monospace;">${u.pass}</td>
-                </tr>
-            `).join('');
-        }
+                <div class="mc-banner">
+                    <i class="fa-solid fa-shield-halved" style="font-size: 42px; color: var(--accent);"></i>
+                    <div>
+                        <h4 style="margin-bottom: 6px;">SureBox Staff Security System</h4>
+                        <p style="font-size: 14px; color: var(--text-muted);">Ваша статистика обновляется автоматически после каждого принятого отчета. Недельная норма сбрасывается руководством каждую субботу.</p>
+                    </div>
+                </div>
+            </div>
 
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const log = document.getElementById('loginInput').value.trim();
-            const pass = document.getElementById('passInput').value.trim();
-
-            const user = dbData.staff.find(u => u.name === log && u.pass === pass);
-            if (user) {
-                currentUser = user;
-                document.getElementById('authScreen').style.display = 'none';
-                document.getElementById('appScreen').style.display = 'block';
-                document.getElementById('userName').innerText = user.name;
-                document.getElementById('userRole').innerText = user.role;
-                renderUsersTable();
-                showToast(`Добро пожаловать, ${user.name}!`);
-            } else {
-                showToast('Неверный логин или пароль!', true);
-            }
-        });
-
-        window.addEventListener('DOMContentLoaded', loadCloudData);
-    </script>
-</body>
-</html>
+            <!-- Отпуск -->
+            <div id="tab-vacation" class="tab-content">
+                <div class="card">
+                    <div class="card-title"><div><i class="fa-solid fa-umbrella-beach"></i> Заявка на отпуск</div></div>
+                    <form id="vacationSubmitForm">
+                        <div class="form-group"><label>Причина отпуска</label><input type="text" id="vacReason" class="form-control" placeholder="Учеба, семейные обстоятельства" required autocomplete="off"></div>
+                        <div class="form-group"><label>Срок (дней)</label><input type="text" id="vacDays" class="form-control" placeholder="7 дней" required autocomplete="off"></div>
+                        <button type="submit" class="btn-primary" style="width: auto; padding: 12px 30px;"><i class="fa-solid fa
