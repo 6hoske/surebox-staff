@@ -154,7 +154,7 @@
         </div>
     </div>
 
-    <!-- Spotify Плеер с треками Friendly Thug 52, Travis Scott, Playboi Carti, Цоя -->
+    <!-- Spotify Плеер -->
     <div class="bottom-controls">
         <div class="music-player">
             <i class="fa-brands fa-spotify" style="color: var(--accent); font-size: 20px;"></i>
@@ -187,17 +187,17 @@
         <div class="auth-card">
             <h1>Sure<span>Box</span></h1>
             <p>Spotify Cloud Staff Panel</p>
-            <form id="loginForm">
-                <div class="form-group">
+            <div id="loginForm" style="display: flex; flex-direction: column; gap: 20px;">
+                <div class="form-group" style="margin-bottom: 0;">
                     <label>Логин</label>
-                    <input type="text" id="loginInput" class="form-control" placeholder="Введите логин" required autocomplete="off">
+                    <input type="text" id="loginInput" class="form-control" placeholder="Введите логин" autocomplete="off">
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 0;">
                     <label>Пароль</label>
-                    <input type="password" id="passInput" class="form-control" placeholder="Введите пароль" required autocomplete="current-password">
+                    <input type="password" id="passInput" class="form-control" placeholder="Введите пароль" autocomplete="current-password">
                 </div>
-                <button type="submit" class="btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Войти в панель</button>
-            </form>
+                <button type="button" onclick="handleLogin()" class="btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Войти в панель</button>
+            </div>
         </div>
     </div>
 
@@ -226,9 +226,9 @@
             <div id="tab-reports" class="tab-content active">
                 <div class="card">
                     <div class="card-title"><div><i class="fa-solid fa-plus"></i> Подать отчет о наказании</div></div>
-                    <form id="reportForm">
+                    <div id="reportForm" style="display: flex; flex-direction: column; gap: 20px;">
                         <div class="grid-2">
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom:0;">
                                 <label>Команда наказания</label>
                                 <select id="repCmd" class="form-control">
                                     <option value="tempmute">/tempmute (Мут)</option>
@@ -237,24 +237,24 @@
                                     <option value="tempbanip">/tempbanip (Бан по IP)</option>
                                 </select>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom:0;">
                                 <label>Ник нарушителя</label>
-                                <input type="text" id="repTarget" class="form-control" placeholder="например: Player_47" required autocomplete="off">
+                                <input type="text" id="repTarget" class="form-control" placeholder="например: Player_47" autocomplete="off">
                             </div>
                         </div>
 
                         <div class="grid-2">
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom:0;">
                                 <label>Срок наказания</label>
-                                <input type="text" id="repDuration" class="form-control" placeholder="30m, 7d, навсегда" required autocomplete="off">
+                                <input type="text" id="repDuration" class="form-control" placeholder="30m, 7d, навсегда" autocomplete="off">
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom:0;">
                                 <label>Причина наказания</label>
-                                <input type="text" id="repReason" class="form-control" placeholder="п.п 1.2 / Читы" required autocomplete="off">
+                                <input type="text" id="repReason" class="form-control" placeholder="п.п 1.2 / Читы" autocomplete="off">
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group" style="margin-bottom:0;">
                             <label>Доказательства (Ctrl + V)</label>
                             <div class="paste-zone" id="pasteZone" tabindex="0">
                                 <i class="fa-solid fa-image" style="font-size: 32px; margin-bottom: 10px;"></i><br>
@@ -263,8 +263,10 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn-primary" style="width: auto; padding: 14px 40px;"><i class="fa-solid fa-paper-plane"></i> Отправить отчет</button>
-                    </form>
+                        <div>
+                            <button type="button" onclick="submitReport()" class="btn-primary" style="width: auto; padding: 14px 40px;"><i class="fa-solid fa-paper-plane"></i> Отправить отчет</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -307,7 +309,746 @@
             <div id="tab-vacation" class="tab-content">
                 <div class="card">
                     <div class="card-title"><div><i class="fa-solid fa-umbrella-beach"></i> Заявка на отпуск</div></div>
-                    <form id="vacationSubmitForm">
-                        <div class="form-group"><label>Причина отпуска</label><input type="text" id="vacReason" class="form-control" placeholder="Учеба, семейные обстоятельства" required autocomplete="off"></div>
-                        <div class="form-group"><label>Срок (дней)</label><input type="text" id="vacDays" class="form-control" placeholder="7 дней" required autocomplete="off"></div>
-                        <button type="submit" class="btn-primary" style="width: auto; padding: 12px 30px;"><i class="fa-solid fa
+                    <div id="vacationSubmitForm" style="display: flex; flex-direction: column; gap: 20px;">
+                        <div class="form-group" style="margin-bottom:0;"><label>Причина отпуска</label><input type="text" id="vacReason" class="form-control" placeholder="Учеба, семейные обстоятельства" autocomplete="off"></div>
+                        <div class="form-group" style="margin-bottom:0;"><label>Срок (дней)</label><input type="text" id="vacDays" class="form-control" placeholder="7 дней" autocomplete="off"></div>
+                        <div><button type="button" onclick="submitVacation()" class="btn-primary" style="width: auto; padding: 12px 30px;"><i class="fa-solid fa-paper-plane"></i> Отправить заявку</button></div>
+                    </div>
+                </div>
+
+                <div class="card" id="vacationAdminCard" style="display: none;">
+                    <div class="card-title"><div><i class="fa-solid fa-list-check"></i> Управление заявками на отпуск</div></div>
+                    <table>
+                        <thead>
+                            <tr><th>Сотрудник</th><th>Причина</th><th>Срок</th><th>Статус</th><th>Действия</th></tr>
+                        </thead>
+                        <tbody id="vacationTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Повышение -->
+            <div id="tab-promotion" class="tab-content">
+                <div class="card">
+                    <div class="card-title"><div><i class="fa-solid fa-arrow-up-right-dots"></i> Заявка на повышение</div></div>
+                    <div id="promotionSubmitForm" style="display: flex; flex-direction: column; gap: 20px;">
+                        <div class="form-group" style="margin-bottom:0;"><label>Желаемая должность</label>
+                            <select id="promTargetRole" class="form-control">
+                                <option>Ст. Хелпер</option>
+                                <option>Мл. Модератор</option>
+                                <option>Модератор</option>
+                                <option>Ст. Модератор</option>
+                            </select>
+                        </div>
+                        <div><button type="button" onclick="submitPromotion()" class="btn-primary" style="width: auto; padding: 12px 30px;"><i class="fa-solid fa-paper-plane"></i> Подать заявку</button></div>
+                    </div>
+                </div>
+
+                <div class="card" id="promotionAdminCard" style="display: none;">
+                    <div class="card-title"><div><i class="fa-solid fa-user-graduate"></i> Управление заявками на повышение</div></div>
+                    <table>
+                        <thead>
+                            <tr><th>Сотрудник</th><th>Желаемая роль</th><th>Статус</th><th>Действия</th></tr>
+                        </thead>
+                        <tbody id="promotionTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Управление КП -->
+            <div id="tab-curator" class="tab-content">
+                <div class="grid-2" style="margin-bottom: 30px;">
+                    <div class="stat-card">
+                        <div>Принято людей за неделю</div>
+                        <div class="stat-value" style="color: var(--success);" id="acceptedWeek">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Снято людей за неделю</div>
+                        <div class="stat-value" style="color: var(--danger);" id="removedWeek">0</div>
+                    </div>
+                </div>
+
+                <div class="card" id="curatorReportCard" style="display: none;">
+                    <div class="card-title">
+                        <div><i class="fa-solid fa-calculator"></i> Отчёт недели (Суббота — Пятница)</div>
+                        <button onclick="generateWeeklyReport()" class="btn-primary" style="width: auto; padding: 10px 22px; font-size: 14px;">
+                            <i class="fa-solid fa-paper-plane"></i> Сформировать и отправить в Новости
+                        </button>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 14px;">Подсчет результатов состава, зарплаты в суриках, топ-3 бонусов и сброс недельной нормы.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><div><i class="fa-solid fa-user-plus"></i> Создать аккаунт сотрудника</div></div>
+                    <div id="createAccountForm" class="grid-2">
+                        <div class="form-group" style="margin-bottom:0;"><label>Логин</label><input type="text" id="newLog" class="form-control" placeholder="Логин" autocomplete="off"></div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Пароль</label>
+                            <div class="input-group">
+                                <input type="text" id="newPass" class="form-control" placeholder="Пароль" autocomplete="off">
+                                <button type="button" onclick="generateRandomPass()" class="btn-primary" style="width: auto; padding: 0 18px; font-size: 13px; white-space: nowrap;"><i class="fa-solid fa-dice"></i> Рандом</button>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;"><label>Роль</label>
+                            <select id="newRole" class="form-control">
+                                <option value="Хелпер">Хелпер</option>
+                                <option value="Ст. Хелпер">Ст. Хелпер</option>
+                                <option value="Мл. Модератор">Мл. Модератор</option>
+                                <option value="Модератор">Модератор</option>
+                                <option value="Ст. Модератор">Ст. Модератор</option>
+                                <option value="Администратор">Администратор</option>
+                                <option value="Зам. Куратора">Зам. Куратора</option>
+                                <option value="Владелец">Владелец</option>
+                                <option value="Поддержка">Поддержка</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="display: flex; align-items: flex-end; margin-bottom:0;">
+                            <button type="button" onclick="createAccount()" class="btn-primary"><i class="fa-solid fa-plus"></i> Создать аккаунт</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" id="passDatabaseCard" style="display: none;">
+                    <div class="card-title"><div><i class="fa-solid fa-key"></i> База данных паролей (Конфиденциально)</div></div>
+                    <table>
+                        <thead>
+                            <tr><th>Логин</th><th>Пароль</th><th>Роль</th></tr>
+                        </thead>
+                        <tbody id="passDbTable"></tbody>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><div><i class="fa-solid fa-users-gear"></i> Управление Составом КП</div></div>
+                    <table>
+                        <thead>
+                            <tr><th>Логин</th><th>Текущая роль</th><th>Изменить роль на</th><th>Действия</th></tr>
+                        </thead>
+                        <tbody id="staffTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Просмотр отчетов -->
+            <div id="tab-supportView" class="tab-content">
+                <div class="card">
+                    <div class="card-title">
+                        <div><i class="fa-solid fa-eye"></i> Мониторинг отчётов КП</div>
+                        <input type="text" id="targetSearchInput" class="form-control" placeholder="🔍 Поиск по нику нарушителя..." oninput="renderSupportView()" style="max-width: 350px; padding: 10px 16px; font-size: 14px;">
+                    </div>
+                    <div class="staff-reports-layout">
+                        <div>
+                            <div style="font-size: 13px; color: var(--text-muted); font-weight: bold; margin-bottom: 12px;">СОТРУДНИКИ:</div>
+                            <div class="staff-card-list" id="staffUserCards"></div>
+                        </div>
+                        <div>
+                            <div id="selectedUserHeader" style="margin-bottom: 18px; font-weight: 600; font-size: 18px; color: var(--accent);">Все отчеты</div>
+                            <div id="userReportsList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const JSONBIN_BIN_ID = "6ad15bf9ac6210605a358914";
+        const JSONBIN_API_KEY = "$2a$10$yLTFqgbBEaMt3ChuZLhmT.bj0iLcH93oCbmVWS7aqwID6g8DBct0O";
+
+        let currentUser = null;
+        let selectedStaffFilter = 'all';
+        let currentPastedImage = null;
+
+        let dbData = {
+            staff: [
+                { id: 'st-1', name: '6hoske', pass: '#6H!sKe99$SureBox2026', role: 'Куратор (Владелец)', mutes: 40, bans: 10, total: 50, allMutes: 100, allBans: 20 },
+                { id: 'st-5', name: 'Badabum', pass: 'badabum123', role: 'Владелец', mutes: 50, bans: 15, total: 65, allMutes: 150, allBans: 30 },
+                { id: 'st-2', name: 'zam', pass: 'zam123', role: 'Зам. Куратора', mutes: 20, bans: 5, total: 25, allMutes: 50, allBans: 10 },
+                { id: 'st-3', name: 'admin', pass: 'admin123', role: 'Администратор', mutes: 10, bans: 2, total: 12, allMutes: 30, allBans: 5 },
+                { id: 'st-4', name: 'Helper_Kirill', pass: 'K~9sF2#q', role: 'Хелпер', mutes: 5, bans: 0, total: 5, allMutes: 120, allBans: 0 }
+            ],
+            reports: [],
+            news: [],
+            vacations: [],
+            promotions: [],
+            accepted: 0,
+            removed: 0
+        };
+
+        // АУДИОПЛЕЕР
+        let audioElement = new Audio();
+        audioElement.loop = true;
+        let isMusicPlaying = false;
+
+        const tracks = {
+            'thug': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
+            'travis': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3',
+            'carti': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+            'tsoi': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+            'lofi': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
+        };
+
+        function changeTrack(trackKey) {
+            audioElement.src = tracks[trackKey] || tracks['thug'];
+            if (isMusicPlaying) {
+                audioElement.play().catch(e => console.log(e));
+            }
+        }
+
+        function toggleMusicPlayer() {
+            const playBtn = document.getElementById('playBtn');
+            const statusLabel = document.getElementById('musicStatus');
+            const trackSelect = document.getElementById('trackSelect').value;
+
+            if (!audioElement.src) {
+                audioElement.src = tracks[trackSelect];
+            }
+
+            if (isMusicPlaying) {
+                audioElement.pause();
+                playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+                statusLabel.innerText = 'Пауза';
+                isMusicPlaying = false;
+            } else {
+                audioElement.play().then(() => {
+                    playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+                    statusLabel.innerText = 'Играет трек';
+                    isMusicPlaying = true;
+                }).catch(err => {
+                    showToast('Нажмите еще раз для старта аудио', true);
+                });
+            }
+        }
+
+        function changeVolume(val) {
+            audioElement.volume = parseFloat(val);
+        }
+
+        async function loadCloudData() {
+            updateSync('Загрузка из облака...', '#ffa502');
+            try {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                });
+                if (res.ok) {
+                    const result = await res.json();
+                    if (result.record && result.record.staff) {
+                        dbData = result.record;
+                    }
+                    updateSync('Spotify Cloud Connected', '#1db954');
+                }
+            } catch (e) {
+                updateSync('Ошибка облака', '#ff4757');
+            }
+        }
+
+        async function saveCloudData() {
+            updateSync('Синхронизация...', '#ffa502');
+            try {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_API_KEY
+                    },
+                    body: JSON.stringify(dbData)
+                });
+                if (res.ok) {
+                    updateSync('Spotify Cloud Connected', '#1db954');
+                }
+            } catch (e) {
+                updateSync('Ошибка сохранения', '#ff4757');
+            }
+        }
+
+        function updateSync(text, color) {
+            const el = document.getElementById('syncText');
+            const icon = document.getElementById('syncIcon');
+            if (el) el.innerText = text;
+            if (icon) icon.style.color = color;
+        }
+
+        function showToast(message, isError = false) {
+            const container = document.getElementById('toastBox');
+            const toast = document.createElement('div');
+            toast.className = `toast ${isError ? 'error' : 'success'}`;
+            toast.innerHTML = `<i class="fa-solid ${isError ? 'fa-circle-xmark' : 'fa-circle-check'}"></i> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+
+        function setTheme(theme) {
+            if (theme === 'green') document.documentElement.removeAttribute('data-theme');
+            else document.documentElement.setAttribute('data-theme', theme);
+        }
+
+        function generateRandomPass() {
+            const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+            let result = "";
+            for (let i = 0; i < 10; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
+            document.getElementById('newPass').value = result;
+        }
+
+        function openModal(reportIndex) {
+            const rep = dbData.reports[reportIndex];
+            if (!rep) return;
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div style="font-size: 16px; margin-bottom: 18px;">
+                    <p><b>Сотрудник КП:</b> <span style="color: var(--accent);">${rep.author}</span></p>
+                    <p><b>Дата и время:</b> ${rep.time || 'Не указано'}</p>
+                    <p><b>Команда:</b> <code>/${rep.cmd}</code></p>
+                    <p><b>Нарушитель:</b> ${rep.target}</p>
+                    <p><b>Срок:</b> ${rep.duration}</p>
+                    <p><b>Причина:</b> ${rep.reason}</p>
+                </div>
+                ${rep.img ? `<div style="margin-top: 15px;"><b>Доказательства:</b><br><img src="${rep.img}" style="width: 100%; max-height: 420px; object-fit: contain; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px;"></div>` : '<p style="color: var(--text-muted);">Скриншот не прикреплен</p>'}
+            `;
+            document.getElementById('reportModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('reportModal').style.display = 'none';
+        }
+
+        function renderRequestsTables() {
+            const vacTbody = document.getElementById('vacationTableBody');
+            const promTbody = document.getElementById('promotionTableBody');
+            if (!vacTbody || !promTbody) return;
+            vacTbody.innerHTML = '';
+            promTbody.innerHTML = '';
+
+            const pendingVac = dbData.vacations.filter(r => r.status === 'На рассмотрении').length;
+            const pendingProm = dbData.promotions.filter(r => r.status === 'На рассмотрении').length;
+
+            const vacNotice = document.getElementById('vacationNotice');
+            const promNotice = document.getElementById('promotionNotice');
+
+            if (pendingVac > 0) { vacNotice.innerText = pendingVac; vacNotice.style.display = 'inline-block'; } else { vacNotice.style.display = 'none'; }
+            if (pendingProm > 0) { promNotice.innerText = pendingProm; promNotice.style.display = 'inline-block'; } else { promNotice.style.display = 'none'; }
+
+            dbData.vacations.forEach((req, idx) => {
+                vacTbody.innerHTML += `
+                    <tr>
+                        <td><b>${req.author}</b></td>
+                        <td>${req.reason}</td>
+                        <td>${req.days}</td>
+                        <td><span style="color: ${req.status==='Одобрено'?'var(--success)':req.status==='Отклонено'?'var(--danger)':'var(--warning)'}; font-weight: bold;">${req.status}</span></td>
+                        <td>
+                            ${req.status==='На рассмотрении' ? `
+                                <button onclick="updateVacStatus(${idx}, 'Одобрено')" class="btn-sm btn-success"><i class="fa-solid fa-check"></i></button>
+                                <button onclick="updateVacStatus(${idx}, 'Отклонено')" class="btn-sm btn-danger"><i class="fa-solid fa-xmark"></i></button>
+                            ` : '-'}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            dbData.promotions.forEach((req, idx) => {
+                promTbody.innerHTML += `
+                    <tr>
+                        <td><b>${req.author}</b></td>
+                        <td><span style="color: var(--accent); font-weight:bold;">${req.targetRole}</span></td>
+                        <td><span style="color: ${req.status==='Одобрено'?'var(--success)':req.status==='Отклонено'?'var(--danger)':'var(--warning)'}; font-weight: bold;">${req.status}</span></td>
+                        <td>
+                            ${req.status==='На рассмотрении' ? `
+                                <button onclick="updatePromStatus(${idx}, 'Одобрено')" class="btn-sm btn-success"><i class="fa-solid fa-check"></i></button>
+                                <button onclick="updatePromStatus(${idx}, 'Отклонено')" class="btn-sm btn-danger"><i class="fa-solid fa-xmark"></i></button>
+                            ` : '-'}
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function updateVacStatus(idx, status) {
+            dbData.vacations[idx].status = status;
+            await saveCloudData();
+            renderRequestsTables();
+            showToast(`Заявка на отпуск ${status.toLowerCase()}`);
+        }
+
+        async function updatePromStatus(idx, status) {
+            dbData.promotions[idx].status = status;
+            await saveCloudData();
+            renderRequestsTables();
+            showToast(`Заявка на повышение ${status.toLowerCase()}`);
+        }
+
+        async function submitVacation() {
+            const reason = document.getElementById('vacReason').value.trim();
+            const days = document.getElementById('vacDays').value.trim();
+            if (!reason || !days) { showToast('Заполните все поля заявки!', true); return; }
+            dbData.vacations.unshift({ author: currentUser.name, reason, days, status: 'На рассмотрении' });
+            await saveCloudData();
+            renderRequestsTables();
+            document.getElementById('vacReason').value = '';
+            document.getElementById('vacDays').value = '';
+            showToast('Заявка на отпуск отправлена!');
+        }
+
+        async function submitPromotion() {
+            const targetRole = document.getElementById('promTargetRole').value;
+            dbData.promotions.unshift({ author: currentUser.name, targetRole, status: 'На рассмотрении' });
+            await saveCloudData();
+            renderRequestsTables();
+            showToast('Заявка на повышение отправлена!');
+        }
+
+        function renderStaffTables() {
+            const tbody = document.getElementById('staffTable');
+            const passTbody = document.getElementById('passDbTable');
+            if (!tbody || !passTbody) return;
+            tbody.innerHTML = '';
+            passTbody.innerHTML = '';
+
+            document.getElementById('acceptedWeek').innerText = dbData.accepted || 0;
+            document.getElementById('removedWeek').innerText = dbData.removed || 0;
+
+            dbData.staff.forEach(member => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><b>${member.name}</b></td>
+                        <td><span style="color: var(--accent); font-weight:600;">${member.role}</span></td>
+                        <td>
+                            <select id="roleSel-${member.id}" class="role-select">
+                                <option value="Хелпер" ${member.role==='Хелпер'?'selected':''}>Хелпер</option>
+                                <option value="Ст. Хелпер" ${member.role==='Ст. Хелпер'?'selected':''}>Ст. Хелпер</option>
+                                <option value="Мл. Модератор" ${member.role==='Мл. Модератор'?'selected':''}>Мл. Модератор</option>
+                                <option value="Модератор" ${member.role==='Модератор'?'selected':''}>Модератор</option>
+                                <option value="Ст. Модератор" ${member.role==='Ст. Модератор'?'selected':''}>Ст. Модератор</option>
+                                <option value="Администратор" ${member.role==='Администратор'?'selected':''}>Администратор</option>
+                                <option value="Зам. Куратора" ${member.role==='Зам. Куратора'?'selected':''}>Зам. Куратора</option>
+                                <option value="Владелец" ${member.role==='Владелец'?'selected':''}>Владелец</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button onclick="changeUserRole('${member.id}')" class="btn-sm btn-warning"><i class="fa-solid fa-angles-up"></i> Изменить роль</button>
+                            <button onclick="deleteAccount('${member.id}')" class="btn-sm btn-danger"><i class="fa-solid fa-user-minus"></i> Снять</button>
+                        </td>
+                    </tr>
+                `;
+                passTbody.innerHTML += `
+                    <tr>
+                        <td><b>${member.name}</b></td>
+                        <td style="color: var(--warning); font-family: monospace; font-size: 15px;">${member.pass}</td>
+                        <td>${member.role}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderSupportView() {
+            const userCardsBox = document.getElementById('staffUserCards');
+            const reportsList = document.getElementById('userReportsList');
+            if (!userCardsBox || !reportsList) return;
+            const searchQuery = (document.getElementById('targetSearchInput')?.value || '').toLowerCase().trim();
+
+            userCardsBox.innerHTML = `
+                <div class="staff-user-card ${selectedStaffFilter === 'all' ? 'active' : ''}" onclick="filterStaffReports('all')">
+                    <div><b>Все сотрудники</b></div>
+                    <small style="color: var(--text-muted);">${dbData.reports.length} отчетов</small>
+                </div>
+            `;
+
+            dbData.staff.forEach(member => {
+                const count = dbData.reports.filter(r => r.author === member.name).length;
+                userCardsBox.innerHTML += `
+                    <div class="staff-user-card ${selectedStaffFilter === member.name ? 'active' : ''}" onclick="filterStaffReports('${member.name}')">
+                        <div>
+                            <b>${member.name}</b><br>
+                            <small style="color: var(--text-muted); font-size: 11px;">${member.role}</small>
+                        </div>
+                        <span style="background: var(--bg-card); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; color: var(--accent);">${count}</span>
+                    </div>
+                `;
+            });
+
+            let filtered = dbData.reports;
+            if (selectedStaffFilter !== 'all') filtered = filtered.filter(r => r.author === selectedStaffFilter);
+            if (searchQuery !== '') filtered = filtered.filter(r => r.target.toLowerCase().includes(searchQuery));
+
+            if (filtered.length === 0) {
+                reportsList.innerHTML = '<p style="color: var(--text-muted);">Отчетов не найдено</p>';
+                return;
+            }
+
+            reportsList.innerHTML = filtered.map((rep) => `
+                <div class="report-item-card" onclick="openModal(${dbData.reports.indexOf(rep)})">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div>
+                            <b style="color: var(--accent);">${rep.author}</b> 
+                            <span style="color: var(--text-muted); font-size: 13px;">→ ${rep.target}</span>
+                        </div>
+                        <span style="color: var(--text-muted); font-size: 12px;"><i class="fa-regular fa-clock"></i> ${rep.time || 'Только что'}</span>
+                    </div>
+                    <div style="font-size: 14px; display: flex; justify-content: space-between; align-items: center;">
+                        <div><b>Наказание:</b> <code>/${rep.cmd}</code> (${rep.duration}) | <b>Причина:</b> ${rep.reason}</div>
+                        <span style="color: var(--success); font-weight: bold; font-size: 13px; white-space: nowrap; margin-left: 12px;"><i class="fa-solid fa-magnifying-glass"></i> Подробнее</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterStaffReports(name) {
+            selectedStaffFilter = name;
+            renderSupportView();
+        }
+
+        function renderNews() {
+            const newsBox = document.getElementById('newsContainer');
+            if (!newsBox) return;
+            if (dbData.news.length === 0) {
+                newsBox.innerHTML = `
+                    <div class="card">
+                        <div class="card-title"><div><i class="fa-solid fa-bullhorn"></i> Недельные отчёты состава</div></div>
+                        <p style="color: var(--text-muted);">Итоги текущей недели еще не были опубликованы руководством. Выдача отчётов происходит в субботу.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const isLeader = currentUser && (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Администратор' || currentUser.role === 'Владелец');
+
+            newsBox.innerHTML = dbData.news.map((n, idx) => `
+                <div class="card">
+                    <div class="card-title">
+                        <div><i class="fa-solid fa-bullhorn"></i> ${n.title}</div>
+                        ${isLeader ? `<button onclick="deleteNews(${idx})" class="btn-sm btn-danger"><i class="fa-solid fa-trash"></i> Удалить новость</button>` : ''}
+                    </div>
+                    <p style="color: var(--text-muted); margin-bottom: 15px;">Опубликовал: <b>${n.author}</b> (${n.date})</p>
+                    ${n.content}
+                </div>
+            `).join('');
+        }
+
+        async function deleteNews(idx) {
+            if (confirm('Удалить эту новость?')) {
+                dbData.news.splice(idx, 1);
+                await saveCloudData();
+                renderNews();
+                showToast('Новость удалена!');
+            }
+        }
+
+        function updateProfileStats() {
+            if (!currentUser) return;
+            const u = dbData.staff.find(m => m.name === currentUser.name) || currentUser;
+            const tAll = document.getElementById('totalAll');
+            if (!tAll) return;
+
+            tAll.innerText = u.total || 0;
+            document.getElementById('mutesAll').innerText = u.allMutes || 0;
+            document.getElementById('bansAll').innerText = u.allBans || 0;
+
+            const isHelper = u.role.includes('Хелпер');
+            const reqMutes = isHelper ? 60 : 65;
+            const reqBans = isHelper ? 0 : 15;
+
+            document.getElementById('mutesWeek').innerText = `${u.mutes || 0}`;
+            document.getElementById('bansWeek').innerText = `${u.bans || 0}`;
+
+            if (isHelper) {
+                document.getElementById('totalWeek').innerText = `${u.mutes || 0} / ${reqMutes} ответов (мутов)`;
+                const pct = Math.min(100, Math.round(((u.mutes || 0) / reqMutes) * 100));
+                document.getElementById('weekProgress').style.width = pct + '%';
+                document.getElementById('normDetails').innerText = 'Норма хелпера: 60 ответов';
+            } else {
+                document.getElementById('totalWeek').innerText = `Муты: ${u.mutes || 0}/65 | Баны: ${u.bans || 0}/15`;
+                const pct = Math.min(100, Math.round((((u.mutes || 0) + (u.bans || 0)) / (reqMutes + reqBans)) * 100));
+                document.getElementById('weekProgress').style.width = pct + '%';
+                document.getElementById('normDetails').innerText = 'Норма модератора: 65 мутов, 15 банов';
+            }
+        }
+
+        // ВХОД В СИСТЕМУ
+        function handleLogin() {
+            const log = document.getElementById('loginInput').value.trim();
+            const pass = document.getElementById('passInput').value.trim();
+
+            const userFound = dbData.staff.find(u => u.name === log && u.pass === pass);
+            if (userFound) {
+                currentUser = userFound;
+            } else if (log === 'support' && pass === 'support123') {
+                currentUser = { name: 'support', pass: 'support123', role: 'Поддержка' };
+            } else {
+                showToast('Неверный логин или пароль!', true);
+                return;
+            }
+
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'block';
+
+            document.getElementById('userName').innerText = currentUser.name;
+            document.getElementById('userRole').innerText = currentUser.role;
+
+            if (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Администратор' || currentUser.role === 'Владелец') {
+                document.getElementById('curatorTab').style.display = 'flex';
+                document.getElementById('supportTab').style.display = 'flex';
+                document.getElementById('vacationAdminCard').style.display = 'block';
+                document.getElementById('promotionAdminCard').style.display = 'block';
+            }
+
+            if (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Владелец') {
+                document.getElementById('curatorReportCard').style.display = 'block';
+                document.getElementById('passDatabaseCard').style.display = 'block';
+            }
+
+            if (currentUser.role === 'Поддержка') {
+                document.getElementById('curatorTab').style.display = 'none';
+                document.getElementById('supportTab').style.display = 'flex';
+                switchTab('supportView');
+                document.getElementById('navTabsContainer').style.display = 'none';
+            }
+
+            renderStaffTables();
+            renderSupportView();
+            renderRequestsTables();
+            renderNews();
+            updateProfileStats();
+            showToast(`Добро пожаловать, ${currentUser.name}!`);
+        }
+
+        // ОТПРАВКА ОТЧЕТА С ПОЛНОЙ ОЧИСТКОЙ
+        async function submitReport() {
+            const cmd = document.getElementById('repCmd').value;
+            const target = document.getElementById('repTarget').value.trim();
+            const duration = document.getElementById('repDuration').value.trim();
+            const reason = document.getElementById('repReason').value.trim();
+
+            if (!target || !duration || !reason) {
+                showToast('Заполните все поля отчета!', true);
+                return;
+            }
+
+            const now = new Date();
+            const timeStr = now.toLocaleDateString() + ', ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            const rep = { author: currentUser.name, cmd, target, duration, reason, img: currentPastedImage, time: timeStr };
+            dbData.reports.push(rep);
+
+            const u = dbData.staff.find(m => m.name === currentUser.name);
+            if (u) {
+                if (cmd === 'tempmute') {
+                    u.mutes = (u.mutes || 0) + 1;
+                    u.allMutes = (u.allMutes || 0) + 1;
+                } else {
+                    u.bans = (u.bans || 0) + 1;
+                    u.allBans = (u.allBans || 0) + 1;
+                }
+                u.total = (u.total || 0) + 1;
+            }
+
+            await saveCloudData();
+            renderSupportView();
+            updateProfileStats();
+            showToast('Отчет успешно отправлен и сохранен!');
+
+            // Сброс всех полей и скриншота в ноль
+            document.getElementById('repTarget').value = '';
+            document.getElementById('repDuration').value = '';
+            document.getElementById('repReason').value = '';
+            document.getElementById('repCmd').selectedIndex = 0;
+            document.getElementById('previewImg').src = '';
+            document.getElementById('previewImg').style.display = 'none';
+            document.getElementById('pasteZone').classList.remove('has-image');
+            currentPastedImage = null;
+        }
+
+        document.addEventListener('paste', function(e) {
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let index in items) {
+                const item = items[index];
+                if (item.kind === 'file') {
+                    const blob = item.getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        currentPastedImage = event.target.result;
+                        const img = document.getElementById('previewImg');
+                        if (img) {
+                            img.src = currentPastedImage;
+                            img.style.display = 'block';
+                            document.getElementById('pasteZone').classList.add('has-image');
+                        }
+                    };
+                    reader.readAsDataURL(blob);
+                }
+            }
+        });
+
+        async function generateWeeklyReport() {
+            let ranked = dbData.staff.map(u => ({ ...u, score: (u.mutes || 0) + ((u.bans || 0) * 2) })).sort((a, b) => b.score - a.score);
+            let rowsHtml = '';
+            dbData.staff.forEach(user => {
+                rowsHtml += `<tr><td><b>${user.name}</b></td><td>${user.role}</td><td>${user.mutes || 0}</td><td>${user.bans || 0}</td></tr>`;
+                user.mutes = 0; user.bans = 0;
+            });
+
+            dbData.news.unshift({
+                title: 'Итоги недели КП',
+                author: currentUser.name,
+                date: new Date().toLocaleDateString(),
+                content: `<table><thead><tr><th>Сотрудник</th><th>Роль</th><th>Мутов</th><th>Банов</th></tr></thead><tbody>${rowsHtml}</tbody></table>`
+            });
+
+            await saveCloudData();
+            renderNews();
+            renderStaffTables();
+            showToast('Отчет недели опубликован!');
+            switchTab('news');
+        }
+
+        async function createAccount() {
+            const log = document.getElementById('newLog').value.trim();
+            const pass = document.getElementById('newPass').value.trim();
+            const role = document.getElementById('newRole').value;
+
+            if (!log || !pass) { showToast('Заполните логин и пароль!', true); return; }
+
+            dbData.accepted = (dbData.accepted || 0) + 1;
+            dbData.staff.push({ id: 'st-' + Date.now(), name: log, pass: pass, role: role, mutes: 0, bans: 0, total: 0, allMutes: 0, allBans: 0 });
+            await saveCloudData();
+            renderStaffTables();
+            renderSupportView();
+            showToast(`Аккаунт ${log} создан!`);
+            document.getElementById('newLog').value = '';
+            document.getElementById('newPass').value = '';
+        }
+
+        async function changeUserRole(id) {
+            const selectEl = document.getElementById(`roleSel-${id}`);
+            if (!selectEl) return;
+            const member = dbData.staff.find(m => m.id === id);
+            if (member) {
+                member.role = selectEl.value;
+                await saveCloudData();
+                renderStaffTables();
+                showToast('Роль изменена!');
+            }
+        }
+
+        async function deleteAccount(id) {
+            const member = dbData.staff.find(m => m.id === id);
+            if (member && confirm(`Снять сотрудника ${member.name}?`)) {
+                dbData.staff = dbData.staff.filter(m => m.id !== id);
+                dbData.removed = (dbData.removed || 0) + 1;
+                await saveCloudData();
+                renderStaffTables();
+                renderSupportView();
+                showToast('Сотрудник снят!');
+            }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            document.getElementById('tabBtn-' + tabId).classList.add('active');
+        }
+
+        function logout() { location.reload(); }
+
+        window.addEventListener('DOMContentLoaded', loadCloudData);
+    </script>
+</body>
+</html>
