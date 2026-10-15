@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SureBox | Панель Управления КП (Permanent NPoint Storage)</title>
+    <title>SureBox | Панель Управления КП (Full Management)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -127,7 +127,7 @@
         .staff-user-card { background: var(--bg-input); border: 1px solid var(--border); padding: 16px 20px; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
         .staff-user-card:hover, .staff-user-card.active { border-color: var(--accent); background: rgba(29, 185, 84, 0.12); box-shadow: 0 0 15px var(--accent-glow); }
 
-        .report-item-card { background: var(--bg-input); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 15px; cursor: pointer; }
+        .report-item-card { background: var(--bg-input); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
         .report-item-card:hover { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
 
         .bottom-controls { position: fixed; bottom: 25px; right: 25px; display: flex; gap: 15px; align-items: center; z-index: 999; }
@@ -138,8 +138,8 @@
 <body>
 
     <div class="sync-badge" id="syncStatus">
-        <i class="fa-solid fa-cloud" id="syncIcon" style="color: var(--accent); font-size: 16px;"></i>
-        <span id="syncText">NPoint Cloud Connected</span>
+        <i class="fa-solid fa-hard-drive" id="syncIcon" style="color: var(--accent); font-size: 16px;"></i>
+        <span id="syncText">Local Permanent Storage Active</span>
     </div>
 
     <div class="toast-container" id="toastBox"></div>
@@ -167,8 +167,8 @@
     <div class="auth-container" id="authScreen">
         <div class="auth-card">
             <h1>Sure<span>Box</span></h1>
-            <p>NPoint Cloud Staff Panel</p>
-            <form id="loginForm" onsubmit="handleLogin(event)" style="display: flex; flex-direction: column; gap: 20px;">
+            <p>Staff Management Panel</p>
+            <form id="loginForm" onsubmit="handleLogin(event); return false;" style="display: flex; flex-direction: column; gap: 20px;">
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>Логин</label>
                     <input type="text" id="loginInput" class="form-control" placeholder="Введите логин" required autocomplete="off">
@@ -207,7 +207,7 @@
             <div id="tab-reports" class="tab-content active">
                 <div class="card">
                     <div class="card-title"><div><i class="fa-solid fa-plus"></i> Подать отчет о наказании</div></div>
-                    <form id="reportForm" onsubmit="submitReport(event)" style="display: flex; flex-direction: column; gap: 20px;">
+                    <form id="reportForm" onsubmit="submitReport(event); return false;" style="display: flex; flex-direction: column; gap: 20px;">
                         <div class="grid-2">
                             <div class="form-group" style="margin-bottom:0;">
                                 <label>Команда наказания</label>
@@ -290,7 +290,7 @@
             <div id="tab-vacation" class="tab-content">
                 <div class="card">
                     <div class="card-title"><div><i class="fa-solid fa-umbrella-beach"></i> Заявка на отпуск</div></div>
-                    <form id="vacationSubmitForm" onsubmit="submitVacation(event)" style="display: flex; flex-direction: column; gap: 20px;">
+                    <form id="vacationSubmitForm" onsubmit="submitVacation(event); return false;" style="display: flex; flex-direction: column; gap: 20px;">
                         <div class="form-group" style="margin-bottom:0;"><label>Причина отпуска</label><input type="text" id="vacReason" class="form-control" placeholder="Учеба, семейные обстоятельства" required autocomplete="off"></div>
                         <div class="form-group" style="margin-bottom:0;"><label>Срок (дней)</label><input type="text" id="vacDays" class="form-control" placeholder="7 дней" required autocomplete="off"></div>
                         <div><button type="submit" onclick="playClickSound()" class="btn-primary" style="width: auto; padding: 12px 30px;"><i class="fa-solid fa-paper-plane"></i> Отправить заявку</button></div>
@@ -312,7 +312,7 @@
             <div id="tab-promotion" class="tab-content">
                 <div class="card">
                     <div class="card-title"><div><i class="fa-solid fa-arrow-up-right-dots"></i> Заявка на повышение</div></div>
-                    <form id="promotionSubmitForm" onsubmit="submitPromotion(event)" style="display: flex; flex-direction: column; gap: 20px;">
+                    <form id="promotionSubmitForm" onsubmit="submitPromotion(event); return false;" style="display: flex; flex-direction: column; gap: 20px;">
                         <div class="form-group" style="margin-bottom:0;"><label>Желаемая должность</label>
                             <select id="promTargetRole" class="form-control">
                                 <option>Ст. Хелпер</option>
@@ -361,7 +361,7 @@
 
                 <div class="card">
                     <div class="card-title"><div><i class="fa-solid fa-user-plus"></i> Создать аккаунт сотрудника</div></div>
-                    <form id="createAccountForm" onsubmit="createAccount(event)" class="grid-2">
+                    <form id="createAccountForm" onsubmit="createAccount(event); return false;" class="grid-2">
                         <div class="form-group" style="margin-bottom:0;"><label>Логин</label><input type="text" id="newLog" class="form-control" placeholder="Логин" required autocomplete="off"></div>
                         <div class="form-group" style="margin-bottom:0;">
                             <label>Пароль</label>
@@ -433,13 +433,11 @@
     </div>
 
     <script>
-        const NPOINT_BIN_ID = "63d76e771439294f9812"; // Официальный стабильный эндпоинт npoint для этой сессии
-        
         let currentUser = null;
         let selectedStaffFilter = 'all';
         let currentPastedImage = null;
 
-        let dbData = {
+        const defaultData = {
             staff: [
                 { id: 'st-1', name: '6hoske', pass: '#6H!sKe99$SureBox2026', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0 },
                 { id: 'st-5', name: 'Badabum', pass: 'badabum123', role: 'Владелец', mutes: 0, bans: 0, total: 0 },
@@ -453,6 +451,28 @@
             accepted: 0,
             removed: 0
         };
+
+        let dbData = defaultData;
+
+        function loadStorageData() {
+            try {
+                const saved = localStorage.getItem('surebox_staff_data_v2');
+                if (saved) {
+                    dbData = JSON.parse(saved);
+                } else {
+                    dbData = defaultData;
+                    saveStorageData();
+                }
+            } catch(e) {
+                dbData = defaultData;
+            }
+        }
+
+        function saveStorageData() {
+            try {
+                localStorage.setItem('surebox_staff_data_v2', JSON.stringify(dbData));
+            } catch(e) {}
+        }
 
         function playClickSound() {
             try {
@@ -469,47 +489,6 @@
                 osc.start();
                 osc.stop(ctx.currentTime + 0.04);
             } catch(e) {}
-        }
-
-        async function loadCloudData() {
-            updateSync('Синхронизация...', '#ffa502');
-            try {
-                const res = await fetch(`https://api.npoint.io/${NPOINT_BIN_ID}`, { cache: 'no-store' });
-                if (res.ok) {
-                    const result = await res.json();
-                    if (result && result.staff && result.staff.length > 0) {
-                        dbData = result;
-                    }
-                    updateSync('NPoint Cloud Connected', '#1db954');
-                }
-            } catch (e) {
-                updateSync('Ошибка загрузки', '#ff4757');
-            }
-        }
-
-        async function saveCloudData() {
-            updateSync('Сохранение...', '#ffa502');
-            try {
-                const res = await fetch(`https://api.npoint.io/${NPOINT_BIN_ID}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dbData)
-                });
-                if (res.ok) {
-                    updateSync('NPoint Cloud Connected', '#1db954');
-                } else {
-                    updateSync('Ошибка сохранения', '#ff4757');
-                }
-            } catch (e) {
-                updateSync('Ошибка сети', '#ff4757');
-            }
-        }
-
-        function updateSync(text, color) {
-            const el = document.getElementById('syncText');
-            const icon = document.getElementById('syncIcon');
-            if (el) el.innerText = text;
-            if (icon) icon.style.color = color;
         }
 
         function showToast(message, isError = false) {
@@ -553,6 +532,35 @@
 
         function closeModal() {
             document.getElementById('reportModal').style.display = 'none';
+        }
+
+        // ФУНКЦИЯ УДАЛЕНИЯ ОТЧЕТА И УМЕНЬШЕНИЯ НОРМЫ СОТРУДНИКА
+        function deleteReport(globalReportIndex, event) {
+            if (event) event.stopPropagation(); // Чтобы не открывалось модальное окно при клике на кнопку удаления
+            if (!confirm('Удалить этот отчёт? Норма сотрудника уменьшится.')) return;
+
+            const rep = dbData.reports[globalReportIndex];
+            if (!rep) return;
+
+            // Находим сотрудника и уменьшаем его счетчики
+            const staffMember = dbData.staff.find(m => m.name === rep.author);
+            if (staffMember) {
+                if (rep.cmd === 'tempmute') {
+                    staffMember.mutes = Math.max(0, (staffMember.mutes || 1) - 1);
+                    staffMember.allMutes = Math.max(0, (staffMember.allMutes || 1) - 1);
+                } else {
+                    staffMember.bans = Math.max(0, (staffMember.bans || 1) - 1);
+                    staffMember.allBans = Math.max(0, (staffMember.allBans || 1) - 1);
+                }
+                staffMember.total = Math.max(0, (staffMember.total || 1) - 1);
+            }
+
+            // Удаляем сам отчет из общего массива
+            dbData.reports.splice(globalReportIndex, 1);
+            saveStorageData();
+            renderSupportView();
+            updateProfileStats();
+            showToast('Отчёт удалён, норма сотрудника обновлена!');
         }
 
         function renderRequestsTables() {
@@ -608,38 +616,38 @@
             });
         }
 
-        async function updateVacStatus(idx, status) {
+        function updateVacStatus(idx, status) {
             dbData.vacations[idx].status = status;
-            await saveCloudData();
+            saveStorageData();
             renderRequestsTables();
             showToast(`Заявка на отпуск ${status.toLowerCase()}`);
         }
 
-        async function updatePromStatus(idx, status) {
+        function updatePromStatus(idx, status) {
             dbData.promotions[idx].status = status;
-            await saveCloudData();
+            saveStorageData();
             renderRequestsTables();
             showToast(`Заявка на повышение ${status.toLowerCase()}`);
         }
 
-        async function submitVacation(e) {
+        function submitVacation(e) {
             if (e) e.preventDefault();
             const reason = document.getElementById('vacReason').value.trim();
             const days = document.getElementById('vacDays').value.trim();
             if (!reason || !days) { showToast('Заполните все поля заявки!', true); return; }
             dbData.vacations.unshift({ author: currentUser.name, reason, days, status: 'На рассмотрении' });
-            await saveCloudData();
+            saveStorageData();
             renderRequestsTables();
             document.getElementById('vacReason').value = '';
             document.getElementById('vacDays').value = '';
             showToast('Заявка на отпуск отправлена!');
         }
 
-        async function submitPromotion(e) {
+        function submitPromotion(e) {
             if (e) e.preventDefault();
             const targetRole = document.getElementById('promTargetRole').value;
             dbData.promotions.unshift({ author: currentUser.name, targetRole, status: 'На рассмотрении' });
-            await saveCloudData();
+            saveStorageData();
             renderRequestsTables();
             showToast('Заявка на повышение отправлена!');
         }
@@ -724,21 +732,25 @@
                 return;
             }
 
-            reportsList.innerHTML = filtered.map((rep) => `
-                <div class="report-item-card" onclick="playClickSound(); openModal(${dbData.reports.indexOf(rep)})">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            reportsList.innerHTML = filtered.map((rep) => {
+                const globalIdx = dbData.reports.indexOf(rep);
+                return `
+                    <div class="report-item-card" onclick="playClickSound(); openModal(${globalIdx})" style="cursor: pointer;">
                         <div>
-                            <b style="color: var(--accent);">${rep.author}</b> 
-                            <span style="color: var(--text-muted); font-size: 13px;">→ ${rep.target}</span>
+                            <div style="display: flex; gap: 10px; margin-bottom: 6px;">
+                                <b style="color: var(--accent);">${rep.author}</b> 
+                                <span style="color: var(--text-muted); font-size: 13px;">→ ${rep.target}</span>
+                                <span style="color: var(--text-muted); font-size: 12px;">(${rep.time || 'Только что'})</span>
+                            </div>
+                            <div style="font-size: 14px;"><b>Наказание:</b> <code>/${rep.cmd}</code> (${rep.duration}) | <b>Причина:</b> ${rep.reason}</div>
                         </div>
-                        <span style="color: var(--text-muted); font-size: 12px;"><i class="fa-regular fa-clock"></i> ${rep.time || 'Только что'}</span>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <span style="color: var(--success); font-weight: bold; font-size: 13px; white-space: nowrap;"><i class="fa-solid fa-magnifying-glass"></i></span>
+                            <button onclick="playClickSound(); deleteReport(${globalIdx}, event)" class="btn-sm btn-danger" title="Удалить отчет"><i class="fa-solid fa-trash"></i></button>
+                        </div>
                     </div>
-                    <div style="font-size: 14px; display: flex; justify-content: space-between; align-items: center;">
-                        <div><b>Наказание:</b> <code>/${rep.cmd}</code> (${rep.duration}) | <b>Причина:</b> ${rep.reason}</div>
-                        <span style="color: var(--success); font-weight: bold; font-size: 13px; white-space: nowrap; margin-left: 12px;"><i class="fa-solid fa-magnifying-glass"></i> Подробнее</span>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function filterStaffReports(name) {
@@ -774,10 +786,10 @@
             `).join('');
         }
 
-        async function deleteNews(idx) {
+        function deleteNews(idx) {
             if (confirm('Удалить эту новость?')) {
                 dbData.news.splice(idx, 1);
-                await saveCloudData();
+                saveStorageData();
                 renderNews();
                 showToast('Новость удалена!');
             }
@@ -809,4 +821,201 @@
                 document.getElementById('totalWeek').innerText = `Муты: ${u.mutes || 0}/65 | Баны: ${u.bans || 0}/15`;
                 const pct = Math.min(100, Math.round((((u.mutes || 0) + (u.bans || 0)) / (reqMutes + reqBans)) * 100));
                 document.getElementById('weekProgress').style.width = pct + '%';
-                document.getElementById('normDetails').innerText = '
+                document.getElementById('normDetails').innerText = 'Норма модератора: 65 мутов, 15 банов';
+            }
+        }
+
+        function handleLogin(e) {
+            if (e) e.preventDefault();
+            loadStorageData();
+            const log = document.getElementById('loginInput').value.trim();
+            const pass = document.getElementById('passInput').value.trim();
+
+            const userFound = dbData.staff.find(u => u.name === log && u.pass === pass);
+            if (userFound) {
+                currentUser = userFound;
+            } else if (log === 'support' && pass === 'support123') {
+                currentUser = { name: 'support', pass: 'support123', role: 'Поддержка' };
+            } else {
+                showToast('Неверный логин или пароль!', true);
+                return;
+            }
+
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'block';
+
+            document.getElementById('userName').innerText = currentUser.name;
+            document.getElementById('userRole').innerText = currentUser.role;
+
+            if (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Администратор' || currentUser.role === 'Владелец') {
+                document.getElementById('curatorTab').style.display = 'flex';
+                document.getElementById('supportTab').style.display = 'flex';
+                document.getElementById('vacationAdminCard').style.display = 'block';
+                document.getElementById('promotionAdminCard').style.display = 'block';
+            }
+
+            if (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Владелец') {
+                document.getElementById('curatorReportCard').style.display = 'block';
+                document.getElementById('passDatabaseCard').style.display = 'block';
+            }
+
+            if (currentUser.role === 'Поддержка') {
+                document.getElementById('curatorTab').style.display = 'none';
+                document.getElementById('supportTab').style.display = 'flex';
+                switchTab('supportView');
+                document.getElementById('navTabsContainer').style.display = 'none';
+            }
+
+            renderStaffTables();
+            renderSupportView();
+            renderRequestsTables();
+            renderNews();
+            updateProfileStats();
+            showToast(`Добро пожаловать, ${currentUser.name}!`);
+        }
+
+        function submitReport(e) {
+            if (e) e.preventDefault();
+            const cmd = document.getElementById('repCmd').value;
+            const target = document.getElementById('repTarget').value.trim();
+            const duration = document.getElementById('repDuration').value.trim();
+            const reason = document.getElementById('repReason').value.trim();
+
+            if (!target || !duration || !reason) {
+                showToast('Заполните все поля отчета!', true);
+                return;
+            }
+
+            const now = new Date();
+            const timeStr = now.toLocaleDateString() + ', ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            if (!dbData.reports) dbData.reports = [];
+            const rep = { author: currentUser.name, cmd, target, duration, reason, img: currentPastedImage, time: timeStr };
+            dbData.reports.push(rep);
+
+            const u = dbData.staff.find(m => m.name === currentUser.name);
+            if (u) {
+                if (cmd === 'tempmute') {
+                    u.mutes = (u.mutes || 0) + 1;
+                    u.allMutes = (u.allMutes || 0) + 1;
+                } else {
+                    u.bans = (u.bans || 0) + 1;
+                    u.allBans = (u.allBans || 0) + 1;
+                }
+                u.total = (u.total || 0) + 1;
+            }
+
+            saveStorageData();
+            renderSupportView();
+            updateProfileStats();
+            showToast('Отчет успешно отправлен и сохранен!');
+
+            document.getElementById('repTarget').value = '';
+            document.getElementById('repDuration').value = '';
+            document.getElementById('repReason').value = '';
+            document.getElementById('repCmd').selectedIndex = 0;
+            document.getElementById('previewImg').src = '';
+            document.getElementById('previewImg').style.display = 'none';
+            document.getElementById('pasteZone').classList.remove('has-image');
+            currentPastedImage = null;
+        }
+
+        document.addEventListener('paste', function(e) {
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let index in items) {
+                const item = items[index];
+                if (item.kind === 'file') {
+                    const blob = item.getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        currentPastedImage = event.target.result;
+                        const img = document.getElementById('previewImg');
+                        if (img) {
+                            img.src = currentPastedImage;
+                            img.style.display = 'block';
+                            document.getElementById('pasteZone').classList.add('has-image');
+                        }
+                    };
+                    reader.readAsDataURL(blob);
+                }
+            }
+        });
+
+        function generateWeeklyReport() {
+            let ranked = dbData.staff.map(u => ({ ...u, score: (u.mutes || 0) + ((u.bans || 0) * 2) })).sort((a, b) => b.score - a.score);
+            let rowsHtml = '';
+            dbData.staff.forEach(user => {
+                rowsHtml += `<tr><td><b>${user.name}</b></td><td>${user.role}</td><td>${user.mutes || 0}</td><td>${user.bans || 0}</td></tr>`;
+                user.mutes = 0; user.bans = 0;
+            });
+
+            if (!dbData.news) dbData.news = [];
+            dbData.news.unshift({
+                title: 'Итоги недели КП',
+                author: currentUser.name,
+                date: new Date().toLocaleDateString(),
+                content: `<table><thead><tr><th>Сотрудник</th><th>Роль</th><th>Мутов</th><th>Банов</th></tr></thead><tbody>${rowsHtml}</tbody></table>`
+            });
+
+            saveStorageData();
+            renderNews();
+            renderStaffTables();
+            showToast('Отчет недели опубликован!');
+            switchTab('news');
+        }
+
+        function createAccount(e) {
+            if (e) e.preventDefault();
+            const log = document.getElementById('newLog').value.trim();
+            const pass = document.getElementById('newPass').value.trim();
+            const role = document.getElementById('newRole').value;
+
+            if (!log || !pass) { showToast('Заполните логин и пароль!', true); return; }
+
+            dbData.accepted = (dbData.accepted || 0) + 1;
+            dbData.staff.push({ id: 'st-' + Date.now(), name: log, pass: pass, role: role, mutes: 0, bans: 0, total: 0, allMutes: 0, allBans: 0 });
+            saveStorageData();
+            renderStaffTables();
+            renderSupportView();
+            showToast(`Аккаунт ${log} создан!`);
+            document.getElementById('newLog').value = '';
+            document.getElementById('newPass').value = '';
+        }
+
+        function changeUserRole(id) {
+            const selectEl = document.getElementById(`roleSel-${id}`);
+            if (!selectEl) return;
+            const member = dbData.staff.find(m => m.id === id);
+            if (member) {
+                member.role = selectEl.value;
+                saveStorageData();
+                renderStaffTables();
+                showToast('Роль изменена!');
+            }
+        }
+
+        function deleteAccount(id) {
+            const member = dbData.staff.find(m => m.id === id);
+            if (member && confirm(`Снять сотрудника ${member.name}?`)) {
+                dbData.staff = dbData.staff.filter(m => m.id !== id);
+                dbData.removed = (dbData.removed || 0) + 1;
+                saveStorageData();
+                renderStaffTables();
+                renderSupportView();
+                showToast('Сотрудник снят!');
+            }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            document.getElementById('tabBtn-' + tabId).classList.add('active');
+        }
+
+        function logout() { location.reload(); }
+
+        window.addEventListener('DOMContentLoaded', loadStorageData);
+    </script>
+</body>
+</html>
