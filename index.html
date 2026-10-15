@@ -426,16 +426,16 @@
         </div>
     </div>
 
-    <!-- Встроенная музыка релакс Synth/Ambient и темы -->
+    <!-- Плеер релакс-музыки -->
     <div class="bottom-controls">
         <div class="music-player">
             <i class="fa-solid fa-music" id="musicIcon" style="color: var(--accent); font-size: 15px;"></i>
             <div>
-                <b>Ambient Relax</b><br>
-                <small style="color: var(--text-muted);" id="musicStatus">Выключено</small>
+                <b>Ambient Synth Lofi</b><br>
+                <small style="color: var(--text-muted);" id="musicStatus">Нажмите ▶</small>
             </div>
             <button onclick="toggleSynthMusic()" class="btn-sm btn-success" id="playBtn" style="padding: 4px 10px;"><i class="fa-solid fa-play"></i></button>
-            <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.3" oninput="changeSynthVolume(this.value)" style="width: 60px; accent-color: var(--accent);">
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.25" oninput="changeSynthVolume(this.value)" style="width: 60px; accent-color: var(--accent);">
         </div>
 
         <div class="theme-switcher">
@@ -505,18 +505,18 @@
                             </div>
                             <div class="form-group">
                                 <label>Ник нарушителя</label>
-                                <input type="text" id="repTarget" class="form-control" placeholder="например: Player_47" required>
+                                <input type="text" id="repTarget" class="form-control" placeholder="например: Player_47" required autocomplete="off">
                             </div>
                         </div>
 
                         <div class="grid-2">
                             <div class="form-group">
                                 <label>Срок наказания</label>
-                                <input type="text" id="repDuration" class="form-control" placeholder="30m, 7d, навсегда" required>
+                                <input type="text" id="repDuration" class="form-control" placeholder="30m, 7d, навсегда" required autocomplete="off">
                             </div>
                             <div class="form-group">
                                 <label>Причина наказания</label>
-                                <input type="text" id="repReason" class="form-control" placeholder="п.п 1.2 / Читы" required>
+                                <input type="text" id="repReason" class="form-control" placeholder="п.п 1.2 / Читы" required autocomplete="off">
                             </div>
                         </div>
 
@@ -534,7 +534,7 @@
                 </div>
             </div>
 
-            <!-- Новости -->
+            <!-- Новости с возможностью удаления -->
             <div id="tab-news" class="tab-content">
                 <div id="newsContainer">
                     <div class="card">
@@ -574,8 +574,8 @@
                 <div class="card">
                     <div class="card-title"><div><i class="fa-solid fa-umbrella-beach"></i> Заявка на отпуск</div></div>
                     <form id="vacationSubmitForm">
-                        <div class="form-group"><label>Причина отпуска</label><input type="text" id="vacReason" class="form-control" placeholder="Учеба, семейные обстоятельства" required></div>
-                        <div class="form-group"><label>Срок (дней)</label><input type="text" id="vacDays" class="form-control" placeholder="7 дней" required></div>
+                        <div class="form-group"><label>Причина отпуска</label><input type="text" id="vacReason" class="form-control" placeholder="Учеба, семейные обстоятельства" required autocomplete="off"></div>
+                        <div class="form-group"><label>Срок (дней)</label><input type="text" id="vacDays" class="form-control" placeholder="7 дней" required autocomplete="off"></div>
                         <button type="submit" class="btn-primary" style="width: auto; padding: 10px 25px;"><i class="fa-solid fa-paper-plane"></i> Отправить заявку</button>
                     </form>
                 </div>
@@ -645,11 +645,11 @@
                 <div class="card">
                     <div class="card-title"><div><i class="fa-solid fa-user-plus"></i> Создать аккаунт сотрудника</div></div>
                     <form id="createAccountForm" class="grid-2">
-                        <div class="form-group"><label>Логин</label><input type="text" id="newLog" class="form-control" placeholder="Логин" required></div>
+                        <div class="form-group"><label>Логин</label><input type="text" id="newLog" class="form-control" placeholder="Логин" required autocomplete="off"></div>
                         <div class="form-group">
                             <label>Пароль</label>
                             <div class="input-group">
-                                <input type="text" id="newPass" class="form-control" placeholder="Пароль" required>
+                                <input type="text" id="newPass" class="form-control" placeholder="Пароль" required autocomplete="off">
                                 <button type="button" onclick="generateRandomPass()" class="btn-primary" style="width: auto; padding: 0 15px; font-size: 12px; white-space: nowrap;"><i class="fa-solid fa-dice"></i> Рандом</button>
                             </div>
                         </div>
@@ -719,7 +719,7 @@
         let selectedStaffFilter = 'all';
         let currentPastedImage = null;
 
-        // Встроенный Web Audio API генератор музыкального эмбиента (работает всегда)
+        // Плеер эмбиента
         let synthCtx = null;
         let synthGain = null;
         let synthInterval = null;
@@ -729,47 +729,63 @@
             const playBtn = document.getElementById('playBtn');
             const statusLabel = document.getElementById('musicStatus');
 
+            if (!synthCtx) {
+                synthCtx = new (window.AudioContext || window.webkitAudioContext)();
+                synthGain = synthCtx.createGain();
+                synthGain.gain.value = 0.25;
+                synthGain.connect(synthCtx.destination);
+            }
+
+            if (synthCtx.state === 'suspended') {
+                synthCtx.resume();
+            }
+
             if (isSynthPlaying) {
-                if (synthCtx) synthCtx.suspend();
                 clearInterval(synthInterval);
                 playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-                statusLabel.innerText = 'Выключено';
+                statusLabel.innerText = 'Пауза';
                 isSynthPlaying = false;
             } else {
-                if (!synthCtx) {
-                    synthCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    synthGain = synthCtx.createGain();
-                    synthGain.gain.value = 0.3;
-                    synthGain.connect(synthCtx.destination);
-                } else {
-                    synthCtx.resume();
-                }
+                const chords = [
+                    [220, 261.63, 329.63],
+                    [174.61, 220, 261.63],
+                    [196, 246.94, 293.66],
+                    [164.81, 207.65, 246.94]
+                ];
+                let chordIndex = 0;
 
-                const notes = [220, 261.63, 329.63, 392.00, 440, 523.25];
+                playChord(chords[0]);
                 synthInterval = setInterval(() => {
-                    if (!synthCtx || synthCtx.state !== 'running') return;
+                    chordIndex = (chordIndex + 1) % chords.length;
+                    playChord(chords[chordIndex]);
+                }, 4000);
+
+                playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+                statusLabel.innerText = 'Играет Ambient';
+                isSynthPlaying = true;
+            }
+        }
+
+        function playChord(frequencies) {
+            if (!synthCtx || !isSynthPlaying && synthCtx.state !== 'running') return;
+            frequencies.forEach(freq => {
+                try {
                     const osc = synthCtx.createOscillator();
                     const noteGain = synthCtx.createGain();
-                    
-                    const freq = notes[Math.floor(Math.random() * notes.length)];
-                    osc.frequency.setValueAtTime(freq, synthCtx.currentTime);
                     osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, synthCtx.currentTime);
 
                     noteGain.gain.setValueAtTime(0, synthCtx.currentTime);
-                    noteGain.gain.linearRampToValueAtTime(0.1, synthCtx.currentTime + 1);
-                    noteGain.gain.exponentialRampToValueAtTime(0.001, synthCtx.currentTime + 4);
+                    noteGain.gain.linearRampToValueAtTime(0.04, synthCtx.currentTime + 1);
+                    noteGain.gain.exponentialRampToValueAtTime(0.0001, synthCtx.currentTime + 3.8);
 
                     osc.connect(noteGain);
                     noteGain.connect(synthGain);
 
                     osc.start();
                     osc.stop(synthCtx.currentTime + 4);
-                }, 1500);
-
-                playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-                statusLabel.innerText = 'Играет Relax';
-                isSynthPlaying = true;
-            }
+                } catch(e) {}
+            });
         }
 
         function changeSynthVolume(val) {
@@ -863,6 +879,7 @@
             modalBody.innerHTML = `
                 <div style="font-size: 15px; margin-bottom: 15px;">
                     <p><b>Сотрудник КП:</b> <span style="color: var(--accent);">${rep.author}</span></p>
+                    <p><b>Дата и время:</b> ${rep.time || 'Не указано'}</p>
                     <p><b>Команда:</b> <code>/${rep.cmd}</code></p>
                     <p><b>Нарушитель:</b> ${rep.target}</p>
                     <p><b>Срок:</b> ${rep.duration}</p>
@@ -1049,10 +1066,16 @@
             reportsList.innerHTML = filtered.map((rep, idx) => `
                 <div class="report-item-card" onclick="openModal(${submittedReports.indexOf(rep)})">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <div><b style="color: var(--accent);">${rep.author}</b> <span style="color: var(--text-muted); font-size: 12px;">→ ${rep.target}</span></div>
-                        <span style="color: var(--success); font-weight: bold; font-size: 12px;"><i class="fa-solid fa-magnifying-glass"></i> Подробнее</span>
+                        <div>
+                            <b style="color: var(--accent);">${rep.author}</b> 
+                            <span style="color: var(--text-muted); font-size: 12px;">→ ${rep.target}</span>
+                        </div>
+                        <span style="color: var(--text-muted); font-size: 11px;"><i class="fa-regular fa-clock"></i> ${rep.time || 'Только что'}</span>
                     </div>
-                    <div style="font-size: 13px;"><b>Наказание:</b> <code>/${rep.cmd}</code> (${rep.duration}) | <b>Причина:</b> ${rep.reason}</div>
+                    <div style="font-size: 13px; display: flex; justify-content: space-between; align-items: center;">
+                        <div><b>Наказание:</b> <code>/${rep.cmd}</code> (${rep.duration}) | <b>Причина:</b> ${rep.reason}</div>
+                        <span style="color: var(--success); font-weight: bold; font-size: 12px; white-space: nowrap; margin-left: 10px;"><i class="fa-solid fa-magnifying-glass"></i> Подробнее</span>
+                    </div>
                 </div>
             `).join('');
         }
@@ -1063,16 +1086,42 @@
             renderSupportView();
         }
 
+        // Рендер новостей с кнопкой удаления для руководство
         function renderNews() {
             const newsBox = document.getElementById('newsContainer');
-            if (newsList.length === 0) return;
-            newsBox.innerHTML = newsList.map(n => `
+            if (newsList.length === 0) {
+                newsBox.innerHTML = `
+                    <div class="card">
+                        <div class="card-title"><div><i class="fa-solid fa-bullhorn"></i> Недельные отчёты состава</div></div>
+                        <p style="color: var(--text-muted);">Итоги текущей недели еще не были опубликованы руководством. Выдача отчётов происходит в субботу.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const isLeader = currentUser && (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Администратор');
+
+            newsBox.innerHTML = newsList.map((n, idx) => `
                 <div class="card">
-                    <div class="card-title"><div><i class="fa-solid fa-bullhorn"></i> ${n.title}</div></div>
+                    <div class="card-title">
+                        <div><i class="fa-solid fa-bullhorn"></i> ${n.title}</div>
+                        ${isLeader ? `<button onclick="deleteNews(${idx})" class="btn-sm btn-danger"><i class="fa-solid fa-trash"></i> Удалить новость</button>` : ''}
+                    </div>
                     <p style="color: var(--text-muted); margin-bottom: 15px;">Опубликовал: <b>${n.author}</b> (${n.date})</p>
                     ${n.content}
                 </div>
             `).join('');
+        }
+
+        function deleteNews(idx) {
+            playSound('click');
+            if (confirm('Вы действительно хотите удалить эту новость из ленты?')) {
+                newsList.splice(idx, 1);
+                saveData();
+                renderNews();
+                playSound('error');
+                showToast('Новость удалена!');
+            }
         }
 
         function updateProfileStats() {
@@ -1135,216 +1184,4 @@
 
             if (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора') {
                 document.getElementById('curatorReportCard').style.display = 'block';
-                document.getElementById('passDatabaseCard').style.display = 'block';
-            }
-
-            if (currentUser.role === 'Поддержка') {
-                document.getElementById('curatorTab').style.display = 'none';
-                document.getElementById('supportTab').style.display = 'flex';
-                switchTab('supportView');
-                document.getElementById('navTabsContainer').style.display = 'none';
-            }
-
-            renderStaffTables();
-            renderSupportView();
-            renderRequestsTables();
-            renderNews();
-            updateProfileStats();
-            showToast(`Успешный вход! Добро пожаловать, ${currentUser.name}`);
-        });
-
-        // Жесткая очистка полей отчета методом reset() + сброс preview
-        document.getElementById('reportForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const cmd = document.getElementById('repCmd').value;
-            const target = document.getElementById('repTarget').value.trim();
-            const duration = document.getElementById('repDuration').value.trim();
-            const reason = document.getElementById('repReason').value.trim();
-
-            const rep = { author: currentUser.name, cmd, target, duration, reason, img: currentPastedImage };
-            submittedReports.push(rep);
-
-            const u = staffDatabase.find(m => m.name === currentUser.name);
-            if (u) {
-                if (cmd === 'tempmute') {
-                    u.mutes = (u.mutes || 0) + 1;
-                    u.allMutes = (u.allMutes || 0) + 1;
-                } else {
-                    u.bans = (u.bans || 0) + 1;
-                    u.allBans = (u.allBans || 0) + 1;
-                }
-                u.total = (u.total || 0) + 1;
-            }
-
-            saveData();
-            renderSupportView();
-            updateProfileStats();
-            playSound('success');
-            showToast('Отчет успешно подан!');
-
-            // ПОЛНЫЙ СБРОС ФОРМЫ И ВСЕХ ПОЛЕЙ
-            this.reset();
-            document.getElementById('previewImg').src = '';
-            document.getElementById('previewImg').style.display = 'none';
-            document.getElementById('pasteZone').classList.remove('has-image');
-            currentPastedImage = null;
-        });
-
-        document.addEventListener('paste', function(e) {
-            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-            for (let index in items) {
-                const item = items[index];
-                if (item.kind === 'file') {
-                    const blob = item.getAsFile();
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        currentPastedImage = event.target.result;
-                        const img = document.getElementById('previewImg');
-                        img.src = currentPastedImage;
-                        img.style.display = 'block';
-                        document.getElementById('pasteZone').classList.add('has-image');
-                        playSound('click');
-                    };
-                    reader.readAsDataURL(blob);
-                }
-            }
-        });
-
-        function getBaseSalary(role) {
-            if (role === 'Хелпер') return 300;
-            if (role === 'Ст. Хелпер') return 400;
-            if (role === 'Мл. Модератор') return 500;
-            if (role === 'Модератор') return 600;
-            if (role === 'Ст. Модератор') return 700;
-            return 300;
-        }
-
-        function generateWeeklyReport() {
-            playSound('success');
-
-            let ranked = staffDatabase.map(u => ({
-                ...u,
-                score: (u.mutes || 0) + ((u.bans || 0) * 2)
-            })).sort((a, b) => b.score - a.score);
-
-            const top1 = ranked[0] ? ranked[0].name : null;
-            const top2 = ranked[1] ? ranked[1].name : null;
-            const top3 = ranked[2] ? ranked[2].name : null;
-
-            let rowsHtml = '';
-            staffDatabase.forEach(user => {
-                let isX2 = false;
-                let normStatus = '<span style="color: var(--danger);">Не выполнена</span>';
-
-                if (user.role.includes('Хелпер')) {
-                    if (user.mutes >= 120) { normStatus = '<span class="badge-x2">ВЫПОЛНЕНА x2 НОРМА</span>'; isX2 = true; }
-                    else if (user.mutes >= 60) { normStatus = '<span style="color: var(--success);">Выполнена</span>'; }
-                } else {
-                    if (user.mutes >= 130 && user.bans >= 30) { normStatus = '<span class="badge-x2">ВЫПОЛНЕНА x2 НОРМА</span>'; isX2 = true; }
-                    else if (user.mutes >= 65 && user.bans >= 15) { normStatus = '<span style="color: var(--success);">Выполнена</span>'; }
-                }
-
-                let baseSal = getBaseSalary(user.role);
-                let finalSal = isX2 ? baseSal * 2 : baseSal;
-
-                let moneyBonus = 0;
-                let bonusBadge = '';
-                if (user.name === top1 && user.score > 0) { moneyBonus = 500; bonusBadge = ' 🥇 (+500₽)'; }
-                else if (user.name === top2 && user.score > 0) { moneyBonus = 250; bonusBadge = ' 🥈 (+250₽)'; }
-                else if (user.name === top3 && user.score > 0) { moneyBonus = 150; bonusBadge = ' 🥉 (+150₽)'; }
-
-                rowsHtml += `
-                    <tr>
-                        <td><b>${user.name}</b>${bonusBadge}</td>
-                        <td>${user.role}</td>
-                        <td>${user.mutes || 0}</td>
-                        <td>${user.bans || 0}</td>
-                        <td>${normStatus}</td>
-                        <td><b style="color: var(--accent);">${finalSal} суриков</b>${moneyBonus ? ` <span style="color: var(--warning); font-size:12px;">+${moneyBonus}₽</span>` : ''}</td>
-                    </tr>
-                `;
-
-                user.mutes = 0;
-                user.bans = 0;
-            });
-
-            const contentHtml = `
-                <table>
-                    <thead>
-                        <tr><th>Сотрудник</th><th>Должность</th><th>Мутов</th><th>Банов</th><th>Статус нормы</th><th>Зарплата (Сурики / Рубли)</th></tr>
-                    </thead>
-                    <tbody>${rowsHtml}</tbody>
-                </table>
-            `;
-
-            newsList.unshift({
-                title: 'Итоги работы Команды Проекта (Суббота — Пятница)',
-                author: `${currentUser.name} (${currentUser.role})`,
-                date: new Date().toLocaleDateString(),
-                content: contentHtml
-            });
-
-            saveData();
-            renderNews();
-            renderStaffTables();
-            renderSupportView();
-            updateProfileStats();
-            showToast('Недельный отчет опубликован! Статистика сброшена на 0.');
-            switchTab('news');
-        }
-
-        function switchTab(tabId) {
-            playSound('click');
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active');
-            const btn = document.getElementById('tabBtn-' + tabId);
-            if (btn) btn.classList.add('active');
-        }
-
-        document.getElementById('createAccountForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const log = document.getElementById('newLog').value.trim();
-            const pass = document.getElementById('newPass').value.trim();
-            const role = document.getElementById('newRole').value;
-            
-            pckAccepted++;
-            staffDatabase.push({ id: 'st-' + Date.now(), name: log, pass: pass, role: role, mutes: 0, bans: 0, total: 0, allMutes: 0, allBans: 0 });
-            saveData();
-            renderStaffTables();
-            renderSupportView();
-            playSound('success');
-            showToast(`Аккаунт ${log} успешно создан!`);
-            this.reset();
-        });
-
-        function changeUserRole(id) {
-            const newRole = document.getElementById(`roleSel-${id}`).value;
-            const member = staffDatabase.find(m => m.id === id);
-            if (member) {
-                member.role = newRole;
-                saveData();
-                renderStaffTables();
-                renderSupportView();
-                playSound('success');
-                showToast(`Должность пользователя ${member.name} изменена на ${newRole}!`);
-            }
-        }
-
-        function deleteAccount(id) {
-            const member = staffDatabase.find(m => m.id === id);
-            if (member && confirm(`Вы точно хотите снять сотрудника ${member.name}?`)) {
-                staffDatabase = staffDatabase.filter(m => m.id !== id);
-                pckRemoved++;
-                saveData();
-                renderStaffTables();
-                renderSupportView();
-                playSound('error');
-                showToast(`Аккаунт ${member.name} удален из системы!`);
-            }
-        }
-
-        function logout() { location.reload(); }
-    </script>
-</body>
-</html>
+                document.getElementById('passDatabase
