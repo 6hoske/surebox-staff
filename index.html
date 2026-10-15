@@ -251,7 +251,6 @@
             box-shadow: 0 -4px 15px var(--accent-glow);
         }
 
-        /* Мигающий оранжевый бейдж */
         .badge-notice {
             background: var(--warning);
             color: #000;
@@ -427,16 +426,16 @@
         </div>
     </div>
 
-    <!-- Музыка и темы -->
+    <!-- Встроенная музыка релакс Synth/Ambient и темы -->
     <div class="bottom-controls">
         <div class="music-player">
             <i class="fa-solid fa-music" id="musicIcon" style="color: var(--accent); font-size: 15px;"></i>
             <div>
-                <b>Lofi Relax Mix</b><br>
-                <small style="color: var(--text-muted);">SureBox Stream</small>
+                <b>Ambient Relax</b><br>
+                <small style="color: var(--text-muted);" id="musicStatus">Выключено</small>
             </div>
-            <button onclick="toggleMusic()" class="btn-sm btn-success" id="playBtn" style="padding: 4px 10px;"><i class="fa-solid fa-play"></i></button>
-            <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.3" oninput="changeVolume(this.value)" style="width: 60px; accent-color: var(--accent);">
+            <button onclick="toggleSynthMusic()" class="btn-sm btn-success" id="playBtn" style="padding: 4px 10px;"><i class="fa-solid fa-play"></i></button>
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.3" oninput="changeSynthVolume(this.value)" style="width: 60px; accent-color: var(--accent);">
         </div>
 
         <div class="theme-switcher">
@@ -715,30 +714,66 @@
         </div>
     </div>
 
-    <!-- Стабильный фоновый аудиоплеер (Lofi / Chill) -->
-    <audio id="bgAudio" loop src="https://stream.zeno.fm/f3v62880y8quv"></audio>
-
     <script>
         let currentUser = null;
         let selectedStaffFilter = 'all';
         let currentPastedImage = null;
-        let isPlaying = false;
 
-        function toggleMusic() {
-            const audio = document.getElementById('bgAudio');
-            const btn = document.getElementById('playBtn');
-            if (isPlaying) {
-                audio.pause();
-                btn.innerHTML = '<i class="fa-solid fa-play"></i>';
+        // Встроенный Web Audio API генератор музыкального эмбиента (работает всегда)
+        let synthCtx = null;
+        let synthGain = null;
+        let synthInterval = null;
+        let isSynthPlaying = false;
+
+        function toggleSynthMusic() {
+            const playBtn = document.getElementById('playBtn');
+            const statusLabel = document.getElementById('musicStatus');
+
+            if (isSynthPlaying) {
+                if (synthCtx) synthCtx.suspend();
+                clearInterval(synthInterval);
+                playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+                statusLabel.innerText = 'Выключено';
+                isSynthPlaying = false;
             } else {
-                audio.play();
-                btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+                if (!synthCtx) {
+                    synthCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    synthGain = synthCtx.createGain();
+                    synthGain.gain.value = 0.3;
+                    synthGain.connect(synthCtx.destination);
+                } else {
+                    synthCtx.resume();
+                }
+
+                const notes = [220, 261.63, 329.63, 392.00, 440, 523.25];
+                synthInterval = setInterval(() => {
+                    if (!synthCtx || synthCtx.state !== 'running') return;
+                    const osc = synthCtx.createOscillator();
+                    const noteGain = synthCtx.createGain();
+                    
+                    const freq = notes[Math.floor(Math.random() * notes.length)];
+                    osc.frequency.setValueAtTime(freq, synthCtx.currentTime);
+                    osc.type = 'sine';
+
+                    noteGain.gain.setValueAtTime(0, synthCtx.currentTime);
+                    noteGain.gain.linearRampToValueAtTime(0.1, synthCtx.currentTime + 1);
+                    noteGain.gain.exponentialRampToValueAtTime(0.001, synthCtx.currentTime + 4);
+
+                    osc.connect(noteGain);
+                    noteGain.connect(synthGain);
+
+                    osc.start();
+                    osc.stop(synthCtx.currentTime + 4);
+                }, 1500);
+
+                playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+                statusLabel.innerText = 'Играет Relax';
+                isSynthPlaying = true;
             }
-            isPlaying = !isPlaying;
         }
 
-        function changeVolume(val) {
-            document.getElementById('bgAudio').volume = val;
+        function changeSynthVolume(val) {
+            if (synthGain) synthGain.gain.value = parseFloat(val);
         }
 
         function playSound(type = 'click') {
@@ -1118,7 +1153,7 @@
             showToast(`Успешный вход! Добро пожаловать, ${currentUser.name}`);
         });
 
-        // Жесткая очистка полей формы отчета и звуковое оповещение
+        // Жесткая очистка полей отчета методом reset() + сброс preview
         document.getElementById('reportForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const cmd = document.getElementById('repCmd').value;
@@ -1147,10 +1182,8 @@
             playSound('success');
             showToast('Отчет успешно подан!');
 
-            // СБРОС ВСЕХ ПОЛЕЙ
-            document.getElementById('repTarget').value = '';
-            document.getElementById('repDuration').value = '';
-            document.getElementById('repReason').value = '';
+            // ПОЛНЫЙ СБРОС ФОРМЫ И ВСЕХ ПОЛЕЙ
+            this.reset();
             document.getElementById('previewImg').src = '';
             document.getElementById('previewImg').style.display = 'none';
             document.getElementById('pasteZone').classList.remove('has-image');
@@ -1231,7 +1264,6 @@
                     </tr>
                 `;
 
-                // СБРОС НЕДЕЛИ НА 0 ДЛЯ ВСЕХ
                 user.mutes = 0;
                 user.bans = 0;
             });
