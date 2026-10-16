@@ -552,6 +552,9 @@
                     if (!dbData.promotions) dbData.promotions = [];
                     if (!dbData.logs) dbData.logs = [];
                     if (!dbData.norms) dbData.norms = { helperMutes: 50, modMutes: 55, modBans: 15 };
+                    if (dbData.norms.helperMutes == null) dbData.norms.helperMutes = 50;
+                    if (dbData.norms.modMutes == null) dbData.norms.modMutes = 55;
+                    if (dbData.norms.modBans == null) dbData.norms.modBans = 15;
 
                     if (!dbData.staff.some(m => m.name === '6hoske')) {
                         dbData.staff.push({ id: 'st-1', name: '6hoske', pass: 'X#9_kL$mP7!zQ2_v', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0, warns: 0, createdAt: Date.now() });
@@ -602,7 +605,7 @@
         }
 
         function saveCustomNorms() {
-            dbData.norms.helperMutes = parseInt(document.getElementById('normHelperMutes').value) || 50;
+            dbData.norms.helperMutes = Math.max(0, parseInt(document.getElementById('normHelperMutes').value, 10) || 50);
             dbData.norms.modMutes = parseInt(document.getElementById('normModMutes').value) || 55;
             dbData.norms.modBans = parseInt(document.getElementById('normModBans').value) || 15;
             addLogAction(`Обновил недельные нормы КП`);
@@ -759,22 +762,35 @@
         }
 
         function calculateUserSalary(u) {
-            let baseSalary = 500;
-            // Сначала проверяем более длинные названия ролей, чтобы они не попадали
-            // под более общие проверки вроде "Хелпер" или "Модератор".
-            if (u.role.includes('Ст. Хелпер')) baseSalary = 400;
-            else if (u.role.includes('Хелпер')) baseSalary = 300;
-            else if (u.role.includes('Ст. Модератор')) baseSalary = 700;
-            else if (u.role.includes('Мл. Модератор')) baseSalary = 500;
-            else if (u.role.includes('Модератор')) baseSalary = 600;
+            const role = String(u.role || '').trim();
 
-            const isHelper = u.role.includes('Хелпер');
-            const reqMutes = isHelper ? dbData.norms.helperMutes : dbData.norms.modMutes;
-            const actualMutes = u.mutes || 0;
+            // У руководящих ролей зарплаты нет.
+            if (
+                role.includes('Куратор') ||
+                role === 'Администратор' ||
+                role === 'Владелец'
+            ) return 0;
+
+            // Фиксированные базовые зарплаты по должностям.
+            let baseSalary = 0;
+            if (role === 'Хелпер') baseSalary = 300;
+            else if (role === 'Ст. Хелпер') baseSalary = 400;
+            else if (role === 'Мл. Модератор') baseSalary = 500;
+            else if (role === 'Модератор') baseSalary = 600;
+            else if (role === 'Ст. Модератор') baseSalary = 700;
+
+            // Сохраняем действующие премиальные множители x2/x3 за количество мутов.
+            if (baseSalary === 0) return 0;
+
+            const isHelper = role.includes('Хелпер');
+            const reqMutes = isHelper
+                ? (dbData.norms.helperMutes || 50)
+                : (dbData.norms.modMutes || 55);
+            const actualMutes = Number(u.mutes) || 0;
 
             let multiplier = 1;
-            if (actualMutes >= reqMutes * 3) multiplier = 3;
-            else if (actualMutes >= reqMutes * 2) multiplier = 2;
+            if (reqMutes > 0 && actualMutes >= reqMutes * 3) multiplier = 3;
+            else if (reqMutes > 0 && actualMutes >= reqMutes * 2) multiplier = 2;
 
             return baseSalary * multiplier;
         }
@@ -796,12 +812,13 @@
                 const isNewbie = (Date.now() - (u.createdAt || Date.now())) < (7 * 24 * 60 * 60 * 1000);
                 const normDone = checkUserNormCompleted(u);
 
-                let colorStyle = 'color: var(--success);';
-                if (onVacation) colorStyle = 'color: var(--warning);';
-                else if (isNewbie) colorStyle = 'color: var(--info);';
-                else if (!normDone) colorStyle = 'color: var(--danger);';
+                // В итогах недели: зеленый — выполнил норму, красный — не выполнил.
+                // Одобренный отпуск и статус новичка цвет не переопределяют.
+                const colorStyle = normDone
+                    ? 'color: var(--success);'
+                    : 'color: var(--danger);';
 
-                return `<tr><td><b style="${colorStyle}">${u.name}</b></td><td>${u.role}</td><td>${u.mutes || 0}</td><td>${u.bans || 0}</td><td style="color:var(--accent);"><b>${sal} CP</b></td></tr>`;
+                return `<tr><td><b style="${colorStyle}">${u.name}</b></td><td>${u.role}</td><td>${u.mutes || 0}</td><td>${u.bans || 0}</td><td style="color:var(--accent);"><b>${sal > 0 ? `${sal} суриков` : 'Нет зарплаты'}</b></td></tr>`;
             }).join('');
 
             dbData.news.unshift({
@@ -976,7 +993,7 @@
             }
 
             const salary = calculateUserSalary(u);
-            document.getElementById('userSalary').innerText = `${salary} CP`;
+            document.getElementById('userSalary').innerText = salary > 0 ? `${salary} суриков` : 'Нет зарплаты';
 
             const warnsCount = u.warns || 0;
             document.getElementById('userWarns').innerText = `${warnsCount}/3`;
