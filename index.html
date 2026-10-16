@@ -568,6 +568,13 @@
                         updateProfileStats();
                     }
                 }
+            }, (error) => {
+                console.error('Firebase Firestore read error:', error);
+                const syncText = document.getElementById('syncText');
+                const syncIcon = document.getElementById('syncIcon');
+                if (syncText) syncText.textContent = 'Ошибка синхронизации';
+                if (syncIcon) syncIcon.style.color = 'var(--danger)';
+                showToast('Не удалось загрузить данные из облака. Проверь интернет и правила Firestore.', true);
             });
         }
 
@@ -667,8 +674,12 @@
         }
 
         function deleteReport(idx) {
-            if (!confirm('Удалить этот отчёт? Норма сотрудника уменьшится.')) return;
             const rep = dbData.reports[idx];
+            if (!rep) {
+                showToast('Отчет уже отсутствует или список устарел. Обнови страницу.', true);
+                return;
+            }
+            if (!confirm('Удалить этот отчёт? Норма сотрудника уменьшится.')) return;
             const u = dbData.staff.find(m => m.name === rep.author);
             if (u) {
                 if (rep.cmd === 'tempmute') u.mutes = Math.max(0, (u.mutes || 1) - 1);
@@ -748,13 +759,14 @@
         }
 
         function calculateUserSalary(u) {
-            let baseSalary = 300;
-            if (u.role.includes('Хелпер')) baseSalary = 300;
-            else if (u.role.includes('Ст. Хелпер')) baseSalary = 400;
+            let baseSalary = 500;
+            // Сначала проверяем более длинные названия ролей, чтобы они не попадали
+            // под более общие проверки вроде "Хелпер" или "Модератор".
+            if (u.role.includes('Ст. Хелпер')) baseSalary = 400;
+            else if (u.role.includes('Хелпер')) baseSalary = 300;
+            else if (u.role.includes('Ст. Модератор')) baseSalary = 700;
             else if (u.role.includes('Мл. Модератор')) baseSalary = 500;
             else if (u.role.includes('Модератор')) baseSalary = 600;
-            else if (u.role.includes('Ст. Модератор')) baseSalary = 700;
-            else baseSalary = 500;
 
             const isHelper = u.role.includes('Хелпер');
             const reqMutes = isHelper ? dbData.norms.helperMutes : dbData.norms.modMutes;
@@ -854,7 +866,7 @@
                 <hr style="border-color: var(--border); margin: 15px 0;">
                 <p><b>Отчетов на новой неделе:</b> ${member.total || 0}</p>
                 <p><b>Муты:</b> ${member.mutes || 0} / ${reqMutes}</p>
-                ${!isHelper ? `<p><b>Баны:</b> ${member.bans \vert{}\vert{} 0} /${reqBans}</p>` : ''}
+                ${!isHelper ? `<p><b>Баны:</b> ${member.bans || 0} /${reqBans}</p>` : ''}
                 <p><b>Зарплата:</b> <span style="color: var(--accent); font-weight: bold;">${sal} CP</span></p>
                 <p style="margin-top: 15px;"><b>Варны:</b> ${member.warns || 0}/3</p>
                 ${(member.warns || 0) > 0 ? `<p style="color: var(--warning);">Причина: ${member.warnReason}<br>Отработка: ${member.warnProgress} /${member.warnRequired} мутов</p>` : '<p style="color: var(--text-muted);">Активных варнов нет.</p>'}
