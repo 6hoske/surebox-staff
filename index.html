@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SureBox | Панель Управления КП (Ultimate Edition)</title>
+    <title>SureBox | Панель Управления КП (Ultimate v3)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <!-- Firebase SDK -->
@@ -23,6 +23,7 @@
             --danger: #ff4757;
             --success: #1db954;
             --warning: #ffa502;
+            --info: #1e90ff;
         }
 
         [data-theme="pink"] { --accent: #ff4757; --accent-glow: rgba(255, 71, 87, 0.4); --border: rgba(255, 71, 87, 0.3); }
@@ -157,6 +158,14 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="profileInspectModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="playBellSound(); closeProfileModal()"><i class="fa-solid fa-xmark"></i></span>
+            <div class="card-title"><div><i class="fa-solid fa-user-gear"></i> Профиль сотрудника</div></div>
+            <div id="inspectModalBody"></div>
+        </div>
+    </div>
+
     <div class="bottom-controls">
         <div class="theme-switcher">
             <span style="font-size: 11px; color: var(--text-muted); font-weight: bold;">ТЕМА:</span>
@@ -271,7 +280,7 @@
             <div id="tab-profile" class="tab-content">
                 <div class="grid-2" style="margin-bottom: 30px;">
                     <div class="stat-card">
-                        <div>Всего отчетов</div>
+                        <div>Всего отчетов на этой неделе</div>
                         <div class="stat-value" id="totalAll">0</div>
                     </div>
                     <div class="stat-card">
@@ -280,10 +289,18 @@
                         <div class="progress-bar"><div class="progress-fill" id="weekProgress"></div></div>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="card-title"><div><i class="fa-solid fa-wallet"></i> Заработная плата (Сурики)</div></div>
-                    <div style="font-size: 22px; font-weight: bold; color: var(--accent);" id="userSalary">0 суриков</div>
-                    <p style="color: var(--text-muted); font-size: 14px; margin-top: 8px;">Предполагаемая выплата за текущую неделю на основе вашей должности и выполненных отчетов.</p>
+
+                <div class="grid-2" style="margin-bottom: 30px;">
+                    <div class="card" style="margin:0;">
+                        <div class="card-title"><div><i class="fa-solid fa-wallet"></i> Заработная плата (CP)</div></div>
+                        <div style="font-size: 26px; font-weight: bold; color: var(--accent);" id="userSalary">0 CP</div>
+                        <p style="color: var(--text-muted); font-size: 14px; margin-top: 8px;">Рассчитывается на основе должности, нормы и множителя премий (X2/X3).</p>
+                    </div>
+                    <div class="card" style="margin:0;">
+                        <div class="card-title"><div><i class="fa-solid fa-triangle-exclamation"></i> Статус предупреждений (Варны)</div></div>
+                        <div style="font-size: 22px; font-weight: bold; color: var(--warning);" id="userWarns">0/3</div>
+                        <div id="userWarnDetails" style="color: var(--text-muted); font-size: 14px; margin-top: 8px;">Нет активных варнов.</div>
+                    </div>
                 </div>
             </div>
 
@@ -350,6 +367,26 @@
                     </div>
                 </div>
 
+                <!-- Выдача варна -->
+                <div class="card" id="warnManageCard" style="display: none;">
+                    <div class="card-title"><div><i class="fa-solid fa-triangle-exclamation"></i> Выдать варн сотруднику</div></div>
+                    <div class="grid-2">
+                        <div class="form-group" style="margin:0;">
+                            <label>Сотрудник</label>
+                            <select id="warnTargetUser" class="form-control"></select>
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label>Требуемая отработка (мутов)</label>
+                            <input type="number" id="warnRequiredMutes" class="form-control" value="20" placeholder="20">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label>Причина варна</label>
+                        <input type="text" id="warnReasonText" class="form-control" placeholder="Нарушение правил / Игнорирование нормы">
+                    </div>
+                    <button onclick="playBellSound(); issueWarn()" class="btn-danger btn-primary" style="width: auto;"><i class="fa-solid fa-gavel"></i> Выдать предупреждение</button>
+                </div>
+
                 <div class="card">
                     <div class="card-title"><div><i class="fa-solid fa-user-plus"></i> Создать аккаунт сотрудника</div></div>
                     <div class="grid-2">
@@ -381,7 +418,7 @@
                 </div>
 
                 <div class="card">
-                    <div class="card-title"><div><i class="fa-solid fa-users-gear"></i> Управление Составом КП</div></div>
+                    <div class="card-title"><div><i class="fa-solid fa-users-gear"></i> Управление Составом КП (клик для профиля)</div></div>
                     <table>
                         <thead><tr><th>Логин</th><th>Роль</th><th>Изменить роль</th><th>Действия</th></tr></thead>
                         <tbody id="staffTable"></tbody>
@@ -459,12 +496,21 @@
                 if (!dbData.logs) dbData.logs = [];
                 if (!dbData.norms) dbData.norms = { helperMutes: 50, modMutes: 55, modBans: 15 };
 
+                dbData.staff.forEach(u => {
+                    if (u.warns === undefined) u.warns = 0;
+                    if (u.warnReason === undefined) u.warnReason = '';
+                    if (u.warnRequired === undefined) u.warnRequired = 0;
+                    if (u.warnProgress === undefined) u.warnProgress = 0;
+                    if (u.createdAt === undefined) u.createdAt = Date.now();
+                });
+
                 if (dbData.staff.length === 0) {
-                    dbData.staff.push({ id: 'st-1', name: '6hoske', pass: '#6H!sKe99$SureBox2026', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0 });
+                    dbData.staff.push({ id: 'st-1', name: '6hoske', pass: '#6H!sKe99$SureBox2026', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0, warns: 0, createdAt: Date.now() });
                     saveCloudData();
                 }
 
                 if (currentUser) {
+                    currentUser = dbData.staff.find(m => m.name === currentUser.name) || currentUser;
                     renderStaffTables();
                     renderSupportView();
                     renderRequestsTables();
@@ -507,6 +553,24 @@
             showToast('Нормы успешно обновлены!');
         }
 
+        function issueWarn() {
+            const targetName = document.getElementById('warnTargetUser').value;
+            const reqMutes = parseInt(document.getElementById('warnRequiredMutes').value) || 20;
+            const reason = document.getElementById('warnReasonText').value.trim() || 'Без причины';
+
+            const user = dbData.staff.find(m => m.name === targetName);
+            if (user) {
+                user.warns = (user.warns || 0) + 1;
+                user.warnReason = reason;
+                user.warnRequired = reqMutes;
+                user.warnProgress = 0;
+                addLogAction(`Выдал варн сотруднику ${user.name} (${reason}, отработка: ${reqMutes} мутов)`);
+                saveCloudData();
+                showToast(`Варн выдан сотруднику ${user.name}!`);
+                document.getElementById('warnReasonText').value = '';
+            }
+        }
+
         function handleLogin() {
             const log = document.getElementById('loginInput').value.trim();
             const pass = document.getElementById('passInput').value.trim();
@@ -532,6 +596,7 @@
                 document.getElementById('logsTab').style.display = 'flex';
                 document.getElementById('vacationAdminCard').style.display = 'block';
                 document.getElementById('promotionAdminCard').style.display = 'block';
+                document.getElementById('warnManageCard').style.display = 'block';
             }
 
             document.getElementById('normHelperMutes').value = dbData.norms.helperMutes;
@@ -568,6 +633,17 @@
                 if (cmd === 'tempmute') u.mutes = (u.mutes || 0) + 1;
                 else u.bans = (u.bans || 0) + 1;
                 u.total = (u.total || 0) + 1;
+
+                if (u.warns > 0 && cmd === 'tempmute') {
+                    u.warnProgress = (u.warnProgress || 0) + 1;
+                    if (u.warnProgress >= u.warnRequired) {
+                        u.warns = 0;
+                        u.warnReason = '';
+                        u.warnRequired = 0;
+                        u.warnProgress = 0;
+                        showToast('Поздравляем! Вы полностью отработали варн, система сняла его!');
+                    }
+                }
             }
 
             saveCloudData();
@@ -605,7 +681,7 @@
 
             if (!log || !pass) { showToast('Заполните логин и пароль!', true); return; }
 
-            dbData.staff.push({ id: 'st-' + Date.now(), name: log, pass: pass, role: role, mutes: 0, bans: 0, total: 0 });
+            dbData.staff.push({ id: 'st-' + Date.now(), name: log, pass: pass, role: role, mutes: 0, bans: 0, total: 0, warns: 0, createdAt: Date.now() });
             addLogAction(`Создал аккаунт "${log}" с ролью "${role}"`);
             saveCloudData();
             showToast(`Аккаунт ${log} создан!`);
@@ -665,30 +741,79 @@
             renderRequestsTables();
         }
 
+        function calculateUserSalary(u) {
+            let baseSalary = 300;
+            if (u.role.includes('Хелпер')) baseSalary = 300;
+            else if (u.role.includes('Ст. Хелпер')) baseSalary = 400;
+            else if (u.role.includes('Мл. Модератор')) baseSalary = 500;
+            else if (u.role.includes('Модератор')) baseSalary = 600;
+            else if (u.role.includes('Ст. Модератор')) baseSalary = 700;
+            else baseSalary = 500;
+
+            const isHelper = u.role.includes('Хелпер');
+            const reqMutes = isHelper ? dbData.norms.helperMutes : dbData.norms.modMutes;
+            const actualMutes = u.mutes || 0;
+
+            let multiplier = 1;
+            if (actualMutes >= reqMutes * 3) multiplier = 3;
+            else if (actualMutes >= reqMutes * 2) multiplier = 2;
+
+            return baseSalary * multiplier;
+        }
+
+        function checkUserNormCompleted(u) {
+            const isHelper = u.role.includes('Хелпер');
+            const reqMutes = isHelper ? dbData.norms.helperMutes : dbData.norms.modMutes;
+            const reqBans = isHelper ? 0 : dbData.norms.modBans;
+            const mutes = u.mutes || 0;
+            const bans = u.bans || 0;
+            if (isHelper) return mutes >= reqMutes;
+            return mutes >= reqMutes && bans >= reqBans;
+        }
+
         function generateWeeklyReport() {
-            let rows = dbData.staff.map(u => `<tr><td><b>${u.name}</b></td><td>${u.role}</td><td>${u.mutes || 0}</td><td>${u.bans || 0}</td></tr>`).join('');
+            let rows = dbData.staff.map(u => {
+                const sal = calculateUserSalary(u);
+                const isHelper = u.role.includes('Хелпер');
+                const onVacation = dbData.vacations.some(v => v.author === u.name && v.status === 'Одобрено');
+                const isNewbie = (Date.now() - (u.createdAt || Date.now())) < (7 * 24 * 60 * 60 * 1000);
+                const normDone = checkUserNormCompleted(u);
+
+                let colorStyle = 'color: var(--success);'; // зелёный по умолчанию
+                if (onVacation) colorStyle = 'color: var(--warning);'; // желтый если в отпуске
+                else if (isNewbie) colorStyle = 'color: var(--info);'; // синий если новички менее недели
+                else if (!normDone) colorStyle = 'color: var(--danger);'; // красный если не выполнил норму
+
+                return `<tr><td><b style="${colorStyle}">${u.name}</b></td><td>${u.role}</td><td>${u.mutes || 0}</td><td>${u.bans || 0}</td><td style="color:var(--accent);"><b>${sal} CP</b></td></tr>`;
+            }).join('');
+
             dbData.news.unshift({
-                title: 'Итоги недели КП',
+                title: 'Итоги недели КП и зарплаты',
                 author: currentUser.name,
                 date: new Date().toLocaleDateString(),
-                content: `<table><thead><tr><th>Сотрудник</th><th>Роль</th><th>Мутов</th><th>Банов</th></tr></thead><tbody>${rows}</tbody></table>`
+                content: `<table><thead><tr><th>Сотрудник</th><th>Роль</th><th>Мутов</th><th>Банов</th><th>Зарплата</th></tr></thead><tbody>${rows}</tbody></table>`
             });
-            dbData.staff.forEach(u => { u.mutes = 0; u.bans = 0; });
+
+            // СБРОС ОТЧЕТОВ ДЛЯ НОВОЙ НЕДЕЛИ
+            dbData.staff.forEach(u => { u.mutes = 0; u.bans = 0; u.total = 0; });
             saveCloudData();
             renderNews();
-            showToast('Отчет недели опубликован в новости!');
+            showToast('Отчет недели сформирован, счетчики сброшены на новую неделю!');
             switchTab('news');
         }
 
         function renderStaffTables() {
             const tbody = document.getElementById('staffTable');
             const passTbody = document.getElementById('passDbTable');
+            const warnSelect = document.getElementById('warnTargetUser');
             if (!tbody || !passTbody) return;
+
+            warnSelect.innerHTML = dbData.staff.map(m => `<option value="${m.name}">${m.name} (${m.role})</option>`).join('');
 
             tbody.innerHTML = dbData.staff.map(m => `
                 <tr>
-                    <td><b>${m.name}</b></td>
-                    <td><span style="color: var(--accent);">${m.role}</span></td>
+                    <td onclick="inspectUserProfile('${m.id}')" style="cursor: pointer; color: var(--accent);"><b>${m.name}</b> <i class="fa-solid fa-magnifying-glass"></i></td>
+                    <td>${m.role}</td>
                     <td>
                         <select id="roleSel-${m.id}" class="role-select">
                             <option value="Хелпер" ${m.role==='Хелпер'?'selected':''}>Хелпер</option>
@@ -709,6 +834,33 @@
             passTbody.innerHTML = dbData.staff.map(m => `
                 <tr><td><b>${m.name}</b></td><td style="color: var(--warning); font-family: monospace;">${m.pass}</td><td>${m.role}</td></tr>
             `).join('');
+        }
+
+        function inspectUserProfile(id) {
+            playBellSound();
+            const member = dbData.staff.find(m => m.id === id);
+            if (!member) return;
+
+            const isHelper = member.role.includes('Хелпер');
+            const reqMutes = isHelper ? dbData.norms.helperMutes : dbData.norms.modMutes;
+            const reqBans = isHelper ? 0 : dbData.norms.modBans;
+            const sal = calculateUserSalary(member);
+
+            document.getElementById('inspectModalBody').innerHTML = `
+                <h3>${member.name} (${member.role})</h3>
+                <hr style="border-color: var(--border); margin: 15px 0;">
+                <p><b>Отчетов на новой неделе:</b> ${member.total || 0}</p>
+                <p><b>Муты:</b> ${member.mutes || 0} / ${reqMutes}</p>
+                ${!isHelper ? `<p><b>Баны:</b> ${member.bans \vert{}\vert{} 0} /${reqBans}</p>` : ''}
+                <p><b>Зарплата:</b> <span style="color: var(--accent); font-weight: bold;">${sal} CP</span></p>
+                <p style="margin-top: 15px;"><b>Варны:</b> ${member.warns || 0}/3</p>
+                ${(member.warns || 0) > 0 ? `<p style="color: var(--warning);">Причина: ${member.warnReason}<br>Отработка: ${member.warnProgress} /${member.warnRequired} мутов</p>` : '<p style="color: var(--text-muted);">Активных варнов нет.</p>'}
+            `;
+            document.getElementById('profileInspectModal').style.display = 'flex';
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileInspectModal').style.display = 'none';
         }
 
         function renderSupportView() {
@@ -810,15 +962,16 @@
                 document.getElementById('weekProgress').style.width = Math.min(100, Math.round((((u.mutes || 0) + (u.bans || 0)) / (reqMutes + reqBans)) * 100)) + '%';
             }
 
-            // Расчет зарплаты в суриках (базовая ставка по ролям)
-            let salary = 0;
-            if (u.role.includes('Хелпер')) salary = 15000;
-            else if (u.role.includes('Модератор')) salary = 25000;
-            else if (u.role.includes('Администратор')) salary = 40000;
-            else if (u.role.includes('Куратор') || u.role.includes('Владелец')) salary = 60000;
-            else salary = 10000;
+            const salary = calculateUserSalary(u);
+            document.getElementById('userSalary').innerText = `${salary} CP`;
 
-            document.getElementById('userSalary').innerText = `${salary.toLocaleString()} суриков`;
+            const warnsCount = u.warns || 0;
+            document.getElementById('userWarns').innerText = `${warnsCount}/3`;
+            if (warnsCount > 0) {
+                document.getElementById('userWarnDetails').innerHTML = `<b>Причина:</b> ${u.warnReason}<br><b>Отработка:</b> нужно ещё ${Math.max(0, u.warnRequired - u.warnProgress)} мутов (${u.warnProgress}/${u.warnRequired})`;
+            } else {
+                document.getElementById('userWarnDetails').innerHTML = `У вас нет активных предупреждений. Отличная работа!`;
+            }
         }
 
         function showToast(msg, isError = false) {
