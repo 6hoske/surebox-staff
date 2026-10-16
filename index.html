@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SureBox | Панель Управления КП (Direct Login)</title>
+    <title>SureBox | Панель Управления КП</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <!-- Firebase SDK -->
@@ -152,7 +152,7 @@
 
     <div class="modal-overlay" id="reportModal">
         <div class="modal-content">
-            <span class="modal-close" onclick="playBellSound(); closeModal()"><i class="fa-solid fa-xmark"></i></span>
+            <span class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></span>
             <div class="card-title"><div><i class="fa-solid fa-file-contract"></i> Детальный отчёт о наказании</div></div>
             <div id="modalBody"></div>
         </div>
@@ -160,7 +160,7 @@
 
     <div class="modal-overlay" id="profileInspectModal">
         <div class="modal-content">
-            <span class="modal-close" onclick="playBellSound(); closeProfileModal()"><i class="fa-solid fa-xmark"></i></span>
+            <span class="modal-close" onclick="closeProfileModal()"><i class="fa-solid fa-xmark"></i></span>
             <div class="card-title"><div><i class="fa-solid fa-user-gear"></i> Профиль сотрудника</div></div>
             <div id="inspectModalBody"></div>
         </div>
@@ -169,11 +169,11 @@
     <div class="bottom-controls">
         <div class="theme-switcher">
             <span style="font-size: 11px; color: var(--text-muted); font-weight: bold;">ТЕМА:</span>
-            <div class="theme-circle" style="background: #1db954;" onclick="playBellSound(); setTheme('green')"></div>
-            <div class="theme-circle" style="background: #ff4757;" onclick="playBellSound(); setTheme('pink')"></div>
-            <div class="theme-circle" style="background: #1e90ff;" onclick="playBellSound(); setTheme('blue')"></div>
-            <div class="theme-circle" style="background: #8a2be2;" onclick="playBellSound(); setTheme('purple')"></div>
-            <div class="theme-circle" style="background: #ffa502;" onclick="playBellSound(); setTheme('orange')"></div>
+            <div class="theme-circle" style="background: #1db954;" onclick="setTheme('green')"></div>
+            <div class="theme-circle" style="background: #ff4757;" onclick="setTheme('pink')"></div>
+            <div class="theme-circle" style="background: #1e90ff;" onclick="setTheme('blue')"></div>
+            <div class="theme-circle" style="background: #8a2be2;" onclick="setTheme('purple')"></div>
+            <div class="theme-circle" style="background: #ffa502;" onclick="setTheme('orange')"></div>
         </div>
     </div>
 
@@ -182,7 +182,7 @@
         <div class="auth-card">
             <h1>Sure<span>Box</span></h1>
             <p>Cloud Staff Management System</p>
-            <div style="display: flex; flex-direction: column; gap: 20px;">
+            <form id="loginForm" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 20px;">
                 <div class="form-group" style="margin:0;">
                     <label>Логин</label>
                     <input type="text" id="loginInput" class="form-control" placeholder="Введите логин" autocomplete="off">
@@ -191,8 +191,8 @@
                     <label>Пароль</label>
                     <input type="password" id="passInput" class="form-control" placeholder="Введите пароль" autocomplete="off">
                 </div>
-                <button type="button" onclick="doDirectLogin()" class="btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Войти в панель</button>
-            </div>
+                <button type="submit" id="submitBtn" class="btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Войти в панель</button>
+            </form>
         </div>
     </div>
 
@@ -202,19 +202,19 @@
             <div class="logo"><i class="fa-solid fa-cube"></i> SureBox Staff</div>
             <div class="user-nav">
                 <div class="user-badge"><span id="userName">User</span> | <span class="role" id="userRole">Роль</span></div>
-                <button onclick="playBellSound(); logout()" class="btn-sm btn-danger"><i class="fa-solid fa-power-off"></i> Выйти</button>
+                <button onclick="logout()" class="btn-sm btn-danger"><i class="fa-solid fa-power-off"></i> Выйти</button>
             </div>
         </header>
 
         <div class="nav-tabs" id="navTabsContainer">
-            <div class="nav-tab active" id="tabBtn-reports" onclick="playBellSound(); switchTab('reports')"><i class="fa-solid fa-file-lines"></i> Отчеты</div>
-            <div class="nav-tab" id="tabBtn-news" onclick="playBellSound(); switchTab('news')"><i class="fa-solid fa-bullhorn"></i> Новости</div>
-            <div class="nav-tab" id="tabBtn-profile" onclick="playBellSound(); switchTab('profile')"><i class="fa-solid fa-user"></i> Профиль</div>
-            <div class="nav-tab" id="tabBtn-vacation" onclick="playBellSound(); switchTab('vacation')"><i class="fa-solid fa-umbrella-beach"></i> Отпуск <span class="badge-notice" id="vacationNotice" style="display: none;">0</span></div>
-            <div class="nav-tab" id="tabBtn-promotion" onclick="playBellSound(); switchTab('promotion')"><i class="fa-solid fa-arrow-up-right-dots"></i> Повышение <span class="badge-notice" id="promotionNotice" style="display: none;">0</span></div>
-            <div class="nav-tab" id="curatorTab" style="display: none;" onclick="playBellSound(); switchTab('curator')"><i class="fa-solid fa-crown"></i> Управление КП</div>
-            <div class="nav-tab" id="supportTab" style="display: none;" onclick="playBellSound(); switchTab('supportView')"><i class="fa-solid fa-eye"></i> Просмотр отчетов</div>
-            <div class="nav-tab" id="logsTab" style="display: none;" onclick="playBellSound(); switchTab('logsView')"><i class="fa-solid fa-list-check"></i> Логи Действий</div>
+            <div class="nav-tab active" id="tabBtn-reports" onclick="switchTab('reports')"><i class="fa-solid fa-file-lines"></i> Отчеты</div>
+            <div class="nav-tab" id="tabBtn-news" onclick="switchTab('news')"><i class="fa-solid fa-bullhorn"></i> Новости</div>
+            <div class="nav-tab" id="tabBtn-profile" onclick="switchTab('profile')"><i class="fa-solid fa-user"></i> Профиль</div>
+            <div class="nav-tab" id="tabBtn-vacation" onclick="switchTab('vacation')"><i class="fa-solid fa-umbrella-beach"></i> Отпуск <span class="badge-notice" id="vacationNotice" style="display: none;">0</span></div>
+            <div class="nav-tab" id="tabBtn-promotion" onclick="switchTab('promotion')"><i class="fa-solid fa-arrow-up-right-dots"></i> Повышение <span class="badge-notice" id="promotionNotice" style="display: none;">0</span></div>
+            <div class="nav-tab" id="curatorTab" style="display: none;" onclick="switchTab('curator')"><i class="fa-solid fa-crown"></i> Управление КП</div>
+            <div class="nav-tab" id="supportTab" style="display: none;" onclick="switchTab('supportView')"><i class="fa-solid fa-eye"></i> Просмотр отчетов</div>
+            <div class="nav-tab" id="logsTab" style="display: none;" onclick="switchTab('logsView')"><i class="fa-solid fa-list-check"></i> Логи Действий</div>
         </div>
 
         <div class="container">
@@ -311,7 +311,7 @@
                     <div style="display: flex; flex-direction: column; gap: 20px;">
                         <div class="form-group" style="margin:0;"><label>Причина отпуска</label><input type="text" id="vacReason" class="form-control" placeholder="Учеба"></div>
                         <div class="form-group" style="margin:0;"><label>Срок (дней)</label><input type="text" id="vacDays" class="form-control" placeholder="7 дней"></div>
-                        <button type="button" onclick="playBellSound(); submitVacation()" class="btn-primary" style="width: auto;"><i class="fa-solid fa-paper-plane"></i> Отправить заявку</button>
+                        <button type="button" onclick="submitVacation()" class="btn-primary" style="width: auto;"><i class="fa-solid fa-paper-plane"></i> Отправить заявку</button>
                     </div>
                 </div>
                 <div class="card" id="vacationAdminCard" style="display: none;">
@@ -336,7 +336,7 @@
                                 <option>Ст. Модератор</option>
                             </select>
                         </div>
-                        <button type="button" onclick="playBellSound(); submitPromotion()" class="btn-primary" style="width: auto;"><i class="fa-solid fa-paper-plane"></i> Подать заявку</button>
+                        <button type="button" onclick="submitPromotion()" class="btn-primary" style="width: auto;"><i class="fa-solid fa-paper-plane"></i> Подать заявку</button>
                     </div>
                 </div>
                 <div class="card" id="promotionAdminCard" style="display: none;">
@@ -353,7 +353,7 @@
                 <div class="card" id="curatorReportCard">
                     <div class="card-title">
                         <div><i class="fa-solid fa-calculator"></i> Отчёт недели</div>
-                        <button onclick="playBellSound(); generateWeeklyReport()" class="btn-primary" style="width: auto; padding: 10px 20px;"><i class="fa-solid fa-paper-plane"></i> Сформировать в Новости</button>
+                        <button onclick="generateWeeklyReport()" class="btn-primary" style="width: auto; padding: 10px 20px;"><i class="fa-solid fa-paper-plane"></i> Сформировать в Новости</button>
                     </div>
                 </div>
 
@@ -363,7 +363,7 @@
                         <div class="form-group" style="margin:0;"><label>Норма мутов для Хелпера</label><input type="number" id="normHelperMutes" class="form-control" value="50"></div>
                         <div class="form-group" style="margin:0;"><label>Норма мутов для Модератора</label><input type="number" id="normModMutes" class="form-control" value="55"></div>
                         <div class="form-group" style="margin:0;"><label>Норма банов для Модератора</label><input type="number" id="normModBans" class="form-control" value="15"></div>
-                        <div class="form-group" style="display: flex; align-items: flex-end; margin:0;"><button onclick="playBellSound(); saveCustomNorms()" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Сохранить нормы</button></div>
+                        <div class="form-group" style="display: flex; align-items: flex-end; margin:0;"><button onclick="saveCustomNorms()" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Сохранить нормы</button></div>
                     </div>
                 </div>
 
@@ -384,7 +384,7 @@
                         <label>Причина варна</label>
                         <input type="text" id="warnReasonText" class="form-control" placeholder="Нарушение правил / Игнорирование нормы">
                     </div>
-                    <button onclick="playBellSound(); issueWarn()" class="btn-danger btn-primary" style="width: auto;"><i class="fa-solid fa-gavel"></i> Выдать предупреждение</button>
+                    <button onclick="issueWarn()" class="btn-danger btn-primary" style="width: auto;"><i class="fa-solid fa-gavel"></i> Выдать предупреждение</button>
                 </div>
 
                 <div class="card">
@@ -393,7 +393,7 @@
                         <input type="text" id="newLog" class="form-control" placeholder="Логин">
                         <div class="input-group">
                             <input type="text" id="newPass" class="form-control" placeholder="Пароль">
-                            <button type="button" onclick="playBellSound(); generateRandomPass()" class="btn-primary" style="width: auto; padding: 0 15px;"><i class="fa-solid fa-dice"></i></button>
+                            <button type="button" onclick="generateRandomPass()" class="btn-primary" style="width: auto; padding: 0 15px;"><i class="fa-solid fa-dice"></i></button>
                         </div>
                         <select id="newRole" class="form-control">
                             <option value="Хелпер">Хелпер</option>
@@ -405,7 +405,7 @@
                             <option value="Зам. Куратора">Зам. Куратора</option>
                             <option value="Владелец">Владелец</option>
                         </select>
-                        <button type="button" onclick="playBellSound(); createAccount()" class="btn-primary"><i class="fa-solid fa-plus"></i> Создать аккаунт</button>
+                        <button type="button" onclick="createAccount()" class="btn-primary"><i class="fa-solid fa-plus"></i> Создать аккаунт</button>
                     </div>
                 </div>
 
@@ -468,85 +468,39 @@
             norms: { helperMutes: 50, modMutes: 55, modBans: 15 }
         };
 
-        function playBellSound() {
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(1200, ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.3);
-                gain.gain.setValueAtTime(0.2, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.3);
-            } catch(e) {}
+        function showToast(msg, isError = false) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${isError ? 'error' : 'success'}`;
+            toast.innerHTML = `<i class="fa-solid ${isError ? 'fa-circle-xmark' : 'fa-circle-check'}"></i> ${msg}`;
+            document.getElementById('toastBox').appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
         }
 
-        // Подгружаем данные
-        db.collection("appData").doc("main").onSnapshot((doc) => {
-            if (doc.exists) {
-                dbData = doc.data();
-                if (!dbData.staff) dbData.staff = [];
-                if (!dbData.reports) dbData.reports = [];
-                if (!dbData.news) dbData.news = [];
-                if (!dbData.vacations) dbData.vacations = [];
-                if (!dbData.promotions) dbData.promotions = [];
-                if (!dbData.logs) dbData.logs = [];
-                if (!dbData.norms) dbData.norms = { helperMutes: 50, modMutes: 55, modBans: 15 };
+        // ОБРАБОТКА КЛИКА ВХОДА (НАМЕРТВО ПРИВЯЗАННАЯ)
+        function processLogin() {
+            const logInput = document.getElementById('loginInput');
+            const passInput = document.getElementById('passInput');
+            
+            if (!logInput || !passInput) return;
 
-                // Проверяем наличие главного аккаунта
-                let masterAcc = dbData.staff.find(m => m.name === '6hoske');
-                if (!masterAcc) {
-                    dbData.staff.push({ id: 'st-1', name: '6hoske', pass: 'X#9_kL$mP7!zQ2_v', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0, warns: 0, createdAt: Date.now() });
-                    saveCloudData();
-                }
+            const log = logInput.value.trim();
+            const pass = passInput.value.trim();
 
-                if (currentUser) {
-                    currentUser = dbData.staff.find(m => m.name === currentUser.name) || currentUser;
-                    renderStaffTables();
-                    renderSupportView();
-                    renderRequestsTables();
-                    renderNews();
-                    renderLogs();
-                    updateProfileStats();
-                }
-            }
-        });
-
-        function saveCloudData() {
-            db.collection("appData").doc("main").set(dbData);
-        }
-
-        // АБСОЛЮТНО ПРЯМАЯ ФУНКЦИЯ ВХОДА (работает без задержек)
-        function doDirectLogin() {
-            playBellSound();
-            const log = document.getElementById('loginInput').value.trim();
-            const pass = document.getElementById('passInput').value.trim();
-
-            if (!log || !pass) {
-                showToast('Заполните логин и пароль!', true);
+            if (log === "" || pass === "") {
+                showToast("Пожалуйста, введите логин и пароль!", true);
                 return;
             }
 
-            // Прямой вход для главного админа
+            // Прямая проверка главного админа
             if (log === '6hoske' && pass === 'X#9_kL$mP7!zQ2_v') {
                 currentUser = { id: 'st-1', name: '6hoske', pass: 'X#9_kL$mP7!zQ2_v', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0, warns: 0 };
-                
-                // Добавляем в локальный массив, если его там нет
-                if (!dbData.staff.some(u => u.name === '6hoske')) {
-                    dbData.staff.push(currentUser);
-                    saveCloudData();
-                }
             } else {
-                // Вход для остальных созданных участников
-                const userFound = dbData.staff.find(u => u.name === log && u.pass === pass);
-                if (userFound) {
-                    currentUser = userFound;
+                // Проверка по остальным аккаунтам
+                const found = dbData.staff.find(u => u.name === log && u.pass === pass);
+                if (found) {
+                    currentUser = found;
                 } else {
-                    showToast('Неверный логин или пароль!', true);
+                    showToast("Неверный логин или пароль!", true);
                     return;
                 }
             }
@@ -577,8 +531,46 @@
             renderNews();
             renderLogs();
             updateProfileStats();
-            showToast(`Добро пожаловать, ${currentUser.name}!`);
+            showToast(`Успешный вход! С возвращением, ${currentUser.name}!`);
         }
+
+        // Привязка события после загрузки DOM
+        window.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('submitBtn');
+            const form = document.getElementById('loginForm');
+            if (btn) btn.addEventListener('click', processLogin);
+            if (form) form.addEventListener('submit', (e) => { e.preventDefault(); processLogin(); });
+        });
+
+        db.collection("appData").doc("main").onSnapshot((doc) => {
+            if (doc.exists) {
+                dbData = doc.data();
+                if (!dbData.staff) dbData.staff = [];
+                if (!dbData.reports) dbData.reports = [];
+                if (!dbData.news) dbData.news = [];
+                if (!dbData.vacations) dbData.vacations = [];
+                if (!dbData.promotions) dbData.promotions = [];
+                if (!dbData.logs) dbData.logs = [];
+                if (!dbData.norms) dbData.norms = { helperMutes: 50, modMutes: 55, modBans: 15 };
+
+                if (!dbData.staff.some(m => m.name === '6hoske')) {
+                    dbData.staff.push({ id: 'st-1', name: '6hoske', pass: 'X#9_kL$mP7!zQ2_v', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0, warns: 0, createdAt: Date.now() });
+                    saveCloudData();
+                }
+
+                if (currentUser) {
+                    currentUser = dbData.staff.find(m => m.name === currentUser.name) || currentUser;
+                    renderStaffTables();
+                    renderSupportView();
+                    renderRequestsTables();
+                    renderNews();
+                    renderLogs();
+                    updateProfileStats();
+                }
+            }
+        });
+
+        function saveCloudData() { db.collection("appData").doc("main").set(dbData); }
 
         function addLogAction(actionText) {
             if (!dbData.logs) dbData.logs = [];
@@ -635,8 +627,6 @@
                 return;
             }
 
-            playBellSound();
-
             const rep = { author: currentUser.name, cmd, target, duration, reason, img: currentPastedImage, time: new Date().toLocaleString() };
             dbData.reports.push(rep);
 
@@ -673,7 +663,6 @@
 
         function deleteReport(idx) {
             if (!confirm('Удалить этот отчёт? Норма сотрудника уменьшится.')) return;
-            playBellSound();
             const rep = dbData.reports[idx];
             const u = dbData.staff.find(m => m.name === rep.author);
             if (u) {
@@ -835,9 +824,9 @@
                             <option value="Зам. Куратора" ${m.role==='Зам. Куратора'?'selected':''}>Зам. Куратора</option>
                             <option value="Владелец" ${m.role==='Владелец'?'selected':''}>Владелец</option>
                         </select>
-                        <button onclick="playBellSound(); changeUserRole('${m.id}')" class="btn-sm btn-warning" style="margin-left: 8px;">Изменить</button>
+                        <button onclick="changeUserRole('${m.id}')" class="btn-sm btn-warning" style="margin-left: 8px;">Изменить</button>
                     </td>
-                    <td><button onclick="playBellSound(); deleteAccount('${m.id}')" class="btn-sm btn-danger"><i class="fa-solid fa-user-minus"></i> Снять</button></td>
+                    <td><button onclick="deleteAccount('${m.id}')" class="btn-sm btn-danger"><i class="fa-solid fa-user-minus"></i> Снять</button></td>
                 </tr>
             `).join('');
 
@@ -847,7 +836,6 @@
         }
 
         function inspectUserProfile(id) {
-            playBellSound();
             const member = dbData.staff.find(m => m.id === id);
             if (!member) return;
 
@@ -869,9 +857,7 @@
             document.getElementById('profileInspectModal').style.display = 'flex';
         }
 
-        function closeProfileModal() {
-            document.getElementById('profileInspectModal').style.display = 'none';
-        }
+        function closeProfileModal() { document.getElementById('profileInspectModal').style.display = 'none'; }
 
         function renderSupportView() {
             const userCardsBox = document.getElementById('staffUserCards');
@@ -879,12 +865,12 @@
             if (!userCardsBox || !reportsList) return;
 
             userCardsBox.innerHTML = `
-                <div class="staff-user-card ${selectedStaffFilter === 'all' ? 'active' : ''}" onclick="playBellSound(); selectedStaffFilter='all'; renderSupportView()">
+                <div class="staff-user-card ${selectedStaffFilter === 'all' ? 'active' : ''}" onclick="selectedStaffFilter='all'; renderSupportView()">
                     <div><b>Все сотрудники</b></div>
                     <small>${dbData.reports.length}</small>
                 </div>
             ` + dbData.staff.map(m => `
-                <div class="staff-user-card ${selectedStaffFilter === m.name ? 'active' : ''}" onclick="playBellSound(); selectedStaffFilter='${m.name}'; renderSupportView()">
+                <div class="staff-user-card ${selectedStaffFilter === m.name ? 'active' : ''}" onclick="selectedStaffFilter='${m.name}'; renderSupportView()">
                     <div><b>${m.name}</b><br><small style="color:var(--text-muted);">${m.role}</small></div>
                     <span>${dbData.reports.filter(r => r.author === m.name).length}</span>
                 </div>
@@ -894,9 +880,9 @@
             if (selectedStaffFilter !== 'all') filtered = filtered.filter(r => r.author === selectedStaffFilter);
 
             reportsList.innerHTML = filtered.length ? filtered.map((rep, idx) => `
-                <div class="report-item-card" onclick="playBellSound(); openModal(${dbData.reports.indexOf(rep)})" style="cursor: pointer;">
+                <div class="report-item-card" onclick="openModal(${dbData.reports.indexOf(rep)})" style="cursor: pointer;">
                     <div><b>${rep.author}</b> → ${rep.target} | <code>/${rep.cmd}</code> (${rep.duration})<br><small style="color:var(--text-muted);">${rep.reason}</small></div>
-                    <button onclick="playBellSound(); deleteReport(${dbData.reports.indexOf(rep)})" class="btn-sm btn-danger"><i class="fa-solid fa-trash"></i></button>
+                    <button onclick="deleteReport(${dbData.reports.indexOf(rep)})" class="btn-sm btn-danger"><i class="fa-solid fa-trash"></i></button>
                 </div>
             `).join('') : '<p style="color: var(--text-muted);">Отчетов нет</p>';
         }
@@ -982,14 +968,6 @@
             } else {
                 document.getElementById('userWarnDetails').innerHTML = `У вас нет активных предупреждений. Отличная работа!`;
             }
-        }
-
-        function showToast(msg, isError = false) {
-            const toast = document.createElement('div');
-            toast.className = `toast ${isError ? 'error' : 'success'}`;
-            toast.innerHTML = `<i class="fa-solid ${isError ? 'fa-circle-xmark' : 'fa-circle-check'}"></i> ${msg}`;
-            document.getElementById('toastBox').appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
         }
 
         function switchTab(tabId) {
