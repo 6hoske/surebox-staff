@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SureBox | Панель Управления КП (Full Management)</title>
+    <title>SureBox | Панель Управления КП (Firebase Cloud)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -138,8 +138,8 @@
 <body>
 
     <div class="sync-badge" id="syncStatus">
-        <i class="fa-solid fa-hard-drive" id="syncIcon" style="color: var(--accent); font-size: 16px;"></i>
-        <span id="syncText">Local Permanent Storage Active</span>
+        <i class="fa-solid fa-cloud" id="syncIcon" style="color: var(--accent); font-size: 16px;"></i>
+        <span id="syncText">Firebase Cloud Connected</span>
     </div>
 
     <div class="toast-container" id="toastBox"></div>
@@ -167,7 +167,7 @@
     <div class="auth-container" id="authScreen">
         <div class="auth-card">
             <h1>Sure<span>Box</span></h1>
-            <p>Staff Management Panel</p>
+            <p>Firebase Staff Panel</p>
             <form id="loginForm" onsubmit="handleLogin(event); return false;" style="display: flex; flex-direction: column; gap: 20px;">
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>Логин</label>
@@ -199,6 +199,7 @@
             <div class="nav-tab" id="tabBtn-vacation" onclick="playClickSound(); switchTab('vacation')"><i class="fa-solid fa-umbrella-beach"></i> Отпуск <span class="badge-notice" id="vacationNotice" style="display: none;">0</span></div>
             <div class="nav-tab" id="tabBtn-promotion" onclick="playClickSound(); switchTab('promotion')"><i class="fa-solid fa-arrow-up-right-dots"></i> Повышение <span class="badge-notice" id="promotionNotice" style="display: none;">0</span></div>
             <div class="nav-tab" id="curatorTab" style="display: none;" onclick="playClickSound(); switchTab('curator')"><i class="fa-solid fa-crown"></i> Управление КП</div>
+            <div class="nav-tab" id="logsTab" style="display: none;" onclick="playClickSound(); switchTab('logs')"><i class="fa-solid fa-shield-halved"></i> Логи руководства</div>
             <div class="nav-tab" id="supportTab" style="display: none;" onclick="playClickSound(); switchTab('supportView')"><i class="fa-solid fa-eye"></i> Просмотр отчетов</div>
         </div>
 
@@ -410,6 +411,20 @@
                 </div>
             </div>
 
+            <!-- Логи руководства -->
+            <div id="tab-logs" class="tab-content">
+                <div class="card">
+                    <div class="card-title"><div><i class="fa-solid fa-shield-halved"></i> Логи действий руководства</div></div>
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">Здесь отображается история повышения, снятия сотрудников и изменения их ролей.</p>
+                    <table>
+                        <thead>
+                            <tr><th>Дата и время</th><th>Кто выполнил</th><th>Действие и детали</th></tr>
+                        </thead>
+                        <tbody id="logsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- Просмотр отчетов -->
             <div id="tab-supportView" class="tab-content">
                 <div class="card">
@@ -432,590 +447,93 @@
         </div>
     </div>
 
-    <script>
+    <!-- Подключаем Firebase SDK (v9 модульный) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // ТВОЙ КОНФИГ ИЗ FIREBASE CONSOLE
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNp_STeCxdaFMiguc46-W3FKiXg6rXN-k",
+            authDomain: "surebox-staff.firebaseapp.com",
+            projectId: "surebox-staff",
+            storageBucket: "surebox-staff.appfirebasestorage.app",
+            messagingSenderId: "1082525260350",
+            appId: "1:1082525260350:web:7485ba44427c3d27720f6f",
+            measurementId: "G-YFK01S4GVL"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
         let currentUser = null;
         let selectedStaffFilter = 'all';
         let currentPastedImage = null;
 
-        const defaultData = {
+        let dbData = {
             staff: [
-                { id: 'st-1', name: '6hoske', pass: '#6H!sKe99$SureBox2026', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0 },
-                { id: 'st-5', name: 'Badabum', pass: 'badabum123', role: 'Владелец', mutes: 0, bans: 0, total: 0 },
-                { id: 'st-2', name: 'zam', pass: 'zam123', role: 'Зам. Куратора', mutes: 0, bans: 0, total: 0 },
-                { id: 'st-3', name: 'admin', pass: 'admin123', role: 'Администратор', mutes: 0, bans: 0, total: 0 }
+                { id: 'st-1', name: '6hoske', pass: '#6H!sKe99$SureBox2026', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0, allMutes: 0, allBans: 0 },
+                { id: 'st-5', name: 'Badabum', pass: 'badabum123', role: 'Владелец', mutes: 0, bans: 0, total: 0, allMutes: 0, allBans: 0 },
+                { id: 'st-2', name: 'zam', pass: 'zam123', role: 'Зам. Куратора', mutes: 0, bans: 0, total: 0, allMutes: 0, allBans: 0 },
+                { id: 'st-3', name: 'admin', pass: 'admin123', role: 'Администратор', mutes: 0, bans: 0, total: 0, allMutes: 0, allBans: 0 }
             ],
             reports: [],
             news: [],
             vacations: [],
             promotions: [],
+            logs: [],
             accepted: 0,
             removed: 0
         };
 
-        let dbData = defaultData;
-
-        function loadStorageData() {
+        async function loadFirebaseData() {
             try {
-                const saved = localStorage.getItem('surebox_staff_data_v2');
-                if (saved) {
-                    dbData = JSON.parse(saved);
+                const docRef = doc(db, "surebox", "maindata");
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    dbData = docSnap.data();
                 } else {
-                    dbData = defaultData;
-                    saveStorageData();
+                    await setDoc(docRef, dbData);
                 }
+                updateSync('Firebase Cloud Connected', '#1db954');
             } catch(e) {
-                dbData = defaultData;
+                updateSync('Ошибка синхронизации', '#ff4757');
             }
         }
 
-        function saveStorageData() {
+        async function saveFirebaseData() {
+            updateSync('Сохранение в облако...', '#ffa502');
             try {
-                localStorage.setItem('surebox_staff_data_v2', JSON.stringify(dbData));
-            } catch(e) {}
+                const docRef = doc(db, "surebox", "maindata");
+                await setDoc(docRef, dbData);
+                updateSync('Firebase Cloud Connected', '#1db954');
+            } catch(e) {
+                updateSync('Ошибка сохранения', '#ff4757');
+            }
         }
 
-        function playClickSound() {
+        function updateSync(text, color) {
+            const el = document.getElementById('syncText');
+            const icon = document.getElementById('syncIcon');
+            if (el) el.innerText = text;
+            if (icon) icon.style.color = color;
+        }
+
+        function addLog(actionText) {
+            if (!dbData.logs) dbData.logs = [];
+            const now = new Date();
+            const timeStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            dbData.logs.unshift({
+                time: timeStr,
+                author: currentUser ? currentUser.name : 'Система',
+                action: actionText
+            });
+        }
+
+        window.playClickSound = function() {
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(800, ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.04);
-                gain.gain.setValueAtTime(0.15, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.04);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.04);
-            } catch(e) {}
-        }
-
-        function showToast(message, isError = false) {
-            const container = document.getElementById('toastBox');
-            const toast = document.createElement('div');
-            toast.className = `toast ${isError ? 'error' : 'success'}`;
-            toast.innerHTML = `<i class="fa-solid ${isError ? 'fa-circle-xmark' : 'fa-circle-check'}"></i> ${message}`;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3500);
-        }
-
-        function setTheme(theme) {
-            if (theme === 'green') document.documentElement.removeAttribute('data-theme');
-            else document.documentElement.setAttribute('data-theme', theme);
-        }
-
-        function generateRandomPass() {
-            const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
-            let result = "";
-            for (let i = 0; i < 10; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
-            document.getElementById('newPass').value = result;
-        }
-
-        function openModal(reportIndex) {
-            const rep = dbData.reports[reportIndex];
-            if (!rep) return;
-            const modalBody = document.getElementById('modalBody');
-            modalBody.innerHTML = `
-                <div style="font-size: 16px; margin-bottom: 18px;">
-                    <p><b>Сотрудник КП:</b> <span style="color: var(--accent);">${rep.author}</span></p>
-                    <p><b>Дата и время:</b> ${rep.time || 'Не указано'}</p>
-                    <p><b>Команда:</b> <code>/${rep.cmd}</code></p>
-                    <p><b>Нарушитель:</b> ${rep.target}</p>
-                    <p><b>Срок:</b> ${rep.duration}</p>
-                    <p><b>Причина:</b> ${rep.reason}</p>
-                </div>
-                ${rep.img ? `<div style="margin-top: 15px;"><b>Доказательства:</b><br><img src="${rep.img}" style="width: 100%; max-height: 420px; object-fit: contain; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px;"></div>` : '<p style="color: var(--text-muted);">Скриншот не прикреплен</p>'}
-            `;
-            document.getElementById('reportModal').style.display = 'flex';
-        }
-
-        function closeModal() {
-            document.getElementById('reportModal').style.display = 'none';
-        }
-
-        // ФУНКЦИЯ УДАЛЕНИЯ ОТЧЕТА И УМЕНЬШЕНИЯ НОРМЫ СОТРУДНИКА
-        function deleteReport(globalReportIndex, event) {
-            if (event) event.stopPropagation(); // Чтобы не открывалось модальное окно при клике на кнопку удаления
-            if (!confirm('Удалить этот отчёт? Норма сотрудника уменьшится.')) return;
-
-            const rep = dbData.reports[globalReportIndex];
-            if (!rep) return;
-
-            // Находим сотрудника и уменьшаем его счетчики
-            const staffMember = dbData.staff.find(m => m.name === rep.author);
-            if (staffMember) {
-                if (rep.cmd === 'tempmute') {
-                    staffMember.mutes = Math.max(0, (staffMember.mutes || 1) - 1);
-                    staffMember.allMutes = Math.max(0, (staffMember.allMutes || 1) - 1);
-                } else {
-                    staffMember.bans = Math.max(0, (staffMember.bans || 1) - 1);
-                    staffMember.allBans = Math.max(0, (staffMember.allBans || 1) - 1);
-                }
-                staffMember.total = Math.max(0, (staffMember.total || 1) - 1);
-            }
-
-            // Удаляем сам отчет из общего массива
-            dbData.reports.splice(globalReportIndex, 1);
-            saveStorageData();
-            renderSupportView();
-            updateProfileStats();
-            showToast('Отчёт удалён, норма сотрудника обновлена!');
-        }
-
-        function renderRequestsTables() {
-            const vacTbody = document.getElementById('vacationTableBody');
-            const promTbody = document.getElementById('promotionTableBody');
-            if (!vacTbody || !promTbody) return;
-            vacTbody.innerHTML = '';
-            promTbody.innerHTML = '';
-
-            if (!dbData.vacations) dbData.vacations = [];
-            if (!dbData.promotions) dbData.promotions = [];
-
-            const pendingVac = dbData.vacations.filter(r => r.status === 'На рассмотрении').length;
-            const pendingProm = dbData.promotions.filter(r => r.status === 'На рассмотрении').length;
-
-            const vacNotice = document.getElementById('vacationNotice');
-            const promNotice = document.getElementById('promotionNotice');
-
-            if (pendingVac > 0) { vacNotice.innerText = pendingVac; vacNotice.style.display = 'inline-block'; } else { vacNotice.style.display = 'none'; }
-            if (pendingProm > 0) { promNotice.innerText = pendingProm; promNotice.style.display = 'inline-block'; } else { promNotice.style.display = 'none'; }
-
-            dbData.vacations.forEach((req, idx) => {
-                vacTbody.innerHTML += `
-                    <tr>
-                        <td><b>${req.author}</b></td>
-                        <td>${req.reason}</td>
-                        <td>${req.days}</td>
-                        <td><span style="color: ${req.status==='Одобрено'?'var(--success)':req.status==='Отклонено'?'var(--danger)':'var(--warning)'}; font-weight: bold;">${req.status}</span></td>
-                        <td>
-                            ${req.status==='На рассмотрении' ? `
-                                <button onclick="playClickSound(); updateVacStatus(${idx}, 'Одобрено')" class="btn-sm btn-success"><i class="fa-solid fa-check"></i></button>
-                                <button onclick="playClickSound(); updateVacStatus(${idx}, 'Отклонено')" class="btn-sm btn-danger"><i class="fa-solid fa-xmark"></i></button>
-                            ` : '-'}
-                        </td>
-                    </tr>
-                `;
-            });
-
-            dbData.promotions.forEach((req, idx) => {
-                promTbody.innerHTML += `
-                    <tr>
-                        <td><b>${req.author}</b></td>
-                        <td><span style="color: var(--accent); font-weight:bold;">${req.targetRole}</span></td>
-                        <td><span style="color: ${req.status==='Одобрено'?'var(--success)':req.status==='Отклонено'?'var(--danger)':'var(--warning)'}; font-weight: bold;">${req.status}</span></td>
-                        <td>
-                            ${req.status==='На рассмотрении' ? `
-                                <button onclick="playClickSound(); updatePromStatus(${idx}, 'Одобрено')" class="btn-sm btn-success"><i class="fa-solid fa-check"></i></button>
-                                <button onclick="playClickSound(); updatePromStatus(${idx}, 'Отклонено')" class="btn-sm btn-danger"><i class="fa-solid fa-xmark"></i></button>
-                            ` : '-'}
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        function updateVacStatus(idx, status) {
-            dbData.vacations[idx].status = status;
-            saveStorageData();
-            renderRequestsTables();
-            showToast(`Заявка на отпуск ${status.toLowerCase()}`);
-        }
-
-        function updatePromStatus(idx, status) {
-            dbData.promotions[idx].status = status;
-            saveStorageData();
-            renderRequestsTables();
-            showToast(`Заявка на повышение ${status.toLowerCase()}`);
-        }
-
-        function submitVacation(e) {
-            if (e) e.preventDefault();
-            const reason = document.getElementById('vacReason').value.trim();
-            const days = document.getElementById('vacDays').value.trim();
-            if (!reason || !days) { showToast('Заполните все поля заявки!', true); return; }
-            dbData.vacations.unshift({ author: currentUser.name, reason, days, status: 'На рассмотрении' });
-            saveStorageData();
-            renderRequestsTables();
-            document.getElementById('vacReason').value = '';
-            document.getElementById('vacDays').value = '';
-            showToast('Заявка на отпуск отправлена!');
-        }
-
-        function submitPromotion(e) {
-            if (e) e.preventDefault();
-            const targetRole = document.getElementById('promTargetRole').value;
-            dbData.promotions.unshift({ author: currentUser.name, targetRole, status: 'На рассмотрении' });
-            saveStorageData();
-            renderRequestsTables();
-            showToast('Заявка на повышение отправлена!');
-        }
-
-        function renderStaffTables() {
-            const tbody = document.getElementById('staffTable');
-            const passTbody = document.getElementById('passDbTable');
-            if (!tbody || !passTbody) return;
-            tbody.innerHTML = '';
-            passTbody.innerHTML = '';
-
-            document.getElementById('acceptedWeek').innerText = dbData.accepted || 0;
-            document.getElementById('removedWeek').innerText = dbData.removed || 0;
-
-            dbData.staff.forEach(member => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td><b>${member.name}</b></td>
-                        <td><span style="color: var(--accent); font-weight:600;">${member.role}</span></td>
-                        <td>
-                            <select id="roleSel-${member.id}" class="role-select">
-                                <option value="Хелпер" ${member.role==='Хелпер'?'selected':''}>Хелпер</option>
-                                <option value="Ст. Хелпер" ${member.role==='Ст. Хелпер'?'selected':''}>Ст. Хелпер</option>
-                                <option value="Мл. Модератор" ${member.role==='Мл. Модератор'?'selected':''}>Мл. Модератор</option>
-                                <option value="Модератор" ${member.role==='Модератор'?'selected':''}>Модератор</option>
-                                <option value="Ст. Модератор" ${member.role==='Ст. Модератор'?'selected':''}>Ст. Модератор</option>
-                                <option value="Администратор" ${member.role==='Администратор'?'selected':''}>Администратор</option>
-                                <option value="Зам. Куратора" ${member.role==='Зам. Куратора'?'selected':''}>Зам. Куратора</option>
-                                <option value="Владелец" ${member.role==='Владелец'?'selected':''}>Владелец</option>
-                            </select>
-                        </td>
-                        <td>
-                            <button onclick="playClickSound(); changeUserRole('${member.id}')" class="btn-sm btn-warning"><i class="fa-solid fa-angles-up"></i> Изменить роль</button>
-                            <button onclick="playClickSound(); deleteAccount('${member.id}')" class="btn-sm btn-danger"><i class="fa-solid fa-user-minus"></i> Снять</button>
-                        </td>
-                    </tr>
-                `;
-                passTbody.innerHTML += `
-                    <tr>
-                        <td><b>${member.name}</b></td>
-                        <td style="color: var(--warning); font-family: monospace; font-size: 15px;">${member.pass}</td>
-                        <td>${member.role}</td>
-                    </tr>
-                `;
-            });
-        }
-
-        function renderSupportView() {
-            const userCardsBox = document.getElementById('staffUserCards');
-            const reportsList = document.getElementById('userReportsList');
-            if (!userCardsBox || !reportsList) return;
-            const searchQuery = (document.getElementById('targetSearchInput')?.value || '').toLowerCase().trim();
-
-            if (!dbData.reports) dbData.reports = [];
-
-            userCardsBox.innerHTML = `
-                <div class="staff-user-card ${selectedStaffFilter === 'all' ? 'active' : ''}" onclick="playClickSound(); filterStaffReports('all')">
-                    <div><b>Все сотрудники</b></div>
-                    <small style="color: var(--text-muted);">${dbData.reports.length} отчетов</small>
-                </div>
-            `;
-
-            dbData.staff.forEach(member => {
-                const count = dbData.reports.filter(r => r.author === member.name).length;
-                userCardsBox.innerHTML += `
-                    <div class="staff-user-card ${selectedStaffFilter === member.name ? 'active' : ''}" onclick="playClickSound(); filterStaffReports('${member.name}')">
-                        <div>
-                            <b>${member.name}</b><br>
-                            <small style="color: var(--text-muted); font-size: 11px;">${member.role}</small>
-                        </div>
-                        <span style="background: var(--bg-card); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; color: var(--accent);">${count}</span>
-                    </div>
-                `;
-            });
-
-            let filtered = dbData.reports;
-            if (selectedStaffFilter !== 'all') filtered = filtered.filter(r => r.author === selectedStaffFilter);
-            if (searchQuery !== '') filtered = filtered.filter(r => r.target.toLowerCase().includes(searchQuery));
-
-            if (filtered.length === 0) {
-                reportsList.innerHTML = '<p style="color: var(--text-muted);">Отчетов не найдено</p>';
-                return;
-            }
-
-            reportsList.innerHTML = filtered.map((rep) => {
-                const globalIdx = dbData.reports.indexOf(rep);
-                return `
-                    <div class="report-item-card" onclick="playClickSound(); openModal(${globalIdx})" style="cursor: pointer;">
-                        <div>
-                            <div style="display: flex; gap: 10px; margin-bottom: 6px;">
-                                <b style="color: var(--accent);">${rep.author}</b> 
-                                <span style="color: var(--text-muted); font-size: 13px;">→ ${rep.target}</span>
-                                <span style="color: var(--text-muted); font-size: 12px;">(${rep.time || 'Только что'})</span>
-                            </div>
-                            <div style="font-size: 14px;"><b>Наказание:</b> <code>/${rep.cmd}</code> (${rep.duration}) | <b>Причина:</b> ${rep.reason}</div>
-                        </div>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <span style="color: var(--success); font-weight: bold; font-size: 13px; white-space: nowrap;"><i class="fa-solid fa-magnifying-glass"></i></span>
-                            <button onclick="playClickSound(); deleteReport(${globalIdx}, event)" class="btn-sm btn-danger" title="Удалить отчет"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function filterStaffReports(name) {
-            selectedStaffFilter = name;
-            renderSupportView();
-        }
-
-        function renderNews() {
-            const newsBox = document.getElementById('newsContainer');
-            if (!newsBox) return;
-            if (!dbData.news) dbData.news = [];
-            if (dbData.news.length === 0) {
-                newsBox.innerHTML = `
-                    <div class="card">
-                        <div class="card-title"><div><i class="fa-solid fa-bullhorn"></i> Недельные отчёты состава</div></div>
-                        <p style="color: var(--text-muted);">Итоги текущей недели еще не были опубликованы руководством. Выдача отчётов происходит в субботу.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            const isLeader = currentUser && (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Администратор' || currentUser.role === 'Владелец');
-
-            newsBox.innerHTML = dbData.news.map((n, idx) => `
-                <div class="card">
-                    <div class="card-title">
-                        <div><i class="fa-solid fa-bullhorn"></i> ${n.title}</div>
-                        ${isLeader ? `<button onclick="playClickSound(); deleteNews(${idx})" class="btn-sm btn-danger"><i class="fa-solid fa-trash"></i> Удалить новость</button>` : ''}
-                    </div>
-                    <p style="color: var(--text-muted); margin-bottom: 15px;">Опубликовал: <b>${n.author}</b> (${n.date})</p>
-                    ${n.content}
-                </div>
-            `).join('');
-        }
-
-        function deleteNews(idx) {
-            if (confirm('Удалить эту новость?')) {
-                dbData.news.splice(idx, 1);
-                saveStorageData();
-                renderNews();
-                showToast('Новость удалена!');
-            }
-        }
-
-        function updateProfileStats() {
-            if (!currentUser) return;
-            const u = dbData.staff.find(m => m.name === currentUser.name) || currentUser;
-            const tAll = document.getElementById('totalAll');
-            if (!tAll) return;
-
-            tAll.innerText = u.total || 0;
-            document.getElementById('mutesAll').innerText = u.allMutes || 0;
-            document.getElementById('bansAll').innerText = u.allBans || 0;
-
-            const isHelper = u.role.includes('Хелпер');
-            const reqMutes = isHelper ? 60 : 65;
-            const reqBans = isHelper ? 0 : 15;
-
-            document.getElementById('mutesWeek').innerText = `${u.mutes || 0}`;
-            document.getElementById('bansWeek').innerText = `${u.bans || 0}`;
-
-            if (isHelper) {
-                document.getElementById('totalWeek').innerText = `${u.mutes || 0} / ${reqMutes} ответов (мутов)`;
-                const pct = Math.min(100, Math.round(((u.mutes || 0) / reqMutes) * 100));
-                document.getElementById('weekProgress').style.width = pct + '%';
-                document.getElementById('normDetails').innerText = 'Норма хелпера: 60 ответов';
-            } else {
-                document.getElementById('totalWeek').innerText = `Муты: ${u.mutes || 0}/65 | Баны: ${u.bans || 0}/15`;
-                const pct = Math.min(100, Math.round((((u.mutes || 0) + (u.bans || 0)) / (reqMutes + reqBans)) * 100));
-                document.getElementById('weekProgress').style.width = pct + '%';
-                document.getElementById('normDetails').innerText = 'Норма модератора: 65 мутов, 15 банов';
-            }
-        }
-
-        function handleLogin(e) {
-            if (e) e.preventDefault();
-            loadStorageData();
-            const log = document.getElementById('loginInput').value.trim();
-            const pass = document.getElementById('passInput').value.trim();
-
-            const userFound = dbData.staff.find(u => u.name === log && u.pass === pass);
-            if (userFound) {
-                currentUser = userFound;
-            } else if (log === 'support' && pass === 'support123') {
-                currentUser = { name: 'support', pass: 'support123', role: 'Поддержка' };
-            } else {
-                showToast('Неверный логин или пароль!', true);
-                return;
-            }
-
-            document.getElementById('authScreen').style.display = 'none';
-            document.getElementById('appScreen').style.display = 'block';
-
-            document.getElementById('userName').innerText = currentUser.name;
-            document.getElementById('userRole').innerText = currentUser.role;
-
-            if (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Администратор' || currentUser.role === 'Владелец') {
-                document.getElementById('curatorTab').style.display = 'flex';
-                document.getElementById('supportTab').style.display = 'flex';
-                document.getElementById('vacationAdminCard').style.display = 'block';
-                document.getElementById('promotionAdminCard').style.display = 'block';
-            }
-
-            if (currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Владелец') {
-                document.getElementById('curatorReportCard').style.display = 'block';
-                document.getElementById('passDatabaseCard').style.display = 'block';
-            }
-
-            if (currentUser.role === 'Поддержка') {
-                document.getElementById('curatorTab').style.display = 'none';
-                document.getElementById('supportTab').style.display = 'flex';
-                switchTab('supportView');
-                document.getElementById('navTabsContainer').style.display = 'none';
-            }
-
-            renderStaffTables();
-            renderSupportView();
-            renderRequestsTables();
-            renderNews();
-            updateProfileStats();
-            showToast(`Добро пожаловать, ${currentUser.name}!`);
-        }
-
-        function submitReport(e) {
-            if (e) e.preventDefault();
-            const cmd = document.getElementById('repCmd').value;
-            const target = document.getElementById('repTarget').value.trim();
-            const duration = document.getElementById('repDuration').value.trim();
-            const reason = document.getElementById('repReason').value.trim();
-
-            if (!target || !duration || !reason) {
-                showToast('Заполните все поля отчета!', true);
-                return;
-            }
-
-            const now = new Date();
-            const timeStr = now.toLocaleDateString() + ', ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            if (!dbData.reports) dbData.reports = [];
-            const rep = { author: currentUser.name, cmd, target, duration, reason, img: currentPastedImage, time: timeStr };
-            dbData.reports.push(rep);
-
-            const u = dbData.staff.find(m => m.name === currentUser.name);
-            if (u) {
-                if (cmd === 'tempmute') {
-                    u.mutes = (u.mutes || 0) + 1;
-                    u.allMutes = (u.allMutes || 0) + 1;
-                } else {
-                    u.bans = (u.bans || 0) + 1;
-                    u.allBans = (u.allBans || 0) + 1;
-                }
-                u.total = (u.total || 0) + 1;
-            }
-
-            saveStorageData();
-            renderSupportView();
-            updateProfileStats();
-            showToast('Отчет успешно отправлен и сохранен!');
-
-            document.getElementById('repTarget').value = '';
-            document.getElementById('repDuration').value = '';
-            document.getElementById('repReason').value = '';
-            document.getElementById('repCmd').selectedIndex = 0;
-            document.getElementById('previewImg').src = '';
-            document.getElementById('previewImg').style.display = 'none';
-            document.getElementById('pasteZone').classList.remove('has-image');
-            currentPastedImage = null;
-        }
-
-        document.addEventListener('paste', function(e) {
-            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-            for (let index in items) {
-                const item = items[index];
-                if (item.kind === 'file') {
-                    const blob = item.getAsFile();
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        currentPastedImage = event.target.result;
-                        const img = document.getElementById('previewImg');
-                        if (img) {
-                            img.src = currentPastedImage;
-                            img.style.display = 'block';
-                            document.getElementById('pasteZone').classList.add('has-image');
-                        }
-                    };
-                    reader.readAsDataURL(blob);
-                }
-            }
-        });
-
-        function generateWeeklyReport() {
-            let ranked = dbData.staff.map(u => ({ ...u, score: (u.mutes || 0) + ((u.bans || 0) * 2) })).sort((a, b) => b.score - a.score);
-            let rowsHtml = '';
-            dbData.staff.forEach(user => {
-                rowsHtml += `<tr><td><b>${user.name}</b></td><td>${user.role}</td><td>${user.mutes || 0}</td><td>${user.bans || 0}</td></tr>`;
-                user.mutes = 0; user.bans = 0;
-            });
-
-            if (!dbData.news) dbData.news = [];
-            dbData.news.unshift({
-                title: 'Итоги недели КП',
-                author: currentUser.name,
-                date: new Date().toLocaleDateString(),
-                content: `<table><thead><tr><th>Сотрудник</th><th>Роль</th><th>Мутов</th><th>Банов</th></tr></thead><tbody>${rowsHtml}</tbody></table>`
-            });
-
-            saveStorageData();
-            renderNews();
-            renderStaffTables();
-            showToast('Отчет недели опубликован!');
-            switchTab('news');
-        }
-
-        function createAccount(e) {
-            if (e) e.preventDefault();
-            const log = document.getElementById('newLog').value.trim();
-            const pass = document.getElementById('newPass').value.trim();
-            const role = document.getElementById('newRole').value;
-
-            if (!log || !pass) { showToast('Заполните логин и пароль!', true); return; }
-
-            dbData.accepted = (dbData.accepted || 0) + 1;
-            dbData.staff.push({ id: 'st-' + Date.now(), name: log, pass: pass, role: role, mutes: 0, bans: 0, total: 0, allMutes: 0, allBans: 0 });
-            saveStorageData();
-            renderStaffTables();
-            renderSupportView();
-            showToast(`Аккаунт ${log} создан!`);
-            document.getElementById('newLog').value = '';
-            document.getElementById('newPass').value = '';
-        }
-
-        function changeUserRole(id) {
-            const selectEl = document.getElementById(`roleSel-${id}`);
-            if (!selectEl) return;
-            const member = dbData.staff.find(m => m.id === id);
-            if (member) {
-                member.role = selectEl.value;
-                saveStorageData();
-                renderStaffTables();
-                showToast('Роль изменена!');
-            }
-        }
-
-        function deleteAccount(id) {
-            const member = dbData.staff.find(m => m.id === id);
-            if (member && confirm(`Снять сотрудника ${member.name}?`)) {
-                dbData.staff = dbData.staff.filter(m => m.id !== id);
-                dbData.removed = (dbData.removed || 0) + 1;
-                saveStorageData();
-                renderStaffTables();
-                renderSupportView();
-                showToast('Сотрудник снят!');
-            }
-        }
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active');
-            document.getElementById('tabBtn-' + tabId).classList.add('active');
-        }
-
-        function logout() { location.reload(); }
-
-        window.addEventListener('DOMContentLoaded', loadStorageData);
-    </script>
-</body>
-</html>
+                osc.frequency.setValueAtTime(8
