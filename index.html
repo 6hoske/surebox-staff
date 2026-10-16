@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SureBox | Панель Управления КП (Ultimate v3)</title>
+    <title>SureBox | Панель Управления КП (Ultimate v4)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <!-- Firebase SDK -->
@@ -177,23 +177,23 @@
         </div>
     </div>
 
-    <!-- Экран Входа -->
+    <!-- Экран Входа (Обернут в тег form с event.preventDefault) -->
     <div class="auth-container" id="authScreen">
-        <div class="auth-card">
+        <form class="auth-card" onsubmit="event.preventDefault(); playBellSound(); handleLogin();">
             <h1>Sure<span>Box</span></h1>
             <p>Cloud Staff Management System</p>
             <div style="display: flex; flex-direction: column; gap: 20px;">
                 <div class="form-group" style="margin:0;">
                     <label>Логин</label>
-                    <input type="text" id="loginInput" class="form-control" placeholder="Введите логин">
+                    <input type="text" id="loginInput" class="form-control" placeholder="Введите логин" required>
                 </div>
                 <div class="form-group" style="margin:0;">
                     <label>Пароль</label>
-                    <input type="password" id="passInput" class="form-control" placeholder="Введите пароль">
+                    <input type="password" id="passInput" class="form-control" placeholder="Введите пароль" required>
                 </div>
-                <button type="button" onclick="playBellSound(); handleLogin()" class="btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Войти в панель</button>
+                <button type="submit" class="btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Войти в панель</button>
             </div>
-        </div>
+        </form>
     </div>
 
     <!-- Основное Окно -->
@@ -774,15 +774,14 @@
         function generateWeeklyReport() {
             let rows = dbData.staff.map(u => {
                 const sal = calculateUserSalary(u);
-                const isHelper = u.role.includes('Хелпер');
                 const onVacation = dbData.vacations.some(v => v.author === u.name && v.status === 'Одобрено');
                 const isNewbie = (Date.now() - (u.createdAt || Date.now())) < (7 * 24 * 60 * 60 * 1000);
                 const normDone = checkUserNormCompleted(u);
 
-                let colorStyle = 'color: var(--success);'; // зелёный по умолчанию
-                if (onVacation) colorStyle = 'color: var(--warning);'; // желтый если в отпуске
-                else if (isNewbie) colorStyle = 'color: var(--info);'; // синий если новички менее недели
-                else if (!normDone) colorStyle = 'color: var(--danger);'; // красный если не выполнил норму
+                let colorStyle = 'color: var(--success);';
+                if (onVacation) colorStyle = 'color: var(--warning);';
+                else if (isNewbie) colorStyle = 'color: var(--info);';
+                else if (!normDone) colorStyle = 'color: var(--danger);';
 
                 return `<tr><td><b style="${colorStyle}">${u.name}</b></td><td>${u.role}</td><td>${u.mutes || 0}</td><td>${u.bans || 0}</td><td style="color:var(--accent);"><b>${sal} CP</b></td></tr>`;
             }).join('');
@@ -794,7 +793,6 @@
                 content: `<table><thead><tr><th>Сотрудник</th><th>Роль</th><th>Мутов</th><th>Банов</th><th>Зарплата</th></tr></thead><tbody>${rows}</tbody></table>`
             });
 
-            // СБРОС ОТЧЕТОВ ДЛЯ НОВОЙ НЕДЕЛИ
             dbData.staff.forEach(u => { u.mutes = 0; u.bans = 0; u.total = 0; });
             saveCloudData();
             renderNews();
