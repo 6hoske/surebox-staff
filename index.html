@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SureBox | Панель Управления КП (Firebase Full Edition)</title>
+    <title>SureBox | Панель Управления КП (Ultimate Edition)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <!-- Firebase SDK -->
@@ -125,7 +125,6 @@
         .input-group { display: flex; gap: 10px; }
         .role-select { padding: 6px 12px; background: var(--bg-input); border: 1px solid var(--border); color: #fff; border-radius: 8px; font-size: 13px; outline: none; }
 
-        .mc-banner { background: linear-gradient(135deg, rgba(29,185,84,0.18), rgba(0,0,0,0.5)); border: 1px dashed var(--border); border-radius: 14px; padding: 25px; display: flex; align-items: center; gap: 25px; margin-top: 25px; }
         .staff-reports-layout { display: grid; grid-template-columns: 320px 1fr; gap: 25px; }
         .staff-card-list { display: flex; flex-direction: column; gap: 12px; }
         .staff-user-card { background: var(--bg-input); border: 1px solid var(--border); padding: 16px 20px; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
@@ -158,7 +157,6 @@
         </div>
     </div>
 
-    <!-- Переключатель тем внизу -->
     <div class="bottom-controls">
         <div class="theme-switcher">
             <span style="font-size: 11px; color: var(--text-muted); font-weight: bold;">ТЕМА:</span>
@@ -282,6 +280,11 @@
                         <div class="progress-bar"><div class="progress-fill" id="weekProgress"></div></div>
                     </div>
                 </div>
+                <div class="card">
+                    <div class="card-title"><div><i class="fa-solid fa-wallet"></i> Заработная плата (Сурики)</div></div>
+                    <div style="font-size: 22px; font-weight: bold; color: var(--accent);" id="userSalary">0 суриков</div>
+                    <p style="color: var(--text-muted); font-size: 14px; margin-top: 8px;">Предполагаемая выплата за текущую неделю на основе вашей должности и выполненных отчетов.</p>
+                </div>
             </div>
 
             <!-- Отпуск -->
@@ -334,6 +337,16 @@
                     <div class="card-title">
                         <div><i class="fa-solid fa-calculator"></i> Отчёт недели</div>
                         <button onclick="playBellSound(); generateWeeklyReport()" class="btn-primary" style="width: auto; padding: 10px 20px;"><i class="fa-solid fa-paper-plane"></i> Сформировать в Новости</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><div><i class="fa-solid fa-sliders"></i> Управление нормами состава</div></div>
+                    <div class="grid-2">
+                        <div class="form-group" style="margin:0;"><label>Норма мутов для Хелпера</label><input type="number" id="normHelperMutes" class="form-control" value="50"></div>
+                        <div class="form-group" style="margin:0;"><label>Норма мутов для Модератора</label><input type="number" id="normModMutes" class="form-control" value="55"></div>
+                        <div class="form-group" style="margin:0;"><label>Норма банов для Модератора</label><input type="number" id="normModBans" class="form-control" value="15"></div>
+                        <div class="form-group" style="display: flex; align-items: flex-end; margin:0;"><button onclick="playBellSound(); saveCustomNorms()" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Сохранить нормы</button></div>
                     </div>
                 </div>
 
@@ -398,7 +411,6 @@
     </div>
 
     <script>
-        // ИНИЦИАЛИЗАЦИЯ FIREBASE (Ключи с твоего скриншота)
         const firebaseConfig = {
             apiKey: "AIzaSyBNp_STeCxdaFMIGuc46-W3FKiXg6rXN-k",
             authDomain: "surebox-staff.firebaseapp.com",
@@ -414,9 +426,11 @@
         let currentUser = null;
         let selectedStaffFilter = 'all';
         let currentPastedImage = null;
-        let dbData = { staff: [], reports: [], news: [], vacations: [], promotions: [], logs: [] };
+        let dbData = { 
+            staff: [], reports: [], news: [], vacations: [], promotions: [], logs: [],
+            norms: { helperMutes: 50, modMutes: 55, modBans: 15 }
+        };
 
-        // Звук колокольчика
         function playBellSound() {
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -434,7 +448,6 @@
             } catch(e) {}
         }
 
-        // Облачная синхронизация в реальном времени
         db.collection("appData").doc("main").onSnapshot((doc) => {
             if (doc.exists) {
                 dbData = doc.data();
@@ -444,6 +457,7 @@
                 if (!dbData.vacations) dbData.vacations = [];
                 if (!dbData.promotions) dbData.promotions = [];
                 if (!dbData.logs) dbData.logs = [];
+                if (!dbData.norms) dbData.norms = { helperMutes: 50, modMutes: 55, modBans: 15 };
 
                 if (dbData.staff.length === 0) {
                     dbData.staff.push({ id: 'st-1', name: '6hoske', pass: '#6H!sKe99$SureBox2026', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0 });
@@ -484,6 +498,15 @@
             document.getElementById('newPass').value = res;
         }
 
+        function saveCustomNorms() {
+            dbData.norms.helperMutes = parseInt(document.getElementById('normHelperMutes').value) || 50;
+            dbData.norms.modMutes = parseInt(document.getElementById('normModMutes').value) || 55;
+            dbData.norms.modBans = parseInt(document.getElementById('normModBans').value) || 15;
+            addLogAction(`Обновил недельные нормы КП`);
+            saveCloudData();
+            showToast('Нормы успешно обновлены!');
+        }
+
         function handleLogin() {
             const log = document.getElementById('loginInput').value.trim();
             const pass = document.getElementById('passInput').value.trim();
@@ -511,6 +534,10 @@
                 document.getElementById('promotionAdminCard').style.display = 'block';
             }
 
+            document.getElementById('normHelperMutes').value = dbData.norms.helperMutes;
+            document.getElementById('normModMutes').value = dbData.norms.modMutes;
+            document.getElementById('normModBans').value = dbData.norms.modBans;
+
             renderStaffTables();
             renderSupportView();
             renderRequestsTables();
@@ -520,7 +547,6 @@
             showToast(`Добро пожаловать, ${currentUser.name}!`);
         }
 
-        // ОТПРАВКА ОТЧЕТА С ПОЛНОЙ ОЧИСТКОЙ ФОРМЫ
         function submitReport() {
             const cmd = document.getElementById('repCmd').value;
             const target = document.getElementById('repTarget').value.trim();
@@ -547,7 +573,6 @@
             saveCloudData();
             showToast('Отчет успешно отправлен!');
 
-            // ПОЛНАЯ ОЧИСТКА ФОРМЫ
             document.getElementById('repTarget').value = '';
             document.getElementById('repDuration').value = '';
             document.getElementById('repReason').value = '';
@@ -772,8 +797,28 @@
             if (!currentUser) return;
             const u = dbData.staff.find(m => m.name === currentUser.name) || currentUser;
             document.getElementById('totalAll').innerText = u.total || 0;
-            document.getElementById('totalWeek').innerText = `${u.mutes || 0} / 60`;
-            document.getElementById('weekProgress').style.width = Math.min(100, Math.round(((u.mutes || 0) / 60) * 100)) + '%';
+
+            const isHelper = u.role.includes('Хелпер');
+            const reqMutes = isHelper ? dbData.norms.helperMutes : dbData.norms.modMutes;
+            const reqBans = isHelper ? 0 : dbData.norms.modBans;
+
+            if (isHelper) {
+                document.getElementById('totalWeek').innerText = `${u.mutes || 0} / ${reqMutes} мутов`;
+                document.getElementById('weekProgress').style.width = Math.min(100, Math.round(((u.mutes || 0) / reqMutes) * 100)) + '%';
+            } else {
+                document.getElementById('totalWeek').innerText = `Муты: ${u.mutes || 0}/${reqMutes} | Баны: ${u.bans || 0}/${reqBans}`;
+                document.getElementById('weekProgress').style.width = Math.min(100, Math.round((((u.mutes || 0) + (u.bans || 0)) / (reqMutes + reqBans)) * 100)) + '%';
+            }
+
+            // Расчет зарплаты в суриках (базовая ставка по ролям)
+            let salary = 0;
+            if (u.role.includes('Хелпер')) salary = 15000;
+            else if (u.role.includes('Модератор')) salary = 25000;
+            else if (u.role.includes('Администратор')) salary = 40000;
+            else if (u.role.includes('Куратор') || u.role.includes('Владелец')) salary = 60000;
+            else salary = 10000;
+
+            document.getElementById('userSalary').innerText = `${salary.toLocaleString()} суриков`;
         }
 
         function showToast(msg, isError = false) {
