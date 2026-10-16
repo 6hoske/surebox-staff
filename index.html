@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SureBox | Панель Управления КП (Ultimate v5)</title>
+    <title>SureBox | Панель Управления КП (Clean Login)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <!-- Firebase SDK -->
@@ -177,7 +177,7 @@
         </div>
     </div>
 
-    <!-- Экран Входа (обычный div без ложных сабмитов) -->
+    <!-- Экран Входа (абсолютно чистые поля, без автозаполнения) -->
     <div class="auth-container" id="authScreen">
         <div class="auth-card">
             <h1>Sure<span>Box</span></h1>
@@ -185,16 +185,13 @@
             <div style="display: flex; flex-direction: column; gap: 20px;">
                 <div class="form-group" style="margin:0;">
                     <label>Логин</label>
-                    <input type="text" id="loginInput" class="form-control" value="6hoske" placeholder="Введите логин">
+                    <input type="text" id="loginInput" class="form-control" placeholder="Введите логин">
                 </div>
                 <div class="form-group" style="margin:0;">
                     <label>Пароль</label>
-                    <div class="input-group">
-                        <input type="text" id="passInput" class="form-control" value="kalepP8229_₽" placeholder="Введите пароль">
-                        <button type="button" onclick="playBellSound(); fillRandomAuthPass()" class="btn-primary" style="width: auto; padding: 0 15px;" title="Сгенерировать пароль"><i class="fa-solid fa-dice"></i></button>
-                    </div>
+                    <input type="password" id="passInput" class="form-control" placeholder="Введите пароль">
                 </div>
-                <button type="button" onclick="playBellSound(); handleLogin()" class="btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Войти в панель</button>
+                <button type="button" onclick="handleLoginClick()" class="btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Войти в панель</button>
             </div>
         </div>
     </div>
@@ -507,13 +504,13 @@
                     if (u.createdAt === undefined) u.createdAt = Date.now();
                 });
 
-                // Гарантируем наличие владельца с твоим новым паролем
+                // Гарантируем наличие владельца с твоим сложным паролем
                 let admin = dbData.staff.find(m => m.name === '6hoske');
                 if (!admin) {
-                    dbData.staff.push({ id: 'st-1', name: '6hoske', pass: 'kalepP8229_₽', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0, warns: 0, createdAt: Date.now() });
+                    dbData.staff.push({ id: 'st-1', name: '6hoske', pass: 'X#9_kL$mP7!zQ2_v', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0, warns: 0, createdAt: Date.now() });
                     saveCloudData();
-                } else if (admin.pass !== 'kalepP8229_₽') {
-                    admin.pass = 'kalepP8229_₽'; // авто-обновление пароля в базе
+                } else if (admin.pass !== 'X#9_kL$mP7!zQ2_v') {
+                    admin.pass = 'X#9_kL$mP7!zQ2_v';
                     saveCloudData();
                 }
 
@@ -527,7 +524,7 @@
                     updateProfileStats();
                 }
             } else {
-                dbData.staff.push({ id: 'st-1', name: '6hoske', pass: 'kalepP8229_₽', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0, warns: 0, createdAt: Date.now() });
+                dbData.staff.push({ id: 'st-1', name: '6hoske', pass: 'X#9_kL$mP7!zQ2_v', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0, warns: 0, createdAt: Date.now() });
                 saveCloudData();
             }
         });
@@ -551,13 +548,6 @@
             let res = "";
             for (let i = 0; i < 10; i++) res += chars.charAt(Math.floor(Math.random() * chars.length));
             document.getElementById('newPass').value = res;
-        }
-
-        function fillRandomAuthPass() {
-            const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_₽";
-            let res = "";
-            for (let i = 0; i < 10; i++) res += chars.charAt(Math.floor(Math.random() * chars.length));
-            document.getElementById('passInput').value = res;
         }
 
         function saveCustomNorms() {
@@ -587,9 +577,12 @@
             }
         }
 
-        function handleLogin() {
+        function handleLoginClick() {
+            playBellSound();
             const log = document.getElementById('loginInput').value.trim();
             const pass = document.getElementById('passInput').value.trim();
+
+            console.log("Попытка входа с логином:", log);
 
             const userFound = dbData.staff.find(u => u.name === log && u.pass === pass);
             if (userFound) {
