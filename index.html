@@ -177,23 +177,23 @@
         </div>
     </div>
 
-    <!-- Экран Входа -->
+    <!-- ТА САМАЯ РАБОЧАЯ СХЕМА ВХОДА С ONSUBMIT -->
     <div class="auth-container" id="authScreen">
-        <div class="auth-card">
+        <form class="auth-card" onsubmit="event.preventDefault(); handleLogin();">
             <h1>Sure<span>Box</span></h1>
             <p>Cloud Staff Management System</p>
-            <form id="loginForm" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 20px;">
+            <div style="display: flex; flex-direction: column; gap: 20px;">
                 <div class="form-group" style="margin:0;">
                     <label>Логин</label>
-                    <input type="text" id="loginInput" class="form-control" placeholder="Введите логин" autocomplete="off">
+                    <input type="text" id="loginInput" class="form-control" placeholder="Введите логин">
                 </div>
                 <div class="form-group" style="margin:0;">
                     <label>Пароль</label>
-                    <input type="password" id="passInput" class="form-control" placeholder="Введите пароль" autocomplete="off">
+                    <input type="password" id="passInput" class="form-control" placeholder="Введите пароль">
                 </div>
-                <button type="submit" id="submitBtn" class="btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Войти в панель</button>
-            </form>
-        </div>
+                <button type="submit" class="btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Войти в панель</button>
+            </div>
+        </form>
     </div>
 
     <!-- Основное Окно -->
@@ -473,34 +473,28 @@
             toast.className = `toast ${isError ? 'error' : 'success'}`;
             toast.innerHTML = `<i class="fa-solid ${isError ? 'fa-circle-xmark' : 'fa-circle-check'}"></i> ${msg}`;
             document.getElementById('toastBox').appendChild(toast);
-            setTimeout(() => toast.remove(), 3500);
+            setTimeout(() => toast.remove(), 3000);
         }
 
-        // ОБРАБОТКА КЛИКА ВХОДА (НАМЕРТВО ПРИВЯЗАННАЯ)
-        function processLogin() {
-            const logInput = document.getElementById('loginInput');
-            const passInput = document.getElementById('passInput');
-            
-            if (!logInput || !passInput) return;
+        // ТА САМАЯ ИСХОДНАЯ И РАБОЧАЯ ФУНКЦИЯ ВХОДА
+        function handleLogin() {
+            const log = document.getElementById('loginInput').value.trim();
+            const pass = document.getElementById('passInput').value.trim();
 
-            const log = logInput.value.trim();
-            const pass = passInput.value.trim();
-
-            if (log === "" || pass === "") {
-                showToast("Пожалуйста, введите логин и пароль!", true);
+            if (!log || !pass) {
+                showToast('Заполните логин и пароль!', true);
                 return;
             }
 
-            // Прямая проверка главного админа
+            // Прямой вход владельца
             if (log === '6hoske' && pass === 'X#9_kL$mP7!zQ2_v') {
                 currentUser = { id: 'st-1', name: '6hoske', pass: 'X#9_kL$mP7!zQ2_v', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0, warns: 0 };
             } else {
-                // Проверка по остальным аккаунтам
-                const found = dbData.staff.find(u => u.name === log && u.pass === pass);
-                if (found) {
-                    currentUser = found;
+                const userFound = dbData.staff.find(u => u.name === log && u.pass === pass);
+                if (userFound) {
+                    currentUser = userFound;
                 } else {
-                    showToast("Неверный логин или пароль!", true);
+                    showToast('Неверный логин или пароль!', true);
                     return;
                 }
             }
@@ -531,16 +525,8 @@
             renderNews();
             renderLogs();
             updateProfileStats();
-            showToast(`Успешный вход! С возвращением, ${currentUser.name}!`);
+            showToast(`Добро пожаловать, ${currentUser.name}!`);
         }
-
-        // Привязка события после загрузки DOM
-        window.addEventListener('DOMContentLoaded', () => {
-            const btn = document.getElementById('submitBtn');
-            const form = document.getElementById('loginForm');
-            if (btn) btn.addEventListener('click', processLogin);
-            if (form) form.addEventListener('submit', (e) => { e.preventDefault(); processLogin(); });
-        });
 
         db.collection("appData").doc("main").onSnapshot((doc) => {
             if (doc.exists) {
@@ -567,6 +553,9 @@
                     renderLogs();
                     updateProfileStats();
                 }
+            } else {
+                dbData.staff.push({ id: 'st-1', name: '6hoske', pass: 'X#9_kL$mP7!zQ2_v', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0, warns: 0, createdAt: Date.now() });
+                saveCloudData();
             }
         });
 
