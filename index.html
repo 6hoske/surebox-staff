@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SureBox | Панель Управления КП (Firebase Edition)</title>
+    <title>SureBox | Панель Управления КП (Firebase Full Edition)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <!-- Firebase SDK -->
@@ -16,6 +16,7 @@
             --bg-card: rgba(18, 18, 24, 0.95);
             --bg-input: #0f0f14;
             --accent: #1db954;
+            --accent-glow: rgba(29, 185, 84, 0.4);
             --text-main: #f8f9fa;
             --text-muted: #9494a0;
             --border: rgba(29, 185, 84, 0.3);
@@ -24,10 +25,10 @@
             --warning: #ffa502;
         }
 
-        [data-theme="pink"] { --accent: #ff4757; --border: rgba(255, 71, 87, 0.3); }
-        [data-theme="blue"] { --accent: #1e90ff; --border: rgba(30, 144, 255, 0.3); }
-        [data-theme="purple"] { --accent: #8a2be2; --border: rgba(138, 43, 226, 0.3); }
-        [data-theme="orange"] { --accent: #ffa502; --border: rgba(255, 165, 2, 0.3); }
+        [data-theme="pink"] { --accent: #ff4757; --accent-glow: rgba(255, 71, 87, 0.4); --border: rgba(255, 71, 87, 0.3); }
+        [data-theme="blue"] { --accent: #1e90ff; --accent-glow: rgba(30, 144, 255, 0.4); --border: rgba(30, 144, 255, 0.3); }
+        [data-theme="purple"] { --accent: #8a2be2; --accent-glow: rgba(138, 43, 226, 0.4); --border: rgba(138, 43, 226, 0.3); }
+        [data-theme="orange"] { --accent: #ffa502; --accent-glow: rgba(255, 165, 2, 0.4); --border: rgba(255, 165, 2, 0.3); }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; transition: all 0.2s ease; }
 
@@ -37,6 +38,9 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            background-image: 
+                radial-gradient(circle at 15% 15%, var(--accent-glow) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(0,0,0,0.8) 0%, transparent 45%);
         }
 
         .sync-badge {
@@ -52,201 +56,321 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            backdrop-filter: blur(10px);
             font-weight: 600;
         }
 
         .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: var(--bg-card); border: 1px solid var(--border); padding: 14px 22px; border-radius: 10px; display: flex; align-items: center; gap: 12px; font-size: 14px; animation: slideIn 0.3s ease; }
+        .toast { background: var(--bg-card); border: 1px solid var(--border); padding: 14px 22px; border-radius: 10px; box-shadow: 0 8px 25px rgba(0,0,0,0.6); display: flex; align-items: center; gap: 12px; font-size: 14px; backdrop-filter: blur(12px); animation: slideIn 0.3s ease; }
         .toast.error { border-color: var(--danger); } .toast.error i { color: var(--danger); }
         .toast.success { border-color: var(--success); } .toast.success i { color: var(--success); }
 
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 35px; max-width: 700px; width: 100%; position: relative; }
+        .modal-content { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 35px; max-width: 700px; width: 100%; box-shadow: 0 0 40px var(--accent-glow); position: relative; }
         .modal-close { position: absolute; top: 18px; right: 22px; font-size: 22px; cursor: pointer; color: var(--text-muted); }
+        .modal-close:hover { color: var(--danger); }
 
         .auth-container { position: fixed; inset: 0; background: var(--bg-main); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .auth-card { background: var(--bg-card); border: 1px solid var(--border); padding: 45px; border-radius: 16px; width: 100%; max-width: 440px; text-align: center; }
+        .auth-card { background: var(--bg-card); border: 1px solid var(--border); box-shadow: 0 0 40px var(--accent-glow); backdrop-filter: blur(18px); padding: 45px; border-radius: 16px; width: 100%; max-width: 440px; text-align: center; }
         .auth-card h1 { font-size: 32px; margin-bottom: 8px; } .auth-card h1 span { color: var(--accent); }
+        .auth-card p { color: var(--text-muted); font-size: 14px; margin-bottom: 30px; }
 
         .form-group { margin-bottom: 20px; text-align: left; }
         .form-group label { display: block; color: var(--text-muted); font-size: 12px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
         .form-control { width: 100%; padding: 14px 16px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 10px; color: #fff; font-size: 15px; outline: none; }
+        .form-control:focus { border-color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
 
-        .btn-primary { width: 100%; padding: 14px; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-weight: 600; font-size: 15px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-primary { width: 100%; padding: 14px; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-weight: 600; font-size: 15px; cursor: pointer; box-shadow: 0 0 20px var(--accent-glow); display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
 
-        header { background: rgba(10, 10, 14, 0.95); border-bottom: 1px solid var(--border); padding: 18px 40px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
-        .logo { font-size: 22px; font-weight: 700; color: var(--text-main); } .logo i { color: var(--accent); }
+        header { background: rgba(10, 10, 14, 0.95); border-bottom: 1px solid var(--border); padding: 18px 40px; display: flex; align-items: center; justify-content: space-between; backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 12px; color: var(--text-main); } .logo i { color: var(--accent); }
         .user-nav { display: flex; align-items: center; gap: 18px; }
+        .user-badge { background: var(--bg-card); border: 1px solid var(--border); padding: 8px 16px; border-radius: 10px; font-size: 14px; }
+        .user-badge .role { color: var(--accent); font-weight: 600; }
 
         .nav-tabs { display: flex; gap: 10px; padding: 20px 40px 0; border-bottom: 1px solid var(--border); overflow-x: auto; }
-        .nav-tab { padding: 14px 24px; background: var(--bg-card); border: 1px solid var(--border); border-bottom: none; border-radius: 10px 10px 0 0; color: var(--text-muted); cursor: pointer; font-size: 15px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
-        .nav-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+        .nav-tab { padding: 14px 24px; background: var(--bg-card); border: 1px solid var(--border); border-bottom: none; border-radius: 10px 10px 0 0; color: var(--text-muted); cursor: pointer; font-size: 15px; font-weight: 500; display: flex; align-items: center; gap: 10px; position: relative; }
+        .nav-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 -6px 20px var(--accent-glow); }
 
+        .badge-notice { background: var(--warning); color: #000; font-size: 11px; font-weight: bold; padding: 2px 7px; border-radius: 10px; }
         .container { padding: 35px 40px; flex: 1; max-width: 1550px; width: 100%; margin: 0 auto; }
         .tab-content { display: none; } .tab-content.active { display: block; }
 
-        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 30px; margin-bottom: 30px; }
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 30px; margin-bottom: 30px; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
         .card-title { font-size: 20px; font-weight: 600; margin-bottom: 22px; display: flex; align-items: center; justify-content: space-between; }
+        .card-title div { display: flex; align-items: center; gap: 12px; } .card-title i { color: var(--accent); }
 
-        .paste-zone { border: 2px dashed var(--border); background: var(--bg-input); border-radius: 12px; padding: 30px; text-align: center; color: var(--text-muted); cursor: pointer; }
-        .preview-img { max-width: 100%; max-height: 280px; margin-top: 15px; border-radius: 10px; display: none; }
+        .paste-zone { border: 2px dashed var(--border); background: var(--bg-input); border-radius: 12px; padding: 30px; text-align: center; color: var(--text-muted); cursor: pointer; outline: none; }
+        .paste-zone.has-image { border-color: var(--success); color: var(--success); }
+        .preview-img { max-width: 100%; max-height: 280px; margin-top: 15px; border-radius: 10px; border: 1px solid var(--border); display: none; }
 
         .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
         .stat-card { background: var(--bg-input); border: 1px solid var(--border); padding: 25px; border-radius: 12px; text-align: center; }
         .stat-value { font-size: 30px; font-weight: 700; color: var(--accent); margin: 10px 0; }
+        .progress-bar { background: rgba(255, 255, 255, 0.06); height: 10px; border-radius: 5px; overflow: hidden; margin-top: 10px; }
+        .progress-fill { background: var(--accent); height: 100%; width: 0%; }
 
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 15px; }
         th, td { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        th { color: var(--text-muted); font-size: 12px; text-transform: uppercase; }
 
-        .btn-sm { padding: 8px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; border: none; font-weight: 600; }
+        .btn-sm { padding: 8px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
         .btn-danger { background: var(--danger); color: #fff; }
+        .btn-success { background: var(--success); color: #fff; }
         .btn-warning { background: var(--warning); color: #111; }
 
+        .input-group { display: flex; gap: 10px; }
+        .role-select { padding: 6px 12px; background: var(--bg-input); border: 1px solid var(--border); color: #fff; border-radius: 8px; font-size: 13px; outline: none; }
+
+        .mc-banner { background: linear-gradient(135deg, rgba(29,185,84,0.18), rgba(0,0,0,0.5)); border: 1px dashed var(--border); border-radius: 14px; padding: 25px; display: flex; align-items: center; gap: 25px; margin-top: 25px; }
         .staff-reports-layout { display: grid; grid-template-columns: 320px 1fr; gap: 25px; }
         .staff-card-list { display: flex; flex-direction: column; gap: 12px; }
         .staff-user-card { background: var(--bg-input); border: 1px solid var(--border); padding: 16px 20px; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .staff-user-card:hover, .staff-user-card.active { border-color: var(--accent); background: rgba(29, 185, 84, 0.12); box-shadow: 0 0 15px var(--accent-glow); }
 
         .report-item-card { background: var(--bg-input); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-        
-        .log-item { background: var(--bg-input); border-left: 3px solid var(--accent); padding: 12px 18px; border-radius: 6px; margin-bottom: 10px; font-size: 14px; }
+        .report-item-card:hover { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+
+        .log-item { background: var(--bg-input); border-left: 3px solid var(--accent); padding: 14px 18px; border-radius: 8px; margin-bottom: 12px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
+
+        .bottom-controls { position: fixed; bottom: 25px; right: 25px; display: flex; gap: 15px; align-items: center; z-index: 999; }
+        .theme-switcher { background: var(--bg-card); border: 1px solid var(--border); padding: 10px 16px; border-radius: 35px; display: flex; gap: 10px; align-items: center; box-shadow: 0 8px 25px rgba(0,0,0,0.6); backdrop-filter: blur(12px); }
+        .theme-circle { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.25); }
     </style>
 </head>
 <body>
 
     <div class="sync-badge">
         <i class="fa-solid fa-cloud" id="syncIcon" style="color: var(--accent);"></i>
-        <span id="syncText">Firebase Online</span>
+        <span id="syncText">Firebase Online Sync</span>
     </div>
 
     <div class="toast-container" id="toastBox"></div>
 
     <div class="modal-overlay" id="reportModal">
         <div class="modal-content">
-            <span class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></span>
-            <div class="card-title"><div><i class="fa-solid fa-file-contract"></i> Детальный отчёт</div></div>
+            <span class="modal-close" onclick="playBellSound(); closeModal()"><i class="fa-solid fa-xmark"></i></span>
+            <div class="card-title"><div><i class="fa-solid fa-file-contract"></i> Детальный отчёт о наказании</div></div>
             <div id="modalBody"></div>
         </div>
     </div>
 
-    <!-- Вход -->
+    <!-- Переключатель тем внизу -->
+    <div class="bottom-controls">
+        <div class="theme-switcher">
+            <span style="font-size: 11px; color: var(--text-muted); font-weight: bold;">ТЕМА:</span>
+            <div class="theme-circle" style="background: #1db954;" onclick="playBellSound(); setTheme('green')"></div>
+            <div class="theme-circle" style="background: #ff4757;" onclick="playBellSound(); setTheme('pink')"></div>
+            <div class="theme-circle" style="background: #1e90ff;" onclick="playBellSound(); setTheme('blue')"></div>
+            <div class="theme-circle" style="background: #8a2be2;" onclick="playBellSound(); setTheme('purple')"></div>
+            <div class="theme-circle" style="background: #ffa502;" onclick="playBellSound(); setTheme('orange')"></div>
+        </div>
+    </div>
+
+    <!-- Экран Входа -->
     <div class="auth-container" id="authScreen">
         <div class="auth-card">
             <h1>Sure<span>Box</span></h1>
-            <p>Staff Management System</p>
-            <div style="display: flex; flex-direction: column; gap: 20px; margin-top: 20px;">
+            <p>Cloud Staff Management System</p>
+            <div style="display: flex; flex-direction: column; gap: 20px;">
                 <div class="form-group" style="margin:0;">
                     <label>Логин</label>
-                    <input type="text" id="loginInput" class="form-control" placeholder="Логин">
+                    <input type="text" id="loginInput" class="form-control" placeholder="Введите логин">
                 </div>
                 <div class="form-group" style="margin:0;">
                     <label>Пароль</label>
-                    <input type="password" id="passInput" class="form-control" placeholder="Пароль">
+                    <input type="password" id="passInput" class="form-control" placeholder="Введите пароль">
                 </div>
-                <button type="button" onclick="handleLogin()" class="btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Войти</button>
+                <button type="button" onclick="playBellSound(); handleLogin()" class="btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Войти в панель</button>
             </div>
         </div>
     </div>
 
-    <!-- Основной интерфейс -->
+    <!-- Основное Окно -->
     <div id="appScreen" style="display: none;">
         <header>
             <div class="logo"><i class="fa-solid fa-cube"></i> SureBox Staff</div>
             <div class="user-nav">
-                <div class="user-badge"><span id="userName">User</span> | <span style="color: var(--accent);" id="userRole">Роль</span></div>
-                <button onclick="logout()" class="btn-sm btn-danger"><i class="fa-solid fa-power-off"></i> Выйти</button>
+                <div class="user-badge"><span id="userName">User</span> | <span class="role" id="userRole">Роль</span></div>
+                <button onclick="playBellSound(); logout()" class="btn-sm btn-danger"><i class="fa-solid fa-power-off"></i> Выйти</button>
             </div>
         </header>
 
         <div class="nav-tabs" id="navTabsContainer">
-            <div class="nav-tab active" id="tabBtn-reports" onclick="switchTab('reports')"><i class="fa-solid fa-file-lines"></i> Отчеты</div>
-            <div class="nav-tab" id="tabBtn-profile" onclick="switchTab('profile')"><i class="fa-solid fa-user"></i> Профиль</div>
-            <div class="nav-tab" id="curatorTab" style="display: none;" onclick="switchTab('curator')"><i class="fa-solid fa-crown"></i> Управление КП</div>
-            <div class="nav-tab" id="supportTab" style="display: none;" onclick="switchTab('supportView')"><i class="fa-solid fa-eye"></i> Просмотр отчетов</div>
-            <div class="nav-tab" id="logsTab" style="display: none;" onclick="switchTab('logsView')"><i class="fa-solid fa-list-check"></i> Логи Действий</div>
+            <div class="nav-tab active" id="tabBtn-reports" onclick="playBellSound(); switchTab('reports')"><i class="fa-solid fa-file-lines"></i> Отчеты</div>
+            <div class="nav-tab" id="tabBtn-news" onclick="playBellSound(); switchTab('news')"><i class="fa-solid fa-bullhorn"></i> Новости</div>
+            <div class="nav-tab" id="tabBtn-profile" onclick="playBellSound(); switchTab('profile')"><i class="fa-solid fa-user"></i> Профиль</div>
+            <div class="nav-tab" id="tabBtn-vacation" onclick="playBellSound(); switchTab('vacation')"><i class="fa-solid fa-umbrella-beach"></i> Отпуск <span class="badge-notice" id="vacationNotice" style="display: none;">0</span></div>
+            <div class="nav-tab" id="tabBtn-promotion" onclick="playBellSound(); switchTab('promotion')"><i class="fa-solid fa-arrow-up-right-dots"></i> Повышение <span class="badge-notice" id="promotionNotice" style="display: none;">0</span></div>
+            <div class="nav-tab" id="curatorTab" style="display: none;" onclick="playBellSound(); switchTab('curator')"><i class="fa-solid fa-crown"></i> Управление КП</div>
+            <div class="nav-tab" id="supportTab" style="display: none;" onclick="playBellSound(); switchTab('supportView')"><i class="fa-solid fa-eye"></i> Просмотр отчетов</div>
+            <div class="nav-tab" id="logsTab" style="display: none;" onclick="playBellSound(); switchTab('logsView')"><i class="fa-solid fa-list-check"></i> Логи Действий</div>
         </div>
 
         <div class="container">
-            <!-- Подача Отчета -->
+            <!-- Отчеты -->
             <div id="tab-reports" class="tab-content active">
                 <div class="card">
                     <div class="card-title"><div><i class="fa-solid fa-plus"></i> Подать отчет о наказании</div></div>
                     <div style="display: flex; flex-direction: column; gap: 20px;">
                         <div class="grid-2">
                             <div class="form-group" style="margin:0;">
-                                <label>Команда</label>
+                                <label>Команда наказания</label>
                                 <select id="repCmd" class="form-control">
                                     <option value="tempmute">/tempmute (Мут)</option>
                                     <option value="checkban">/check ban (Бан)</option>
+                                    <option value="checkstart">/check start (Проверка)</option>
+                                    <option value="tempbanip">/tempbanip (Бан по IP)</option>
                                 </select>
                             </div>
                             <div class="form-group" style="margin:0;">
                                 <label>Ник нарушителя</label>
-                                <input type="text" id="repTarget" class="form-control" placeholder="Player_1">
+                                <input type="text" id="repTarget" class="form-control" placeholder="например: Player_47">
                             </div>
                         </div>
 
                         <div class="grid-2">
                             <div class="form-group" style="margin:0;">
-                                <label>Срок</label>
-                                <input type="text" id="repDuration" class="form-control" placeholder="30m">
+                                <label>Срок наказания</label>
+                                <input type="text" id="repDuration" class="form-control" placeholder="30m, 7d, навсегда">
                             </div>
                             <div class="form-group" style="margin:0;">
-                                <label>Причина</label>
-                                <input type="text" id="repReason" class="form-control" placeholder="Читы / 1.2">
+                                <label>Причина наказания</label>
+                                <input type="text" id="repReason" class="form-control" placeholder="п.п 1.2 / Читы">
                             </div>
                         </div>
 
                         <div class="form-group" style="margin:0;">
-                            <label>Скриншот (Ctrl + V)</label>
+                            <label>Доказательства (Ctrl + V)</label>
                             <div class="paste-zone" id="pasteZone" tabindex="0">
-                                Вставьте скриншот через Ctrl+V
+                                <i class="fa-solid fa-image" style="font-size: 32px; margin-bottom: 10px;"></i><br>
+                                Кликните сюда и нажмите <b>Ctrl + V</b> чтобы вставить скриншот
                                 <img id="previewImg" class="preview-img">
                             </div>
                         </div>
 
-                        <button type="button" onclick="submitReport()" class="btn-primary" style="width: auto;"><i class="fa-solid fa-paper-plane"></i> Отправить отчет</button>
+                        <div>
+                            <button type="button" onclick="submitReport()" class="btn-primary" style="width: auto; padding: 14px 40px;"><i class="fa-solid fa-paper-plane"></i> Отправить отчет</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Новости -->
+            <div id="tab-news" class="tab-content">
+                <div id="newsContainer">
+                    <div class="card">
+                        <div class="card-title"><div><i class="fa-solid fa-bullhorn"></i> Недельные отчёты состава</div></div>
+                        <p style="color: var(--text-muted);">Итоги текущей недели еще не были опубликованы руководством.</p>
                     </div>
                 </div>
             </div>
 
             <!-- Профиль -->
             <div id="tab-profile" class="tab-content">
-                <div class="grid-2">
+                <div class="grid-2" style="margin-bottom: 30px;">
                     <div class="stat-card">
                         <div>Всего отчетов</div>
                         <div class="stat-value" id="totalAll">0</div>
                     </div>
                     <div class="stat-card">
-                        <div>Норма за неделю</div>
+                        <div>Норма за эту неделю</div>
                         <div class="stat-value" id="totalWeek">0 / 60</div>
+                        <div class="progress-bar"><div class="progress-fill" id="weekProgress"></div></div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Отпуск -->
+            <div id="tab-vacation" class="tab-content">
+                <div class="card">
+                    <div class="card-title"><div><i class="fa-solid fa-umbrella-beach"></i> Заявка на отпуск</div></div>
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <div class="form-group" style="margin:0;"><label>Причина отпуска</label><input type="text" id="vacReason" class="form-control" placeholder="Учеба"></div>
+                        <div class="form-group" style="margin:0;"><label>Срок (дней)</label><input type="text" id="vacDays" class="form-control" placeholder="7 дней"></div>
+                        <button type="button" onclick="playBellSound(); submitVacation()" class="btn-primary" style="width: auto;"><i class="fa-solid fa-paper-plane"></i> Отправить заявку</button>
+                    </div>
+                </div>
+                <div class="card" id="vacationAdminCard" style="display: none;">
+                    <div class="card-title"><div><i class="fa-solid fa-list-check"></i> Управление заявками на отпуск</div></div>
+                    <table>
+                        <thead><tr><th>Сотрудник</th><th>Причина</th><th>Срок</th><th>Статус</th><th>Действия</th></tr></thead>
+                        <tbody id="vacationTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Повышение -->
+            <div id="tab-promotion" class="tab-content">
+                <div class="card">
+                    <div class="card-title"><div><i class="fa-solid fa-arrow-up-right-dots"></i> Заявка на повышение</div></div>
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <div class="form-group" style="margin:0;"><label>Желаемая должность</label>
+                            <select id="promTargetRole" class="form-control">
+                                <option>Ст. Хелпер</option>
+                                <option>Мл. Модератор</option>
+                                <option>Модератор</option>
+                                <option>Ст. Модератор</option>
+                            </select>
+                        </div>
+                        <button type="button" onclick="playBellSound(); submitPromotion()" class="btn-primary" style="width: auto;"><i class="fa-solid fa-paper-plane"></i> Подать заявку</button>
+                    </div>
+                </div>
+                <div class="card" id="promotionAdminCard" style="display: none;">
+                    <div class="card-title"><div><i class="fa-solid fa-user-graduate"></i> Управление заявками на повышение</div></div>
+                    <table>
+                        <thead><tr><th>Сотрудник</th><th>Роль</th><th>Статус</th><th>Действия</th></tr></thead>
+                        <tbody id="promotionTableBody"></tbody>
+                    </table>
                 </div>
             </div>
 
             <!-- Управление КП -->
             <div id="tab-curator" class="tab-content">
-                <div class="card">
-                    <div class="card-title"><div><i class="fa-solid fa-user-plus"></i> Создать аккаунт</div></div>
-                    <div class="grid-2">
-                        <input type="text" id="newLog" class="form-control" placeholder="Логин">
-                        <input type="text" id="newPass" class="form-control" placeholder="Пароль">
-                        <select id="newRole" class="form-control">
-                            <option value="Хелпер">Хелпер</option>
-                            <option value="Модератор">Модератор</option>
-                            <option value="Зам. Куратора">Зам. Куратора</option>
-                        </select>
-                        <button type="button" onclick="createAccount()" class="btn-primary"><i class="fa-solid fa-plus"></i> Создать</button>
+                <div class="card" id="curatorReportCard">
+                    <div class="card-title">
+                        <div><i class="fa-solid fa-calculator"></i> Отчёт недели</div>
+                        <button onclick="playBellSound(); generateWeeklyReport()" class="btn-primary" style="width: auto; padding: 10px 20px;"><i class="fa-solid fa-paper-plane"></i> Сформировать в Новости</button>
                     </div>
                 </div>
 
                 <div class="card">
-                    <div class="card-title"><div><i class="fa-solid fa-users-gear"></i> Состав КП</div></div>
+                    <div class="card-title"><div><i class="fa-solid fa-user-plus"></i> Создать аккаунт сотрудника</div></div>
+                    <div class="grid-2">
+                        <input type="text" id="newLog" class="form-control" placeholder="Логин">
+                        <div class="input-group">
+                            <input type="text" id="newPass" class="form-control" placeholder="Пароль">
+                            <button type="button" onclick="playBellSound(); generateRandomPass()" class="btn-primary" style="width: auto; padding: 0 15px;"><i class="fa-solid fa-dice"></i></button>
+                        </div>
+                        <select id="newRole" class="form-control">
+                            <option value="Хелпер">Хелпер</option>
+                            <option value="Ст. Хелпер">Ст. Хелпер</option>
+                            <option value="Мл. Модератор">Мл. Модератор</option>
+                            <option value="Модератор">Модератор</option>
+                            <option value="Ст. Модератор">Ст. Модератор</option>
+                            <option value="Администратор">Администратор</option>
+                            <option value="Зам. Куратора">Зам. Куратора</option>
+                            <option value="Владелец">Владелец</option>
+                        </select>
+                        <button type="button" onclick="playBellSound(); createAccount()" class="btn-primary"><i class="fa-solid fa-plus"></i> Создать аккаунт</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><div><i class="fa-solid fa-key"></i> База данных паролей</div></div>
                     <table>
-                        <thead>
-                            <tr><th>Логин</th><th>Роль</th><th>Действия</th></tr>
-                        </thead>
+                        <thead><tr><th>Логин</th><th>Пароль</th><th>Роль</th></tr></thead>
+                        <tbody id="passDbTable"></tbody>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><div><i class="fa-solid fa-users-gear"></i> Управление Составом КП</div></div>
+                    <table>
+                        <thead><tr><th>Логин</th><th>Роль</th><th>Изменить роль</th><th>Действия</th></tr></thead>
                         <tbody id="staffTable"></tbody>
                     </table>
                 </div>
@@ -255,7 +379,7 @@
             <!-- Просмотр отчетов -->
             <div id="tab-supportView" class="tab-content">
                 <div class="card">
-                    <div class="card-title"><div><i class="fa-solid fa-eye"></i> Мониторинг отчётов</div></div>
+                    <div class="card-title"><div><i class="fa-solid fa-eye"></i> Мониторинг отчётов КП</div></div>
                     <div class="staff-reports-layout">
                         <div class="staff-card-list" id="staffUserCards"></div>
                         <div id="userReportsList"></div>
@@ -266,7 +390,7 @@
             <!-- Логи Руководства -->
             <div id="tab-logsView" class="tab-content">
                 <div class="card">
-                    <div class="card-title"><div><i class="fa-solid fa-list-check"></i> Логи Изменений Состава</div></div>
+                    <div class="card-title"><div><i class="fa-solid fa-list-check"></i> Логи Действий Руководства</div></div>
                     <div id="logsContainer"></div>
                 </div>
             </div>
@@ -288,18 +412,39 @@
         const db = firebase.firestore();
 
         let currentUser = null;
-        let dbData = { staff: [], reports: [], logs: [] };
+        let selectedStaffFilter = 'all';
         let currentPastedImage = null;
+        let dbData = { staff: [], reports: [], news: [], vacations: [], promotions: [], logs: [] };
 
-        // Авто-подгрузка из облака Firebase в реальном времени
+        // Звук колокольчика
+        function playBellSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(1200, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.3);
+            } catch(e) {}
+        }
+
+        // Облачная синхронизация в реальном времени
         db.collection("appData").doc("main").onSnapshot((doc) => {
             if (doc.exists) {
                 dbData = doc.data();
                 if (!dbData.staff) dbData.staff = [];
                 if (!dbData.reports) dbData.reports = [];
+                if (!dbData.news) dbData.news = [];
+                if (!dbData.vacations) dbData.vacations = [];
+                if (!dbData.promotions) dbData.promotions = [];
                 if (!dbData.logs) dbData.logs = [];
-                
-                // Если база только создана — добавим дефолтного владельца
+
                 if (dbData.staff.length === 0) {
                     dbData.staff.push({ id: 'st-1', name: '6hoske', pass: '#6H!sKe99$SureBox2026', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0 });
                     saveCloudData();
@@ -308,6 +453,8 @@
                 if (currentUser) {
                     renderStaffTables();
                     renderSupportView();
+                    renderRequestsTables();
+                    renderNews();
                     renderLogs();
                     updateProfileStats();
                 }
@@ -322,8 +469,19 @@
 
         function addLogAction(actionText) {
             if (!dbData.logs) dbData.logs = [];
-            const time = new Date().toLocaleString();
-            dbData.logs.unshift({ author: currentUser.name, text: actionText, time: time });
+            dbData.logs.unshift({ author: currentUser.name, text: actionText, time: new Date().toLocaleString() });
+        }
+
+        function setTheme(theme) {
+            if (theme === 'green') document.documentElement.removeAttribute('data-theme');
+            else document.documentElement.setAttribute('data-theme', theme);
+        }
+
+        function generateRandomPass() {
+            const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+            let res = "";
+            for (let i = 0; i < 10; i++) res += chars.charAt(Math.floor(Math.random() * chars.length));
+            document.getElementById('newPass').value = res;
         }
 
         function handleLogin() {
@@ -344,20 +502,25 @@
             document.getElementById('userName').innerText = currentUser.name;
             document.getElementById('userRole').innerText = currentUser.role;
 
-            const isLeader = currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Владелец';
+            const isLeader = currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Администратор' || currentUser.role === 'Владелец';
             if (isLeader) {
                 document.getElementById('curatorTab').style.display = 'flex';
                 document.getElementById('supportTab').style.display = 'flex';
                 document.getElementById('logsTab').style.display = 'flex';
+                document.getElementById('vacationAdminCard').style.display = 'block';
+                document.getElementById('promotionAdminCard').style.display = 'block';
             }
 
             renderStaffTables();
             renderSupportView();
+            renderRequestsTables();
+            renderNews();
             renderLogs();
             updateProfileStats();
-            showToast(`Успешный вход!`);
+            showToast(`Добро пожаловать, ${currentUser.name}!`);
         }
 
+        // ОТПРАВКА ОТЧЕТА С ПОЛНОЙ ОЧИСТКОЙ ФОРМЫ
         function submitReport() {
             const cmd = document.getElementById('repCmd').value;
             const target = document.getElementById('repTarget').value.trim();
@@ -365,9 +528,11 @@
             const reason = document.getElementById('repReason').value.trim();
 
             if (!target || !duration || !reason) {
-                showToast('Заполните все поля!', true);
+                showToast('Заполните все поля отчета!', true);
                 return;
             }
+
+            playBellSound();
 
             const rep = { author: currentUser.name, cmd, target, duration, reason, img: currentPastedImage, time: new Date().toLocaleString() };
             dbData.reports.push(rep);
@@ -380,25 +545,30 @@
             }
 
             saveCloudData();
-            showToast('Отчет отправлен!');
+            showToast('Отчет успешно отправлен!');
 
+            // ПОЛНАЯ ОЧИСТКА ФОРМЫ
             document.getElementById('repTarget').value = '';
             document.getElementById('repDuration').value = '';
             document.getElementById('repReason').value = '';
+            document.getElementById('repCmd').selectedIndex = 0;
+            document.getElementById('previewImg').src = '';
             document.getElementById('previewImg').style.display = 'none';
+            document.getElementById('pasteZone').classList.remove('has-image');
             currentPastedImage = null;
         }
 
-        function deleteReport(globalIdx) {
-            if (!confirm('Удалить отчёт?')) return;
-            const rep = dbData.reports[globalIdx];
+        function deleteReport(idx) {
+            if (!confirm('Удалить этот отчёт? Норма сотрудника уменьшится.')) return;
+            playBellSound();
+            const rep = dbData.reports[idx];
             const u = dbData.staff.find(m => m.name === rep.author);
             if (u) {
                 if (rep.cmd === 'tempmute') u.mutes = Math.max(0, (u.mutes || 1) - 1);
                 else u.bans = Math.max(0, (u.bans || 1) - 1);
                 u.total = Math.max(0, (u.total || 1) - 1);
             }
-            dbData.reports.splice(globalIdx, 1);
+            dbData.reports.splice(idx, 1);
             saveCloudData();
             showToast('Отчет удален!');
         }
@@ -408,67 +578,202 @@
             const pass = document.getElementById('newPass').value.trim();
             const role = document.getElementById('newRole').value;
 
-            if (!log || !pass) return;
+            if (!log || !pass) { showToast('Заполните логин и пароль!', true); return; }
 
             dbData.staff.push({ id: 'st-' + Date.now(), name: log, pass: pass, role: role, mutes: 0, bans: 0, total: 0 });
-            addLogAction(`Создал аккаунт ${log} с ролью ${role}`);
+            addLogAction(`Создал аккаунт "${log}" с ролью "${role}"`);
             saveCloudData();
-            showToast(`Сотрудник ${log} добавлен!`);
+            showToast(`Аккаунт ${log} создан!`);
             document.getElementById('newLog').value = '';
             document.getElementById('newPass').value = '';
+        }
+
+        function changeUserRole(id) {
+            const selectEl = document.getElementById(`roleSel-${id}`);
+            if (!selectEl) return;
+            const member = dbData.staff.find(m => m.id === id);
+            if (member) {
+                addLogAction(`Изменил роль сотрудника ${member.name} с "${member.role}" на "${selectEl.value}"`);
+                member.role = selectEl.value;
+                saveCloudData();
+                showToast('Роль изменена!');
+            }
         }
 
         function deleteAccount(id) {
             const member = dbData.staff.find(m => m.id === id);
             if (member && confirm(`Снять сотрудника ${member.name}?`)) {
-                addLogAction(`Снял сотрудника ${member.name}`);
+                addLogAction(`Снял сотрудника с должности: ${member.name} (${member.role})`);
                 dbData.staff = dbData.staff.filter(m => m.id !== id);
                 saveCloudData();
                 showToast('Сотрудник снят!');
             }
         }
 
+        function submitVacation() {
+            const reason = document.getElementById('vacReason').value.trim();
+            const days = document.getElementById('vacDays').value.trim();
+            if (!reason || !days) return;
+            dbData.vacations.unshift({ author: currentUser.name, reason, days, status: 'На рассмотрении' });
+            saveCloudData();
+            showToast('Заявка на отпуск отправлена!');
+            document.getElementById('vacReason').value = '';
+            document.getElementById('vacDays').value = '';
+        }
+
+        function updateVacStatus(idx, status) {
+            dbData.vacations[idx].status = status;
+            saveCloudData();
+            renderRequestsTables();
+        }
+
+        function submitPromotion() {
+            const targetRole = document.getElementById('promTargetRole').value;
+            dbData.promotions.unshift({ author: currentUser.name, targetRole, status: 'На рассмотрении' });
+            saveCloudData();
+            showToast('Заявка на повышение отправлена!');
+        }
+
+        function updatePromStatus(idx, status) {
+            dbData.promotions[idx].status = status;
+            saveCloudData();
+            renderRequestsTables();
+        }
+
+        function generateWeeklyReport() {
+            let rows = dbData.staff.map(u => `<tr><td><b>${u.name}</b></td><td>${u.role}</td><td>${u.mutes || 0}</td><td>${u.bans || 0}</td></tr>`).join('');
+            dbData.news.unshift({
+                title: 'Итоги недели КП',
+                author: currentUser.name,
+                date: new Date().toLocaleDateString(),
+                content: `<table><thead><tr><th>Сотрудник</th><th>Роль</th><th>Мутов</th><th>Банов</th></tr></thead><tbody>${rows}</tbody></table>`
+            });
+            dbData.staff.forEach(u => { u.mutes = 0; u.bans = 0; });
+            saveCloudData();
+            renderNews();
+            showToast('Отчет недели опубликован в новости!');
+            switchTab('news');
+        }
+
         function renderStaffTables() {
             const tbody = document.getElementById('staffTable');
-            if (!tbody) return;
+            const passTbody = document.getElementById('passDbTable');
+            if (!tbody || !passTbody) return;
+
             tbody.innerHTML = dbData.staff.map(m => `
                 <tr>
                     <td><b>${m.name}</b></td>
                     <td><span style="color: var(--accent);">${m.role}</span></td>
-                    <td><button onclick="deleteAccount('${m.id}')" class="btn-sm btn-danger"><i class="fa-solid fa-user-minus"></i> Снять</button></td>
+                    <td>
+                        <select id="roleSel-${m.id}" class="role-select">
+                            <option value="Хелпер" ${m.role==='Хелпер'?'selected':''}>Хелпер</option>
+                            <option value="Ст. Хелпер" ${m.role==='Ст. Хелпер'?'selected':''}>Ст. Хелпер</option>
+                            <option value="Мл. Модератор" ${m.role==='Мл. Модератор'?'selected':''}>Мл. Модератор</option>
+                            <option value="Модератор" ${m.role==='Модератор'?'selected':''}>Модератор</option>
+                            <option value="Ст. Модератор" ${m.role==='Ст. Модератор'?'selected':''}>Ст. Модератор</option>
+                            <option value="Администратор" ${m.role==='Администратор'?'selected':''}>Администратор</option>
+                            <option value="Зам. Куратора" ${m.role==='Зам. Куратора'?'selected':''}>Зам. Куратора</option>
+                            <option value="Владелец" ${m.role==='Владелец'?'selected':''}>Владелец</option>
+                        </select>
+                        <button onclick="playBellSound(); changeUserRole('${m.id}')" class="btn-sm btn-warning" style="margin-left: 8px;">Изменить</button>
+                    </td>
+                    <td><button onclick="playBellSound(); deleteAccount('${m.id}')" class="btn-sm btn-danger"><i class="fa-solid fa-user-minus"></i> Снять</button></td>
                 </tr>
+            `).join('');
+
+            passTbody.innerHTML = dbData.staff.map(m => `
+                <tr><td><b>${m.name}</b></td><td style="color: var(--warning); font-family: monospace;">${m.pass}</td><td>${m.role}</td></tr>
             `).join('');
         }
 
         function renderSupportView() {
-            const container = document.getElementById('userReportsList');
-            if (!container) return;
-            container.innerHTML = dbData.reports.map((rep, idx) => `
-                <div class="report-item-card">
-                    <div>
-                        <b>${rep.author}</b> → ${rep.target} | <code>/${rep.cmd}</code> (${rep.duration})
-                        <div style="font-size: 13px; color: var(--text-muted);">${rep.reason}</div>
-                    </div>
-                    <button onclick="deleteReport(${idx})" class="btn-sm btn-danger"><i class="fa-solid fa-trash"></i></button>
+            const userCardsBox = document.getElementById('staffUserCards');
+            const reportsList = document.getElementById('userReportsList');
+            if (!userCardsBox || !reportsList) return;
+
+            userCardsBox.innerHTML = `
+                <div class="staff-user-card ${selectedStaffFilter === 'all' ? 'active' : ''}" onclick="playBellSound(); selectedStaffFilter='all'; renderSupportView()">
+                    <div><b>Все сотрудники</b></div>
+                    <small>${dbData.reports.length}</small>
                 </div>
+            ` + dbData.staff.map(m => `
+                <div class="staff-user-card ${selectedStaffFilter === m.name ? 'active' : ''}" onclick="playBellSound(); selectedStaffFilter='${m.name}'; renderSupportView()">
+                    <div><b>${m.name}</b><br><small style="color:var(--text-muted);">${m.role}</small></div>
+                    <span>${dbData.reports.filter(r => r.author === m.name).length}</span>
+                </div>
+            `).join('');
+
+            let filtered = dbData.reports;
+            if (selectedStaffFilter !== 'all') filtered = filtered.filter(r => r.author === selectedStaffFilter);
+
+            reportsList.innerHTML = filtered.length ? filtered.map((rep, idx) => `
+                <div class="report-item-card" onclick="playBellSound(); openModal(${dbData.reports.indexOf(rep)})" style="cursor: pointer;">
+                    <div><b>${rep.author}</b> → ${rep.target} | <code>/${rep.cmd}</code> (${rep.duration})<br><small style="color:var(--text-muted);">${rep.reason}</small></div>
+                    <button onclick="playBellSound(); deleteReport(${dbData.reports.indexOf(rep)})" class="btn-sm btn-danger"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('') : '<p style="color: var(--text-muted);">Отчетов нет</p>';
+        }
+
+        function renderRequestsTables() {
+            const vacTbody = document.getElementById('vacationTableBody');
+            const promTbody = document.getElementById('promotionTableBody');
+            if (!vacTbody || !promTbody) return;
+
+            vacTbody.innerHTML = dbData.vacations.map((v, i) => `
+                <tr><td><b>${v.author}</b></td><td>${v.reason}</td><td>${v.days}</td><td><b>${v.status}</b></td><td>
+                ${v.status==='На рассмотрении'?`<button onclick="updateVacStatus(${i}, 'Одобрено')" class="btn-sm btn-success">✓</button> <button onclick="updateVacStatus(${i}, 'Отклонено')" class="btn-sm btn-danger">✕</button>`:'-'}</td></tr>
+            `).join('');
+
+            promTbody.innerHTML = dbData.promotions.map((p, i) => `
+                <tr><td><b>${p.author}</b></td><td><span style="color:var(--accent);">${p.targetRole}</span></td><td><b>${p.status}</b></td><td>
+                ${p.status==='На рассмотрении'?`<button onclick="updatePromStatus(${i}, 'Одобрено')" class="btn-sm btn-success">✓</button> <button onclick="updatePromStatus(${i}, 'Отклонено')" class="btn-sm btn-danger">✕</button>`:'-'}</td></tr>
             `).join('');
         }
 
-        function renderLogs() {
-            const logsBox = document.getElementById('logsContainer');
-            if (!logsBox) return;
-            logsBox.innerHTML = (dbData.logs || []).map(l => `
-                <div class="log-item">
-                    <b>${l.author}</b>: ${l.text} <span style="float: right; color: var(--text-muted); font-size: 12px;">${l.time}</span>
+        function renderNews() {
+            const container = document.getElementById('newsContainer');
+            if (!container) return;
+            container.innerHTML = dbData.news.length ? dbData.news.map(n => `
+                <div class="card">
+                    <div class="card-title"><div><i class="fa-solid fa-bullhorn"></i> ${n.title}</div></div>
+                    <p style="color:var(--text-muted); margin-bottom:15px;">Автор: <b>${n.author}</b> (${n.date})</p>
+                    ${n.content}
                 </div>
-            `).join('');
+            `).join('') : '<div class="card"><div class="card-title"><div><i class="fa-solid fa-bullhorn"></i> Новости</div></div><p style="color:var(--text-muted);">Пока нет новостей.</p></div>';
         }
+
+        function renderLogs() {
+            const container = document.getElementById('logsContainer');
+            if (!container) return;
+            container.innerHTML = (dbData.logs || []).length ? dbData.logs.map(l => `
+                <div class="log-item">
+                    <div><b>${l.author}</b>: ${l.text}</div>
+                    <div style="color: var(--text-muted); font-size: 12px;">${l.time}</div>
+                </div>
+            `).join('') : '<p style="color: var(--text-muted);">Логов пока нет</p>';
+        }
+
+        function openModal(idx) {
+            const rep = dbData.reports[idx];
+            if (!rep) return;
+            document.getElementById('modalBody').innerHTML = `
+                <p><b>Сотрудник:</b> ${rep.author}</p>
+                <p><b>Нарушитель:</b> ${rep.target}</p>
+                <p><b>Команда:</b> /${rep.cmd} (${rep.duration})</p>
+                <p><b>Причина:</b> ${rep.reason}</p>
+                ${rep.img ? `<img src="${rep.img}" style="width:100%; max-height:350px; object-fit:contain; margin-top:15px; border-radius:10px;">` : ''}
+            `;
+            document.getElementById('reportModal').style.display = 'flex';
+        }
+
+        function closeModal() { document.getElementById('reportModal').style.display = 'none'; }
 
         function updateProfileStats() {
             if (!currentUser) return;
             const u = dbData.staff.find(m => m.name === currentUser.name) || currentUser;
             document.getElementById('totalAll').innerText = u.total || 0;
             document.getElementById('totalWeek').innerText = `${u.mutes || 0} / 60`;
+            document.getElementById('weekProgress').style.width = Math.min(100, Math.round(((u.mutes || 0) / 60) * 100)) + '%';
         }
 
         function showToast(msg, isError = false) {
@@ -490,17 +795,17 @@
 
         document.addEventListener('paste', function(e) {
             const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-            for (let index in items) {
-                const item = items[index];
-                if (item.kind === 'file') {
-                    const blob = item.getAsFile();
+            for (let i in items) {
+                if (items[i].kind === 'file') {
                     const reader = new FileReader();
                     reader.onload = function(event) {
                         currentPastedImage = event.target.result;
-                        document.getElementById('previewImg').src = currentPastedImage;
-                        document.getElementById('previewImg').style.display = 'block';
+                        const img = document.getElementById('previewImg');
+                        img.src = currentPastedImage;
+                        img.style.display = 'block';
+                        document.getElementById('pasteZone').classList.add('has-image');
                     };
-                    reader.readAsDataURL(blob);
+                    reader.readAsDataURL(items[i].getAsFile());
                 }
             }
         });
