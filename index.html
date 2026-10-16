@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SureBox | Панель Управления КП (Clean Login)</title>
+    <title>SureBox | Панель Управления КП (Fixed Login)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <!-- Firebase SDK -->
@@ -177,7 +177,7 @@
         </div>
     </div>
 
-    <!-- Экран Входа (абсолютно чистые поля, без автозаполнения) -->
+    <!-- Экран Входа -->
     <div class="auth-container" id="authScreen">
         <div class="auth-card">
             <h1>Sure<span>Box</span></h1>
@@ -191,7 +191,7 @@
                     <label>Пароль</label>
                     <input type="password" id="passInput" class="form-control" placeholder="Введите пароль">
                 </div>
-                <button type="button" onclick="handleLoginClick()" class="btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Войти в панель</button>
+                <button type="button" id="loginBtn" class="btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Войти в панель</button>
             </div>
         </div>
     </div>
@@ -504,7 +504,6 @@
                     if (u.createdAt === undefined) u.createdAt = Date.now();
                 });
 
-                // Гарантируем наличие владельца с твоим сложным паролем
                 let admin = dbData.staff.find(m => m.name === '6hoske');
                 if (!admin) {
                     dbData.staff.push({ id: 'st-1', name: '6hoske', pass: 'X#9_kL$mP7!zQ2_v', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0, warns: 0, createdAt: Date.now() });
@@ -577,49 +576,55 @@
             }
         }
 
-        function handleLoginClick() {
-            playBellSound();
-            const log = document.getElementById('loginInput').value.trim();
-            const pass = document.getElementById('passInput').value.trim();
+        // Прямое и надежное событие на кнопку входа через JS
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginBtn = document.getElementById('loginBtn');
+            if (loginBtn) {
+                loginBtn.addEventListener('click', () => {
+                    playBellSound();
+                    const log = document.getElementById('loginInput').value.trim();
+                    const pass = document.getElementById('passInput').value.trim();
 
-            console.log("Попытка входа с логином:", log);
+                    console.log("Попытка входа с логином:", log);
 
-            const userFound = dbData.staff.find(u => u.name === log && u.pass === pass);
-            if (userFound) {
-                currentUser = userFound;
-            } else {
-                showToast('Неверный логин или пароль!', true);
-                return;
+                    const userFound = dbData.staff.find(u => u.name === log && u.pass === pass);
+                    if (userFound) {
+                        currentUser = userFound;
+                    } else {
+                        showToast('Неверный логин или пароль!', true);
+                        return;
+                    }
+
+                    document.getElementById('authScreen').style.display = 'none';
+                    document.getElementById('appScreen').style.display = 'block';
+
+                    document.getElementById('userName').innerText = currentUser.name;
+                    document.getElementById('userRole').innerText = currentUser.role;
+
+                    const isLeader = currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Администратор' || currentUser.role === 'Владелец';
+                    if (isLeader) {
+                        document.getElementById('curatorTab').style.display = 'flex';
+                        document.getElementById('supportTab').style.display = 'flex';
+                        document.getElementById('logsTab').style.display = 'flex';
+                        document.getElementById('vacationAdminCard').style.display = 'block';
+                        document.getElementById('promotionAdminCard').style.display = 'block';
+                        document.getElementById('warnManageCard').style.display = 'block';
+                    }
+
+                    document.getElementById('normHelperMutes').value = dbData.norms.helperMutes;
+                    document.getElementById('normModMutes').value = dbData.norms.modMutes;
+                    document.getElementById('normModBans').value = dbData.norms.modBans;
+
+                    renderStaffTables();
+                    renderSupportView();
+                    renderRequestsTables();
+                    renderNews();
+                    renderLogs();
+                    updateProfileStats();
+                    showToast(`Добро пожаловать, ${currentUser.name}!`);
+                });
             }
-
-            document.getElementById('authScreen').style.display = 'none';
-            document.getElementById('appScreen').style.display = 'block';
-
-            document.getElementById('userName').innerText = currentUser.name;
-            document.getElementById('userRole').innerText = currentUser.role;
-
-            const isLeader = currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Администратор' || currentUser.role === 'Владелец';
-            if (isLeader) {
-                document.getElementById('curatorTab').style.display = 'flex';
-                document.getElementById('supportTab').style.display = 'flex';
-                document.getElementById('logsTab').style.display = 'flex';
-                document.getElementById('vacationAdminCard').style.display = 'block';
-                document.getElementById('promotionAdminCard').style.display = 'block';
-                document.getElementById('warnManageCard').style.display = 'block';
-            }
-
-            document.getElementById('normHelperMutes').value = dbData.norms.helperMutes;
-            document.getElementById('normModMutes').value = dbData.norms.modMutes;
-            document.getElementById('normModBans').value = dbData.norms.modBans;
-
-            renderStaffTables();
-            renderSupportView();
-            renderRequestsTables();
-            renderNews();
-            renderLogs();
-            updateProfileStats();
-            showToast(`Добро пожаловать, ${currentUser.name}!`);
-        }
+        });
 
         function submitReport() {
             const cmd = document.getElementById('repCmd').value;
@@ -792,7 +797,7 @@
                 else if (isNewbie) colorStyle = 'color: var(--info);';
                 else if (!normDone) colorStyle = 'color: var(--danger);';
 
-                return `<tr><td><b style="${colorStyle}">${u.name}</b></td><td>${u.role}</td><td>${u.mutes || 0}</td><td>${u.bans || 0}</td><td style="color:var(--accent);"><b>${sal} CP</b></td></tr>`;
+                return `<tr><td><b style="${colorStyle}">${u.name}</b></td><td>${u.role}</td><td>${u.mutes \vert{}\vert{} 0}</td><td>${u.bans || 0}</td><td style="color:var(--accent);"><b>${sal} CP</b></td></tr>`;
             }).join('');
 
             dbData.news.unshift({
@@ -857,11 +862,9 @@
                 <h3>${member.name} (${member.role})</h3>
                 <hr style="border-color: var(--border); margin: 15px 0;">
                 <p><b>Отчетов на новой неделе:</b> ${member.total || 0}</p>
-                <p><b>Муты:</b> ${member.mutes || 0} / ${reqMutes}</p>
-                ${!isHelper ? `<p><b>Баны:</b> ${member.bans \vert{}\vert{} 0} /${reqBans}</p>` : ''}
+                <p><b>Муты:</b> ${member.mutes || 0} / ${reqMutes}</p>${!isHelper ? `<p><b>Баны:</b> ${member.bans || 0} / ${reqBans}</p>` : ''}
                 <p><b>Зарплата:</b> <span style="color: var(--accent); font-weight: bold;">${sal} CP</span></p>
-                <p style="margin-top: 15px;"><b>Варны:</b> ${member.warns || 0}/3</p>
-                ${(member.warns || 0) > 0 ? `<p style="color: var(--warning);">Причина: ${member.warnReason}<br>Отработка: ${member.warnProgress} /${member.warnRequired} мутов</p>` : '<p style="color: var(--text-muted);">Активных варнов нет.</p>'}
+                <p style="margin-top: 15px;"><b>Варны:</b> ${member.warns \vert{}\vert{} 0}/3</p>${(member.warns || 0) > 0 ? `<p style="color: var(--warning);">Причина: ${member.warnReason}<br>Отработка: ${member.warnProgress} / ${member.warnRequired} мутов</p>` : '<p style="color: var(--text-muted);">Активных варнов нет.</p>'}
             `;
             document.getElementById('profileInspectModal').style.display = 'flex';
         }
@@ -881,139 +884,4 @@
                     <small>${dbData.reports.length}</small>
                 </div>
             ` + dbData.staff.map(m => `
-                <div class="staff-user-card ${selectedStaffFilter === m.name ? 'active' : ''}" onclick="playBellSound(); selectedStaffFilter='${m.name}'; renderSupportView()">
-                    <div><b>${m.name}</b><br><small style="color:var(--text-muted);">${m.role}</small></div>
-                    <span>${dbData.reports.filter(r => r.author === m.name).length}</span>
-                </div>
-            `).join('');
-
-            let filtered = dbData.reports;
-            if (selectedStaffFilter !== 'all') filtered = filtered.filter(r => r.author === selectedStaffFilter);
-
-            reportsList.innerHTML = filtered.length ? filtered.map((rep, idx) => `
-                <div class="report-item-card" onclick="playBellSound(); openModal(${dbData.reports.indexOf(rep)})" style="cursor: pointer;">
-                    <div><b>${rep.author}</b> → ${rep.target} | <code>/${rep.cmd}</code> (${rep.duration})<br><small style="color:var(--text-muted);">${rep.reason}</small></div>
-                    <button onclick="playBellSound(); deleteReport(${dbData.reports.indexOf(rep)})" class="btn-sm btn-danger"><i class="fa-solid fa-trash"></i></button>
-                </div>
-            `).join('') : '<p style="color: var(--text-muted);">Отчетов нет</p>';
-        }
-
-        function renderRequestsTables() {
-            const vacTbody = document.getElementById('vacationTableBody');
-            const promTbody = document.getElementById('promotionTableBody');
-            if (!vacTbody || !promTbody) return;
-
-            vacTbody.innerHTML = dbData.vacations.map((v, i) => `
-                <tr><td><b>${v.author}</b></td><td>${v.reason}</td><td>${v.days}</td><td><b>${v.status}</b></td><td>
-                ${v.status==='На рассмотрении'?`<button onclick="updateVacStatus(${i}, 'Одобрено')" class="btn-sm btn-success">✓</button> <button onclick="updateVacStatus(${i}, 'Отклонено')" class="btn-sm btn-danger">✕</button>`:'-'}</td></tr>
-            `).join('');
-
-            promTbody.innerHTML = dbData.promotions.map((p, i) => `
-                <tr><td><b>${p.author}</b></td><td><span style="color:var(--accent);">${p.targetRole}</span></td><td><b>${p.status}</b></td><td>
-                ${p.status==='На рассмотрении'?`<button onclick="updatePromStatus(${i}, 'Одобрено')" class="btn-sm btn-success">✓</button> <button onclick="updatePromStatus(${i}, 'Отклонено')" class="btn-sm btn-danger">✕</button>`:'-'}</td></tr>
-            `).join('');
-        }
-
-        function renderNews() {
-            const container = document.getElementById('newsContainer');
-            if (!container) return;
-            container.innerHTML = dbData.news.length ? dbData.news.map(n => `
-                <div class="card">
-                    <div class="card-title"><div><i class="fa-solid fa-bullhorn"></i> ${n.title}</div></div>
-                    <p style="color:var(--text-muted); margin-bottom:15px;">Автор: <b>${n.author}</b> (${n.date})</p>
-                    ${n.content}
-                </div>
-            `).join('') : '<div class="card"><div class="card-title"><div><i class="fa-solid fa-bullhorn"></i> Новости</div></div><p style="color:var(--text-muted);">Пока нет новостей.</p></div>';
-        }
-
-        function renderLogs() {
-            const container = document.getElementById('logsContainer');
-            if (!container) return;
-            container.innerHTML = (dbData.logs || []).length ? dbData.logs.map(l => `
-                <div class="log-item">
-                    <div><b>${l.author}</b>: ${l.text}</div>
-                    <div style="color: var(--text-muted); font-size: 12px;">${l.time}</div>
-                </div>
-            `).join('') : '<p style="color: var(--text-muted);">Логов пока нет</p>';
-        }
-
-        function openModal(idx) {
-            const rep = dbData.reports[idx];
-            if (!rep) return;
-            document.getElementById('modalBody').innerHTML = `
-                <p><b>Сотрудник:</b> ${rep.author}</p>
-                <p><b>Нарушитель:</b> ${rep.target}</p>
-                <p><b>Команда:</b> /${rep.cmd} (${rep.duration})</p>
-                <p><b>Причина:</b> ${rep.reason}</p>
-                ${rep.img ? `<img src="${rep.img}" style="width:100%; max-height:350px; object-fit:contain; margin-top:15px; border-radius:10px;">` : ''}
-            `;
-            document.getElementById('reportModal').style.display = 'flex';
-        }
-
-        function closeModal() { document.getElementById('reportModal').style.display = 'none'; }
-
-        function updateProfileStats() {
-            if (!currentUser) return;
-            const u = dbData.staff.find(m => m.name === currentUser.name) || currentUser;
-            document.getElementById('totalAll').innerText = u.total || 0;
-
-            const isHelper = u.role.includes('Хелпер');
-            const reqMutes = isHelper ? dbData.norms.helperMutes : dbData.norms.modMutes;
-            const reqBans = isHelper ? 0 : dbData.norms.modBans;
-
-            if (isHelper) {
-                document.getElementById('totalWeek').innerText = `${u.mutes || 0} / ${reqMutes} мутов`;
-                document.getElementById('weekProgress').style.width = Math.min(100, Math.round(((u.mutes || 0) / reqMutes) * 100)) + '%';
-            } else {
-                document.getElementById('totalWeek').innerText = `Муты: ${u.mutes || 0}/${reqMutes} | Баны: ${u.bans || 0}/${reqBans}`;
-                document.getElementById('weekProgress').style.width = Math.min(100, Math.round((((u.mutes || 0) + (u.bans || 0)) / (reqMutes + reqBans)) * 100)) + '%';
-            }
-
-            const salary = calculateUserSalary(u);
-            document.getElementById('userSalary').innerText = `${salary} CP`;
-
-            const warnsCount = u.warns || 0;
-            document.getElementById('userWarns').innerText = `${warnsCount}/3`;
-            if (warnsCount > 0) {
-                document.getElementById('userWarnDetails').innerHTML = `<b>Причина:</b> ${u.warnReason}<br><b>Отработка:</b> нужно ещё ${Math.max(0, u.warnRequired - u.warnProgress)} мутов (${u.warnProgress}/${u.warnRequired})`;
-            } else {
-                document.getElementById('userWarnDetails').innerHTML = `У вас нет активных предупреждений. Отличная работа!`;
-            }
-        }
-
-        function showToast(msg, isError = false) {
-            const toast = document.createElement('div');
-            toast.className = `toast ${isError ? 'error' : 'success'}`;
-            toast.innerHTML = `<i class="fa-solid ${isError ? 'fa-circle-xmark' : 'fa-circle-check'}"></i> ${msg}`;
-            document.getElementById('toastBox').appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(e => e.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active');
-            document.getElementById('tabBtn-' + tabId).classList.add('active');
-        }
-
-        function logout() { location.reload(); }
-
-        document.addEventListener('paste', function(e) {
-            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-            for (let i in items) {
-                if (items[i].kind === 'file') {
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        currentPastedImage = event.target.result;
-                        const img = document.getElementById('previewImg');
-                        img.src = currentPastedImage;
-                        img.style.display = 'block';
-                        document.getElementById('pasteZone').classList.add('has-image');
-                    };
-                    reader.readAsDataURL(items[i].getAsFile());
-                }
-            }
-        });
-    </script>
-</body>
-</html>
+                <div class="staff-user-card ${selectedStaffFilter === m.name ? 'active' : ''}" onclick="playBellSound(); selectedStaffFilter='${m.name
