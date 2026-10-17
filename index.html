@@ -286,6 +286,73 @@
 
         .privilege-red{color:#ff3b4f!important;text-shadow:0 0 12px rgba(255,59,79,.45);font-weight:900}.role-order{display:flex;align-items:center;gap:8px}.role-order .num{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--accent-glow);color:var(--accent);font-weight:900}.friend-tag{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.05);font-size:11px}.shop-media{width:100%;height:130px;object-fit:cover;border-radius:12px;border:1px solid var(--border);background:#05080d}.music-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}.music-card{border:1px solid var(--border);border-radius:15px;padding:14px;background:linear-gradient(145deg,var(--bg-input),rgba(130,90,255,.08))}.music-card iframe{width:100%;height:152px;border:0;border-radius:10px}.request-thread{border:1px solid var(--border);background:var(--bg-input);border-radius:13px;padding:13px;margin:8px 0}.request-thread.closed{opacity:.72}.request-msg{padding:9px 11px;border-radius:10px;background:rgba(255,255,255,.04);margin-top:7px}.request-msg b{color:var(--accent)}
         @media(max-width:760px){.music-grid{grid-template-columns:1fr}.shop-media{height:105px}.role-order{align-items:flex-start}.report-meta-grid{grid-template-columns:1fr}}
+
+        /* SureBox Neon v5 — full-site theme system + performance tuning */
+        :root {
+            --surface-deep: #070709;
+            --surface-panel: rgba(18,18,24,.96);
+            --surface-soft: #0f0f14;
+            --surface-hover: rgba(255,255,255,.045);
+            --header-bg: rgba(8,8,12,.94);
+            --overlay-bg: rgba(0,0,0,.78);
+            --line-soft: rgba(255,255,255,.09);
+            --text-on-accent: #fff;
+            --theme-shadow: 0 14px 38px rgba(0,0,0,.28);
+        }
+        [data-theme="pink"] { --bg-main:#14070b; --bg-card:rgba(30,10,16,.96); --bg-input:#190a10; --accent:#ff4770; --accent-glow:rgba(255,71,112,.28); --border:rgba(255,71,112,.30); --surface-deep:#14070b; --surface-panel:rgba(30,10,16,.96); --surface-soft:#190a10; --surface-hover:rgba(255,71,112,.08); --header-bg:rgba(18,6,11,.95); }
+        [data-theme="blue"] { --bg-main:#06101c; --bg-card:rgba(8,22,38,.96); --bg-input:#091827; --accent:#3d9cff; --accent-glow:rgba(61,156,255,.28); --border:rgba(61,156,255,.30); --surface-deep:#06101c; --surface-panel:rgba(8,22,38,.96); --surface-soft:#091827; --surface-hover:rgba(61,156,255,.08); --header-bg:rgba(4,12,22,.95); }
+        [data-theme="purple"] { --bg-main:#0d0718; --bg-card:rgba(25,12,43,.96); --bg-input:#140a22; --accent:#a855f7; --accent-glow:rgba(168,85,247,.30); --border:rgba(168,85,247,.30); --surface-deep:#0d0718; --surface-panel:rgba(25,12,43,.96); --surface-soft:#140a22; --surface-hover:rgba(168,85,247,.09); --header-bg:rgba(10,5,20,.95); }
+        [data-theme="orange"] { --bg-main:#160c04; --bg-card:rgba(34,18,7,.96); --bg-input:#1d1006; --accent:#ffad3d; --accent-glow:rgba(255,173,61,.28); --border:rgba(255,173,61,.30); --surface-deep:#160c04; --surface-panel:rgba(34,18,7,.96); --surface-soft:#1d1006; --surface-hover:rgba(255,173,61,.08); --header-bg:rgba(18,9,3,.95); }
+        [data-theme="cyan"] { --bg-main:#031117; --bg-card:rgba(5,25,31,.96); --bg-input:#061b22; --accent:#00d9ff; --accent-glow:rgba(0,217,255,.30); --border:rgba(0,217,255,.30); --surface-deep:#031117; --surface-panel:rgba(5,25,31,.96); --surface-soft:#061b22; --surface-hover:rgba(0,217,255,.08); --header-bg:rgba(2,12,16,.95); }
+        [data-theme="gold"] { --bg-main:#140f04; --bg-card:rgba(31,23,7,.96); --bg-input:#1a1406; --accent:#f5c542; --accent-glow:rgba(245,197,66,.28); --border:rgba(245,197,66,.30); --surface-deep:#140f04; --surface-panel:rgba(31,23,7,.96); --surface-soft:#1a1406; --surface-hover:rgba(245,197,66,.08); --header-bg:rgba(17,12,3,.95); }
+        [data-theme="crimson"] { --bg-main:#16050a; --bg-card:rgba(35,8,17,.96); --bg-input:#1d0910; --accent:#e11d48; --accent-glow:rgba(225,29,72,.30); --border:rgba(225,29,72,.30); --surface-deep:#16050a; --surface-panel:rgba(35,8,17,.96); --surface-soft:#1d0910; --surface-hover:rgba(225,29,72,.08); --header-bg:rgba(18,4,9,.95); }
+        [data-theme="ice"] { --bg-main:#071018; --bg-card:rgba(14,28,39,.96); --bg-input:#0a1721; --accent:#a5d8ff; --accent-glow:rgba(165,216,255,.25); --border:rgba(165,216,255,.28); --surface-deep:#071018; --surface-panel:rgba(14,28,39,.96); --surface-soft:#0a1721; --surface-hover:rgba(165,216,255,.08); --header-bg:rgba(5,12,19,.95); }
+        [data-theme="matrix"] { --bg-main:#061006; --bg-card:rgba(9,28,9,.96); --bg-input:#0a1b0a; --accent:#a3ff12; --accent-glow:rgba(163,255,18,.22); --border:rgba(163,255,18,.25); --surface-deep:#061006; --surface-panel:rgba(9,28,9,.96); --surface-soft:#0a1b0a; --surface-hover:rgba(163,255,18,.07); --header-bg:rgba(4,11,4,.95); }
+        [data-theme="stealth"] { --surface-deep:#05080d; --surface-panel:rgba(12,19,29,.96); --surface-soft:#09111c; --header-bg:rgba(4,7,12,.95); --surface-hover:rgba(69,217,255,.07); }
+        [data-theme="graphite"] { --surface-deep:#17191d; --surface-panel:rgba(32,35,41,.97); --surface-soft:#24272e; --header-bg:rgba(20,22,26,.96); --surface-hover:rgba(184,197,214,.08); }
+        [data-theme="white"] { --surface-deep:#f4f6fa; --surface-panel:rgba(255,255,255,.97); --surface-soft:#edf1f7; --header-bg:rgba(255,255,255,.96); --surface-hover:rgba(22,119,255,.06); --overlay-bg:rgba(30,40,55,.42); --line-soft:rgba(30,45,65,.12); --text-on-accent:#fff; --theme-shadow:0 12px 30px rgba(40,55,80,.12); }
+        [data-theme="milk"] { --surface-deep:#e9e5dc; --surface-panel:rgba(250,248,242,.97); --surface-soft:#f1eee6; --header-bg:rgba(250,248,242,.96); --surface-hover:rgba(66,107,105,.07); --overlay-bg:rgba(45,42,35,.40); --line-soft:rgba(55,65,60,.12); --text-on-accent:#fff; --theme-shadow:0 12px 30px rgba(55,50,40,.12); }
+
+        body { background-color:var(--surface-deep); }
+        header, .auth-container { background:var(--header-bg)!important; color:var(--text-main); }
+        .sync-badge, .user-badge, .theme-switcher, .toast, .card, .modal-content,
+        .nav-tab, .staff-user-card, .report-item-card, .stat-card, .mini-stat,
+        .log-item, .request-thread, .shop-item, .music-card, .notice-item,
+        .settings-line, .profile-banner, .dashboard-hero, .staff-showcase-card {
+            color:var(--text-main);
+        }
+        .sync-badge, .theme-switcher { background:var(--surface-panel)!important; box-shadow:var(--theme-shadow)!important; }
+        .modal-overlay { background:var(--overlay-bg)!important; }
+        .card, .modal-content, .auth-card { background:var(--surface-panel)!important; box-shadow:var(--theme-shadow); }
+        .nav-tab, .staff-user-card, .report-item-card, .stat-card, .mini-stat, .notice-item, .shop-item, .music-card, .request-thread, .log-item { background:var(--surface-soft)!important; }
+        .form-control, .role-select { background:var(--surface-soft)!important; color:var(--text-main)!important; }
+        .form-control::placeholder { color:var(--text-muted)!important; }
+        .progress-bar { background:var(--line-soft)!important; }
+        .status-pill { background:var(--surface-hover)!important; color:var(--text-main); }
+        .settings-line { border-bottom-color:var(--line-soft)!important; }
+        table tr:hover td { background:var(--surface-hover)!important; }
+        th { color:var(--accent)!important; border-color:var(--border)!important; }
+        td { border-color:var(--line-soft)!important; }
+        .btn-primary { color:var(--text-on-accent)!important; }
+        .btn-primary, .btn-success, .btn-danger, .btn-warning { transition:transform .16s ease,filter .16s ease,box-shadow .16s ease,background .16s ease; }
+        .btn-primary:hover, .btn-success:hover, .btn-danger:hover, .btn-warning:hover { filter:brightness(1.08); }
+        .site-bg-preview { background:linear-gradient(135deg,var(--surface-soft),var(--surface-panel))!important; color:var(--text-muted)!important; }
+        .staff-showcase-card { background:linear-gradient(120deg,var(--surface-soft),var(--surface-panel))!important; border-color:var(--border)!important; }
+        .staff-showcase-name, .staff-showcase-role, .staff-showcase-title { color:var(--text-main)!important; }
+        .staff-showcase-role { background:var(--surface-hover)!important; border-color:var(--border)!important; }
+        .dashboard-hero { background:linear-gradient(100deg,var(--surface-panel),var(--surface-soft))!important; border-color:var(--border)!important; }
+        .dashboard-hero-icon { background:var(--surface-soft)!important; border-color:var(--border)!important; color:var(--accent)!important; }
+        .theme-circle { border-color:var(--line-soft)!important; }
+
+        /* Don't animate every property of every DOM node — this was a major source of jank. */
+        * { transition-property:color,background-color,border-color,box-shadow,opacity,transform; transition-duration:.16s; transition-timing-function:ease; }
+        .no-animations *, .no-animations *::before, .no-animations *::after { transition:none!important; animation:none!important; }
+        @media (max-width:760px) {
+            .card, .toast, .modal-content, .theme-switcher, .sync-badge { backdrop-filter:none!important; }
+            .card { box-shadow:0 8px 20px rgba(0,0,0,.18)!important; }
+        }
+        @media (prefers-reduced-motion:reduce) { * { transition:none!important; animation:none!important; } }
+
 </style>
 
 <style id="surebox-neon-v4">
@@ -959,11 +1026,33 @@ header{
         let saveQueue = Promise.resolve();
         let saveRequested = false;
         let saveInProgress = false;
+        let saveTimer = null;
         let unsavedChanges = false;
         function saveCloudData() {
             if(!apiToken){const st=document.getElementById('syncText');if(st)st.textContent='Войдите для сохранения';return Promise.reject(new Error('Нет сессии'));}
-            unsavedChanges=true;saveRequested=true;if(saveInProgress)return saveQueue;saveInProgress=true;
-            saveQueue=(async()=>{const st=document.getElementById('syncText');while(saveRequested){saveRequested=false;if(st)st.textContent='Сохранение…';try{await apiRequest('/api/sync',{method:'POST',body:JSON.stringify(dbData)});unsavedChanges=false;if(st)st.textContent='Синхронизировано';}catch(err){unsavedChanges=true;if(st)st.textContent='Не сохранено — сервер не подтвердил запись';showToast('Сохранение не подтверждено сервером: '+(err.message||'ошибка сети'),true);throw err;}}})().finally(()=>{saveInProgress=false;});return saveQueue;
+            unsavedChanges=true; saveRequested=true;
+            const st=document.getElementById('syncText'); if(st)st.textContent='Ожидание сохранения…';
+            clearTimeout(saveTimer);
+            saveTimer=setTimeout(()=>{
+                if(saveInProgress)return;
+                saveInProgress=true;
+                saveQueue=(async()=>{
+                    while(saveRequested){
+                        saveRequested=false;
+                        if(st)st.textContent='Сохранение…';
+                        try {
+                            // Serialize only once, at the moment the newest coalesced save is sent.
+                            const snapshot=JSON.stringify(dbData);
+                            await apiRequest('/api/sync',{method:'POST',body:snapshot});
+                            unsavedChanges=false; if(st)st.textContent='Синхронизировано';
+                        } catch(err) {
+                            unsavedChanges=true; if(st)st.textContent='Не сохранено — сервер не подтвердил запись';
+                            showToast('Сохранение не подтверждено сервером: '+(err.message||'ошибка сети'),true);
+                        }
+                    }
+                })().finally(()=>{saveInProgress=false;});
+            },700);
+            return saveQueue;
         }
 
         function addLogAction(actionText) {
@@ -973,8 +1062,10 @@ header{
         }
 
         function setTheme(theme) {
-            if (theme === 'green') document.documentElement.removeAttribute('data-theme');
-            else document.documentElement.setAttribute('data-theme', theme);
+            const root=document.documentElement;
+            if (theme === 'green') root.removeAttribute('data-theme');
+            else root.setAttribute('data-theme', theme);
+            document.body?.setAttribute('data-theme',theme);
             localStorage.setItem('surebox_theme', theme);
             const picker = document.getElementById('themeSelect');
             if (picker) picker.value = theme;
@@ -997,6 +1088,7 @@ header{
         function isLeadershipRole(role){return roleRank(role)>=60;}
         function isLeaderUser(){return !!currentUser&&isLeadershipRole(currentUser.role);}
         function canEditReportsUser(){return !!currentUser&&roleRank(currentUser.role)>=10;}
+        function canDeleteReportsUser(){return !!currentUser&&roleRank(currentUser.role)>=80;}
         function canManageRewardsUser(){return !!currentUser&&roleRank(currentUser.role)>=70;}
         function isOwnerCurator() { return !!currentUser && /^(куратор|куратор \(владелец\)|владелец)$/i.test(String(currentUser.role||'').trim()); }
         function applyRoleVisibility() {
@@ -1121,11 +1213,24 @@ header{
             catch(e){if(e.code==='REPORT_CONFLICT')await loadCloudData();showToast('Изменения НЕ сохранены: '+(e.message||'ошибка сети'),true);renderSupportView();}finally{if(btn)btn.disabled=false;}
         }
         async function showReportAudit(id){
-            try{const result=await apiRequest('/api/reports/'+encodeURIComponent(id)+'/audit'),box=document.getElementById('modalBody');box.innerHTML=`<div class="card" style="margin:0"><div class="card-title"><div><i class="fa-solid fa-clock-rotate-left"></i> История отчёта</div><button class="btn-sm" onclick="openModalById('${escapeHtml(id)}')">Назад</button></div>${(result.audit||[]).map(a=>`<div class="notice-item"><b>${a.action==='create'?'Создание':'Редактирование'}</b> · ${escapeHtml(a.actor)} · ${escapeHtml(formatDate(a.at))}<div class="muted">Версия: ${escapeHtml(a.conflict_version||'—')}</div></div>`).join('')||'<p class="muted">История отсутствует.</p>'}</div>`;}catch(e){showToast('Не удалось загрузить историю: '+e.message,true);}
+            try{const result=await apiRequest('/api/reports/'+encodeURIComponent(id)+'/audit'),box=document.getElementById('modalBody');box.innerHTML=`<div class="card" style="margin:0"><div class="card-title"><div><i class="fa-solid fa-clock-rotate-left"></i> История отчёта</div><button class="btn-sm" onclick="openModalById('${escapeHtml(id)}')">Назад</button></div>${(result.audit||[]).map(a=>`<div class="notice-item"><b>${a.action==='create'?'Создание':(a.action==='delete'?'Удаление':'Редактирование')}</b> · ${escapeHtml(a.actor)} · ${escapeHtml(formatDate(a.at))}<div class="muted">Версия: ${escapeHtml(a.conflict_version||'—')}</div></div>`).join('')||'<p class="muted">История отсутствует.</p>'}</div>`;}catch(e){showToast('Не удалось загрузить историю: '+e.message,true);}
         }
         function openModalById(id){const rep=dbData.reports.find(r=>String(r.id)===String(id));if(rep)openModal(dbData.reports.indexOf(rep));}
 
-        function deleteReport(){showToast('Удаление отчётов отключено для защиты аудита и истории данных.',true);}
+        async function deleteReport(id){
+            if(!canDeleteReportsUser()){showToast('Удалять отчёты может только куратор и выше.',true);return;}
+            const rep=dbData.reports.find(r=>String(r.id)===String(id));
+            if(!rep){showToast('Отчёт не найден.',true);return;}
+            const reason=prompt('Причина удаления отчёта (обязательно):','');
+            if(reason===null)return;
+            if(!reason.trim()){showToast('Укажи причину удаления.',true);return;}
+            if(!confirm(`Удалить отчёт ${rep.id}? Сам отчёт исчезнет из активного списка, но аудит удаления сохранится.`))return;
+            try{
+                const result=await apiRequest('/api/reports/'+encodeURIComponent(id),{method:'DELETE',body:JSON.stringify({reason:reason.trim()})});
+                if(!result?.ok)throw new Error('Сервер не подтвердил удаление.');
+                await loadCloudData(); closeModal(); renderAllAfterDataChange(); showToast('Отчёт удалён. Аудит сохранён.');
+            }catch(e){showToast('Отчёт НЕ удалён: '+(e.message||'ошибка сети'),true);}
+        }
 
         function createAccount() {
             if (!isLeaderUser()) { showToast('Создавать аккаунты может только руководство.', true); return; }
@@ -1356,7 +1461,7 @@ header{
 
         function reportCardMarkup(rep){
             const canEdit=canEditReportsUser(),img=rep.img?`<a href="${escapeHtml(rep.img)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Открыть</a>`:'Нет';
-            return `<div class="report-item-card" onclick="openModalById('${escapeHtml(rep.id)}')" style="cursor:pointer"><div style="min-width:0;flex:1"><b>${escapeHtml(rep.author)}</b> → <b>${escapeHtml(rep.target||'—')}</b> · <code>/${escapeHtml(rep.cmd||'—')}</code> · ${escapeHtml(rep.duration||'—')}<div class="muted" style="margin-top:5px;overflow-wrap:anywhere">${escapeHtml(rep.reason||'Причина не указана')}</div><div class="report-meta-grid"><div class="report-meta"><small class="muted">Создан</small><br>${escapeHtml(formatDate(rep.createdAt))} · ${escapeHtml(rep.author)}</div><div class="report-meta"><small class="muted">Изменён</small><br>${escapeHtml(formatDate(rep.updatedAt))} · ${escapeHtml(rep.updatedBy||rep.author)}</div><div class="report-meta"><small class="muted">Тип / cmd</small><br>${escapeHtml(rep.punishmentType||rep.type||rep.cmd||'—')} / ${escapeHtml(rep.cmd||'—')}</div><div class="report-meta"><small class="muted">Ссылка</small><br>${img}</div></div></div><div class="report-actions"><button class="btn-sm btn-success" onclick="event.stopPropagation();openModalById('${escapeHtml(rep.id)}')"><i class="fa-solid fa-eye"></i> Просмотр</button>${canEdit?`<button class="btn-sm btn-warning" onclick="event.stopPropagation();editReport('${escapeHtml(rep.id)}')"><i class="fa-solid fa-pen"></i> Изменить</button>`:''}</div></div>`;
+            return `<div class="report-item-card" onclick="openModalById('${escapeHtml(rep.id)}')" style="cursor:pointer"><div style="min-width:0;flex:1"><b>${escapeHtml(rep.author)}</b> → <b>${escapeHtml(rep.target||'—')}</b> · <code>/${escapeHtml(rep.cmd||'—')}</code> · ${escapeHtml(rep.duration||'—')}<div class="muted" style="margin-top:5px;overflow-wrap:anywhere">${escapeHtml(rep.reason||'Причина не указана')}</div><div class="report-meta-grid"><div class="report-meta"><small class="muted">Создан</small><br>${escapeHtml(formatDate(rep.createdAt))} · ${escapeHtml(rep.author)}</div><div class="report-meta"><small class="muted">Изменён</small><br>${escapeHtml(formatDate(rep.updatedAt))} · ${escapeHtml(rep.updatedBy||rep.author)}</div><div class="report-meta"><small class="muted">Тип / cmd</small><br>${escapeHtml(rep.punishmentType||rep.type||rep.cmd||'—')} / ${escapeHtml(rep.cmd||'—')}</div><div class="report-meta"><small class="muted">Ссылка</small><br>${img}</div></div></div><div class="report-actions"><button class="btn-sm btn-success" onclick="event.stopPropagation();openModalById('${escapeHtml(rep.id)}')"><i class="fa-solid fa-eye"></i> Просмотр</button>${canEdit?`<button class="btn-sm btn-warning" onclick="event.stopPropagation();editReport('${escapeHtml(rep.id)}')"><i class="fa-solid fa-pen"></i> Изменить</button>`:''}${canDeleteReportsUser()?`<button class="btn-sm btn-danger" onclick="event.stopPropagation();deleteReport('${escapeHtml(rep.id)}')"><i class="fa-solid fa-trash"></i> Удалить</button>`:''}</div></div>`;
         }
         function renderSupportView(){
             const userCardsBox=document.getElementById('staffUserCards'),reportsList=document.getElementById('userReportsList');if(!userCardsBox||!reportsList)return;
@@ -1451,7 +1556,7 @@ header{
 
         function openModal(idx){
             const rep=dbData.reports[idx];if(!rep)return;const canEdit=canEditReportsUser();
-            document.getElementById('modalBody').innerHTML=`<div class="report-meta-grid"><div class="report-meta"><small class="muted">Дата создания</small><br>${escapeHtml(formatDate(rep.createdAt))}</div><div class="report-meta"><small class="muted">Создал</small><br>${escapeHtml(rep.author)}</div><div class="report-meta"><small class="muted">Последнее изменение</small><br>${escapeHtml(formatDate(rep.updatedAt))}</div><div class="report-meta"><small class="muted">Последним редактировал</small><br>${escapeHtml(rep.updatedBy||rep.author)}</div></div><div style="margin-top:14px"><p><b>Тип наказания:</b> ${escapeHtml(rep.punishmentType||rep.type||rep.cmd||'—')}</p><p><b>Команда:</b> /${escapeHtml(rep.cmd||'—')}</p><p><b>Нарушитель:</b> ${escapeHtml(rep.target||'—')}</p><p><b>Срок:</b> ${escapeHtml(rep.duration||'—')}</p><p><b>Причина:</b> ${escapeHtml(rep.reason||'—')}</p>${rep.img?`<p style="margin-top:8px"><b>Доказательство:</b> <a href="${escapeHtml(rep.img)}" target="_blank" rel="noopener" style="color:var(--accent)">Открыть ссылку</a><img src="${escapeHtml(rep.img)}" style="width:100%;max-height:350px;object-fit:contain;margin-top:10px;border-radius:10px" onerror="this.style.display='none'"></p>`:''}</div><div class="search-row" style="margin-top:16px">${canEdit?`<button class="btn-sm btn-warning" onclick="editReport('${escapeHtml(rep.id)}')">Редактировать</button><button class="btn-sm btn-success" onclick="showReportAudit('${escapeHtml(rep.id)}')">История</button>`:''}<button class="btn-sm" onclick="closeModal()">Закрыть</button></div>`;
+            document.getElementById('modalBody').innerHTML=`<div class="report-meta-grid"><div class="report-meta"><small class="muted">Дата создания</small><br>${escapeHtml(formatDate(rep.createdAt))}</div><div class="report-meta"><small class="muted">Создал</small><br>${escapeHtml(rep.author)}</div><div class="report-meta"><small class="muted">Последнее изменение</small><br>${escapeHtml(formatDate(rep.updatedAt))}</div><div class="report-meta"><small class="muted">Последним редактировал</small><br>${escapeHtml(rep.updatedBy||rep.author)}</div></div><div style="margin-top:14px"><p><b>Тип наказания:</b> ${escapeHtml(rep.punishmentType||rep.type||rep.cmd||'—')}</p><p><b>Команда:</b> /${escapeHtml(rep.cmd||'—')}</p><p><b>Нарушитель:</b> ${escapeHtml(rep.target||'—')}</p><p><b>Срок:</b> ${escapeHtml(rep.duration||'—')}</p><p><b>Причина:</b> ${escapeHtml(rep.reason||'—')}</p>${rep.img?`<p style="margin-top:8px"><b>Доказательство:</b> <a href="${escapeHtml(rep.img)}" target="_blank" rel="noopener" style="color:var(--accent)">Открыть ссылку</a><img src="${escapeHtml(rep.img)}" style="width:100%;max-height:350px;object-fit:contain;margin-top:10px;border-radius:10px" onerror="this.style.display='none'"></p>`:''}</div><div class="search-row" style="margin-top:16px">${canEdit?`<button class="btn-sm btn-warning" onclick="editReport('${escapeHtml(rep.id)}')">Редактировать</button><button class="btn-sm btn-success" onclick="showReportAudit('${escapeHtml(rep.id)}')">История</button>`:''}${canDeleteReportsUser()?`<button class="btn-sm btn-danger" onclick="deleteReport('${escapeHtml(rep.id)}')">Удалить</button>`:''}<button class="btn-sm" onclick="closeModal()">Закрыть</button></div>`;
             document.getElementById('reportModal').style.display='flex';
         }
 
