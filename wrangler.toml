@@ -1,8 +1,0 @@
-name = "surebox-staff-api"
-main = "src/index.js"
-compatibility_date = "2026-10-17"
-
-[[d1_databases]]
-binding = "DB"
-database_name = "surebox-staff-db"
-database_id = "268b2311-8340-45b4-95c9-e62684b1f15d"
