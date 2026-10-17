@@ -36,6 +36,10 @@
         [data-theme="crimson"] { --accent:#e11d48; --accent-glow:rgba(225,29,72,.35); --border:rgba(225,29,72,.3); }
         [data-theme="ice"] { --accent:#a5d8ff; --accent-glow:rgba(165,216,255,.32); --border:rgba(165,216,255,.3); }
         [data-theme="matrix"] { --accent:#a3ff12; --accent-glow:rgba(163,255,18,.28); --border:rgba(163,255,18,.28); }
+        [data-theme="stealth"] { --bg-main:#05080d; --bg-card:rgba(12,19,29,.96); --bg-input:#09111c; --accent:#45d9ff; --accent-glow:rgba(69,217,255,.25); --border:rgba(69,217,255,.23); --text-main:#edf6ff; --text-muted:#91a8bd; }
+        [data-theme="graphite"] { --bg-main:#17191d; --bg-card:rgba(32,35,41,.97); --bg-input:#24272e; --accent:#b8c5d6; --accent-glow:rgba(184,197,214,.18); --border:rgba(184,197,214,.22); --text-main:#f3f5f7; --text-muted:#a8afb9; }
+        [data-theme="white"] { --bg-main:#f4f6fa; --bg-card:rgba(255,255,255,.97); --bg-input:#edf1f7; --accent:#1677ff; --accent-glow:rgba(22,119,255,.16); --border:rgba(22,119,255,.22); --text-main:#172033; --text-muted:#687386; --danger:#dc3545; --success:#14804a; --warning:#e4a11b; }
+        [data-theme="milk"] { --bg-main:#e9e5dc; --bg-card:rgba(250,248,242,.97); --bg-input:#f1eee6; --accent:#426b69; --accent-glow:rgba(66,107,105,.17); --border:rgba(66,107,105,.23); --text-main:#222b2b; --text-muted:#737c79; --danger:#c94b52; --success:#367c5a; --warning:#c18a24; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; transition: all 0.2s ease; }
 
@@ -186,6 +190,35 @@
         .profile-banner{padding:26px;border-radius:14px;background:linear-gradient(125deg,var(--accent-glow),rgba(255,255,255,.03));border:1px solid var(--border);margin-bottom:15px}.achievement-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--bg-input);padding:10px 13px;border-radius:12px;margin:5px}.achievement-badge i{color:var(--accent)}
         .message-thread{padding:12px;border:1px solid var(--border);border-radius:10px;margin:8px 0;cursor:pointer;background:var(--bg-input)}.message-thread.active{border-color:var(--accent);box-shadow:0 0 12px var(--accent-glow)}.chat-message{padding:10px 12px;margin:8px 0;border-radius:10px;background:var(--bg-input);border:1px solid var(--border)}
         @media(max-width:760px){.analytics-bars{gap:4px;padding:7px}.analytics-bar-label{font-size:9px}}
+        /* STEALTH PRO desktop shell */
+        @media (min-width: 1000px) {
+          #appScreen { min-height:100vh; background:transparent; }
+          #appScreen > header { position:fixed; left:218px; right:0; top:0; height:66px; padding:0 26px; background:rgba(4,9,17,.94); border-bottom:1px solid rgba(67,190,255,.18); z-index:120; }
+          #appScreen > .nav-tabs { position:fixed; left:0; top:0; bottom:0; width:218px; padding:82px 12px 18px; display:flex; flex-direction:column; gap:5px; overflow-y:auto; overflow-x:hidden; border-right:1px solid rgba(67,190,255,.2); border-bottom:0; background:rgba(3,8,15,.97); z-index:130; scrollbar-width:thin; }
+          #appScreen > .nav-tabs:before { content:'SUREBOX  /  STAFF'; position:fixed; top:23px; left:18px; width:180px; color:#e9f7ff; font-size:13px; letter-spacing:1.6px; font-weight:900; }
+          #appScreen > .nav-tabs:after { content:'STEALTH PRO  •  v4'; position:fixed; bottom:15px; left:18px; color:#718da6; font-size:10px; letter-spacing:1px; }
+          .nav-tab { flex:0 0 auto; width:100%; padding:11px 12px; border:1px solid transparent; border-radius:9px; background:transparent; font-size:13px; }
+          .nav-tab:hover { background:rgba(57,182,255,.08); border-color:rgba(57,182,255,.18); transform:translateX(2px); }
+          .nav-tab.active { background:linear-gradient(100deg,rgba(20,151,220,.24),rgba(15,36,56,.48)); color:#e9faff; border:1px solid rgba(58,203,255,.65); box-shadow:inset 3px 0 #41d7ff,0 0 20px rgba(32,167,255,.1); }
+          .nav-tab.active i { color:#5bdfff; }
+          #appScreen > .container { margin:66px 0 0 218px; padding:25px 28px 45px; width:calc(100% - 218px); max-width:none; }
+          .card { padding:22px; border-radius:13px; background:linear-gradient(145deg,rgba(11,22,36,.94),rgba(7,13,23,.96)); border-color:rgba(65,172,230,.18); }
+          .card-title { font-size:17px; margin-bottom:17px; }
+          .staff-user-card,.report-item-card,.shop-item,.stat-card { border-radius:13px; }
+          .bottom-controls { position:fixed; left:12px; bottom:58px; z-index:140; }
+          .theme-switcher { gap:7px; padding:8px 10px; }
+          .theme-circle { width:18px; height:18px; }
+          .logo { color:#eaf7ff; }
+          .btn-primary { background:linear-gradient(110deg,var(--accent),color-mix(in srgb,var(--accent) 60%,#7c5cff)); }
+          .profile-banner,.shop-item,.top-five-card { box-shadow:inset 0 1px rgba(255,255,255,.04),0 8px 28px rgba(0,0,0,.18); }
+        }
+        [data-theme="white"] .card,[data-theme="milk"] .card { background:var(--bg-card); }
+        .staff-user-card { transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease; }
+        .staff-user-card:hover { transform:translateY(-2px); }
+        .shop-item:before { content:''; position:absolute; inset:-80% -30%; background:linear-gradient(110deg,transparent 40%,rgba(255,255,255,.09) 50%,transparent 60%); transform:translateX(-70%); transition:transform .7s; pointer-events:none; }
+        .shop-item:hover:before { transform:translateX(70%); }
+        @media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; scroll-behavior:auto !important; } }
+
         .shop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}.shop-item{position:relative;overflow:hidden;border:1px solid var(--border);border-radius:16px;padding:16px;background:linear-gradient(145deg,var(--bg-input),rgba(130,90,255,.07));transition:transform .2s,border-color .2s,box-shadow .2s}.shop-item:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 12px 30px var(--accent-glow)}.shop-icon{height:88px;display:grid;place-items:center;font-size:42px;background:radial-gradient(circle,var(--accent-glow),transparent 70%);margin:-3px -3px 10px}.shop-item h3{font-size:15px;margin-bottom:6px}.shop-price{color:var(--accent);font-weight:800;margin:10px 0}.rarity{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-muted)}.top-five{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}.top-five-card{padding:18px 12px;text-align:center;border:1px solid var(--border);border-radius:16px;background:linear-gradient(150deg,var(--bg-input),rgba(130,90,255,.1));position:relative;overflow:hidden}.top-five-card:nth-child(1){border-color:#f5c542;box-shadow:0 0 22px rgba(245,197,66,.12)}.top-five-card:nth-child(2){border-color:#b9c5d6}.top-five-card:nth-child(3){border-color:#c9895c}.top-five-rank{font-size:26px;font-weight:900;color:var(--accent)}.top-five-avatar{width:58px;height:58px;object-fit:cover;border-radius:18px;margin:8px auto;border:2px solid var(--accent)}.shop-equipped{outline:2px solid var(--accent);outline-offset:2px}.bg-video-layer{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;pointer-events:none;display:none}.bg-image-layer{position:fixed;inset:0;background-size:cover;background-position:center;z-index:-3;pointer-events:none;display:none}.bg-dim-layer{position:fixed;inset:0;background:rgba(4,6,14,.45);z-index:-1;pointer-events:none;display:none}.security-note{border-left:3px solid var(--warning);padding:10px 13px;background:rgba(255,180,0,.07);border-radius:8px;font-size:12px;color:var(--text-muted)}
         .no-animations *, .no-animations *::before, .no-animations *::after { animation:none !important; transition:none !important; }
         @media(max-width:760px) { header { padding:14px; align-items:flex-start; gap:12px; flex-direction:column; } .nav-tabs { padding:12px 12px 0; } .container { padding:18px 12px; } .card { padding:18px; } .staff-reports-layout { grid-template-columns:1fr; } }
@@ -228,7 +261,7 @@
             <div class="theme-circle" style="background: #ff4757;" onclick="setTheme('pink')"></div>
             <div class="theme-circle" style="background: #1e90ff;" onclick="setTheme('blue')"></div>
             <div class="theme-circle" style="background: #8a2be2;" onclick="setTheme('purple')"></div>
-            <div class="theme-circle" style="background: #ffa502;" onclick="setTheme('orange')"></div><div class="theme-circle" title="Cyan" style="background:#00d9ff" onclick="setTheme('cyan')"></div><div class="theme-circle" title="Gold" style="background:#f5c542" onclick="setTheme('gold')"></div><div class="theme-circle" title="Crimson" style="background:#e11d48" onclick="setTheme('crimson')"></div><div class="theme-circle" title="Ice" style="background:#a5d8ff" onclick="setTheme('ice')"></div><div class="theme-circle" title="Matrix" style="background:#a3ff12" onclick="setTheme('matrix')"></div>
+            <div class="theme-circle" style="background: #ffa502;" onclick="setTheme('orange')"></div><div class="theme-circle" title="Cyan" style="background:#00d9ff" onclick="setTheme('cyan')"></div><div class="theme-circle" title="Gold" style="background:#f5c542" onclick="setTheme('gold')"></div><div class="theme-circle" title="Crimson" style="background:#e11d48" onclick="setTheme('crimson')"></div><div class="theme-circle" title="Ice" style="background:#a5d8ff" onclick="setTheme('ice')"></div><div class="theme-circle" title="Matrix" style="background:#a3ff12" onclick="setTheme('matrix')"></div><div class="theme-circle" title="Stealth Pro" style="background:#45d9ff" onclick="setTheme('stealth')"></div><div class="theme-circle" title="Graphite" style="background:#9da9b9" onclick="setTheme('graphite')"></div><div class="theme-circle" title="White" style="background:#f4f6fa" onclick="setTheme('white')"></div><div class="theme-circle" title="Milk" style="background:#e9e5dc" onclick="setTheme('milk')"></div>
         </div>
     </div>
 
@@ -254,7 +287,7 @@
     <!-- Основное Окно -->
     <div id="appScreen" style="display: none;">
         <header>
-            <div class="logo"><i class="fa-solid fa-cube"></i> SureBox Staff</div>
+            <div class="logo"><i class="fa-solid fa-crown"></i> SureBox Staff <span style="font-size:10px;color:#57dfff;border:1px solid rgba(87,223,255,.35);padding:3px 6px;border-radius:6px">STEALTH PRO</span></div><input id="quickSearch" class="form-control" style="max-width:360px;padding:10px 13px" placeholder="⌕ Быстрый поиск / Ctrl + K" onkeydown="if(event.key==='Enter')runQuickSearch(this.value)">
             <div class="user-nav">
                 <button onclick="switchTab('notifications')" class="btn-sm btn-warning" title="Уведомления"><i class="fa-solid fa-bell"></i> <span id="notificationCount">0</span></button>
                 <div class="user-badge"><span id="userName">User</span> | <span class="role" id="userRole">Роль</span></div>
@@ -493,7 +526,7 @@
                 <div class="card"><div class="card-title"><div><i class="fa-solid fa-sliders"></i> Настройки интерфейса</div></div>
                     <div class="settings-line"><div><b>Звуки интерфейса</b><div class="muted">Клики и успешная отправка отчёта</div></div><input type="checkbox" id="soundToggle" checked onchange="setSoundEnabled(this.checked)"></div>
                     <div class="settings-line"><div><b>Анимации</b><div class="muted">Плавные переходы и появление карточек</div></div><input type="checkbox" id="animationToggle" checked onchange="setAnimationsEnabled(this.checked)"></div>
-                    <div class="settings-line"><div><b>Цветовая тема</b><div class="muted">Можно также нажать на кружки внизу страницы</div></div><select id="themeSelect" class="form-control" style="max-width:200px;" onchange="setTheme(this.value)"><option value="green">Зелёная</option><option value="pink">Красная</option><option value="blue">Синяя</option><option value="purple">Фиолетовая</option><option value="orange">Оранжевая</option><option value="cyan">Cyan</option><option value="gold">Золото</option><option value="crimson">Crimson</option><option value="ice">Лёд</option><option value="matrix">Matrix</option></select></div>
+                    <div class="settings-line"><div><b>Цветовая тема</b><div class="muted">Можно также нажать на кружки внизу страницы</div></div><select id="themeSelect" class="form-control" style="max-width:200px;" onchange="setTheme(this.value)"><option value="green">Зелёная</option><option value="pink">Красная</option><option value="blue">Синяя</option><option value="purple">Фиолетовая</option><option value="orange">Оранжевая</option><option value="cyan">Cyan</option><option value="gold">Золото</option><option value="crimson">Crimson</option><option value="ice">Лёд</option><option value="matrix">Matrix</option><option value="stealth">Stealth Pro</option><option value="graphite">Графит</option><option value="white">Белая</option><option value="milk">Молочная</option></select></div>
                 </div>
                 <div class="card"><div class="card-title"><div><i class="fa-solid fa-panorama"></i> Собственный фон сайта</div></div><p class="muted" style="margin-bottom:12px">Вставь прямую ссылку на изображение/GIF/видео или выбери файл. Файл будет храниться в этом браузере; ссылка сохраняется локально для текущего устройства.</p><input id="siteBackgroundUrl" class="form-control" placeholder="https://.../background.gif или .mp4"><input id="siteBackgroundFile" type="file" accept="image/*,video/mp4,video/webm" class="form-control" style="margin-top:8px"><div class="search-row" style="margin-top:10px"><button class="btn-primary" style="width:auto" onclick="applySiteBackground()">Применить фон</button><button class="btn-sm btn-warning" onclick="resetSiteBackground()">Сбросить фон</button></div><div class="settings-line"><div><b>Затемнение фона</b><div class="muted">Помогает читать текст поверх изображения</div></div><input id="siteBgDim" type="range" min="0" max="85" value="45" onchange="applySiteBgDim(this.value)"></div></div>
                 <div class="card" id="backupCard"><div class="card-title"><div><i class="fa-solid fa-database"></i> Резервная копия</div></div><p class="muted" style="margin-bottom:16px;">Создай резервную копию перед обновлением. Восстановление заменит текущие данные приложения — сначала скачай копию. Доступ только руководству.</p><div class="security-note" style="margin-bottom:12px">Резервная копия может содержать конфиденциальные данные. Не отправляй её посторонним. Защита кнопки в интерфейсе не заменяет Firebase Security Rules.</div><div class="input-group"><button class="btn-primary" onclick="exportBackup()"><i class="fa-solid fa-download"></i> Скачать копию JSON</button><label class="btn-primary" style="cursor:pointer;"><i class="fa-solid fa-upload"></i> Восстановить JSON<input type="file" id="backupImport" accept="application/json,.json" style="display:none;" onchange="importBackup(event)"></label></div></div>
@@ -1427,6 +1460,16 @@
                 document.getElementById('userWarnDetails').innerHTML = `У вас нет активных предупреждений. Отличная работа!`;
             }
         }
+
+        function runQuickSearch(value) {
+            const q = String(value || '').trim().toLowerCase(); if (!q) return;
+            const map = [['отчет','reports'],['отчёт','reports'],['профиль','profile'],['рейтинг','leaderboard'],['топ','leaderboard'],['задач','tasks'],['магазин','shop'],['аналит','analytics'],['запрос','requests'],['настрой','settings'],['ии','ai'],['ai','ai'],['академ','academy'],['уведом','notifications'],['команд','curator']];
+            const hit = map.find(x => q.includes(x[0]));
+            if (hit) { switchTab(hit[1]); showToast('Открыт раздел: ' + hit[0]); }
+            else if (typeof dbData !== 'undefined' && dbData.staff) { const m = dbData.staff.find(x => String(x.name||'').toLowerCase().includes(q)); if(m) inspectUserProfile(m.id); else showToast('Ничего не найдено'); }
+            const input=document.getElementById('quickSearch'); if(input) input.blur();
+        }
+        document.addEventListener('keydown', function(e) { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='k') { e.preventDefault(); const input=document.getElementById('quickSearch'); if(input){input.focus();input.select();} } });
 
         function switchTab(tabId) {
             const panel = document.getElementById('tab-' + tabId);
