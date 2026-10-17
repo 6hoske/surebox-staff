@@ -7,9 +7,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 
     <style>
         :root {
@@ -699,32 +696,24 @@
     </div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBNp_STeCxdaFMIGuc46-W3FKiXg6rXN-k",
-            authDomain: "surebox-staff.firebaseapp.com",
-            projectId: "surebox-staff",
-            storageBucket: "surebox-staff.firebasestorage.app",
-            messagingSenderId: "1082525260350",
-            appId: "1:1082525260350:web:7485ba44427c3d27720f6f"
-        };
-
-        let db = null;
-        let storage = null;
-        try {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.firestore();
-            storage = firebase.storage();
-        } catch (e) {
-            console.warn("Firebase Init Warning:", e);
+        // Cloudflare Worker API. Set this to your deployed Worker URL.
+        const API_BASE = 'https://surebox-worker-api.surebox-staff.workers.dev/';
+        let apiToken = sessionStorage.getItem('surebox_api_token') || '';
+        async function apiRequest(path, options={}) {
+            const headers = { 'Content-Type':'application/json', ...(options.headers||{}) };
+            if (apiToken) headers.Authorization = 'Bearer ' + apiToken;
+            const response = await fetch(API_BASE + path, { ...options, headers });
+            const payload = await response.json().catch(()=>({}));
+            if (!response.ok) throw new Error(payload.error || `API error ${response.status}`);
+            return payload;
         }
+        let storage = null;
 
         let currentUser = null;
         let selectedStaffFilter = 'all';
         let currentPastedImage = null;
         let dbData = { 
-            staff: [
-                { id: 'st-1', name: '6hoske', pass: 'X#9_kL$mP7!zQ2_v', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0, warns: 0, createdAt: Date.now() }
-            ], 
+            staff: [], 
             reports: [], news: [], vacations: [], promotions: [], logs: [], tasks: [], notifications: [], weekArchives: [], messages: [], hallOfFame: [], academyProgress: [],
             salaries: { "Хелпер":300, "Ст. Хелпер":400, "Мл. Модератор":500, "Модератор":600, "Ст. Модератор":700 },
             norms: { helperMutes: 50, modMutes: 55, modBans: 15 }
@@ -782,7 +771,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const btn = document.getElementById('loginBtn');
             if (btn) {
-                btn.onclick = function() {
+                btn.onclick = async function() {
                     const log = document.getElementById('loginInput').value.trim();
                     const pass = document.getElementById('passInput').value.trim();
 
@@ -791,17 +780,16 @@
                         return;
                     }
 
-                    // Проверка главного администратора
-                    if (log === '6hoske' && pass === 'X#9_kL$mP7!zQ2_v') {
-                        currentUser = dbData.staff.find(m => m.name === '6hoske') || { id: 'st-1', name: '6hoske', pass: 'X#9_kL$mP7!zQ2_v', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0, warns: 0 };
-                    } else {
-                        const found = dbData.staff.find(u => u.name === log && u.pass === pass);
-                        if (found) {
-                            currentUser = found;
-                        } else {
-                            showToast('Неверный логин или пароль!', true);
-                            return;
-                        }
+                    try {
+                        const auth = await apiRequest('/api/login', { method:'POST', body:JSON.stringify({name:log, password:pass}) });
+                        apiToken = auth.token;
+                        sessionStorage.setItem('surebox_api_token', apiToken);
+                        currentUser = auth.user;
+                        dbData = await apiRequest('/api/data');
+                        ensureCollections();
+                    } catch (e) {
+                        showToast('Вход не выполнен: ' + (e.message || 'ошибка API'), true);
+                        return;
                     }
 
                     document.getElementById('authScreen').style.display = 'none';
@@ -852,74 +840,33 @@
             }
         });
 
-        if (db) {
-            db.collection("appData").doc("main").onSnapshot((doc) => {
-                if (doc.exists) {
-                    dbData = doc.data();
-                    ensureCollections();
-                    if (!dbData.staff) dbData.staff = [];
-                    if (!dbData.reports) dbData.reports = [];
-                    if (!dbData.news) dbData.news = [];
-                    if (!dbData.vacations) dbData.vacations = [];
-                    if (!dbData.promotions) dbData.promotions = [];
-                    if (!dbData.logs) dbData.logs = [];
-                    dbData.staff.forEach(member => {
-                        if (member.lifetimeTotal == null) {
-                            member.lifetimeTotal = Math.max(
-                                (dbData.reports || []).filter(report => report.author === member.name).length,
-                                Number(member.total) || 0
-                            );
-                        }
-                    });
-                    if (!dbData.norms) dbData.norms = { helperMutes: 50, modMutes: 55, modBans: 15 };
-                    if (dbData.norms.helperMutes == null) dbData.norms.helperMutes = 50;
-                    if (dbData.norms.modMutes == null) dbData.norms.modMutes = 55;
-                    if (dbData.norms.modBans == null) dbData.norms.modBans = 15;
-
-                    if (!dbData.staff.some(m => m.name === '6hoske')) {
-                        dbData.staff.push({ id: 'st-1', name: '6hoske', pass: 'X#9_kL$mP7!zQ2_v', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0, warns: 0, createdAt: Date.now() });
-                        saveCloudData();
-                    }
-
-                    if (currentUser) {
-                        currentUser = dbData.staff.find(m => m.name === currentUser.name) || currentUser;
-                        renderStaffTables(); renderSalarySettings();
-                        renderSupportView();
-                        renderRequestsTables();
-                        renderNews();
-                        renderWeeklyArchives();
-                        renderLogs();
-                        updateProfileStats();
-                        renderDashboard();
-                        renderLeaderboard();
-                        renderTasks();
-                        renderNotifications();
-                        updateTaskAssignees();
-                    }
-                }
-            }, (error) => {
-                console.error('Firebase Firestore read error:', error);
-                const syncText = document.getElementById('syncText');
-                const syncIcon = document.getElementById('syncIcon');
-                if (syncText) syncText.textContent = 'Ошибка синхронизации';
-                if (syncIcon) syncIcon.style.color = 'var(--danger)';
-                showToast('Не удалось загрузить данные из облака. Проверь интернет и правила Firestore.', true);
-            });
+        // Initial state is loaded after successful server-side login.
+        async function loadCloudData() {
+            try {
+                dbData = await apiRequest('/api/data');
+                ensureCollections();
+                const st=document.getElementById('syncText'); if(st) st.textContent='Подключено к Cloudflare';
+            } catch(e) {
+                const st=document.getElementById('syncText'); if(st) st.textContent='Ошибка синхронизации';
+                console.error('Cloudflare API read error:', e);
+            }
         }
 
+        let saveQueue = Promise.resolve();
         function saveCloudData() {
-            if (db) {
-                document.getElementById('syncText').textContent = 'Сохранение…';
-                db.collection("appData").doc("main").set(dbData).then(() => {
-                    const st = document.getElementById('syncText'); if (st) st.textContent = 'Синхронизировано';
-                }).catch(err => {
-                    console.error('Firebase write error:', err);
-                    const st = document.getElementById('syncText'); if (st) st.textContent = 'Ошибка сохранения';
-                    showToast('Не удалось сохранить данные в Firebase. Проверь правила доступа.', true);
-                });
-            } else {
-                showToast('Firebase не подключён — изменения не сохранены в облако.', true);
-            }
+            if (!apiToken) { const st=document.getElementById('syncText'); if(st) st.textContent='Войдите для сохранения'; return; }
+            const snapshot = JSON.stringify(dbData);
+            saveQueue = saveQueue.then(async () => {
+                const st=document.getElementById('syncText'); if(st) st.textContent='Сохранение…';
+                try {
+                    await apiRequest('/api/sync', { method:'POST', body:snapshot });
+                    if(st) st.textContent='Синхронизировано';
+                } catch(err) {
+                    console.error('Cloudflare API write error:', err);
+                    if(st) st.textContent='Ошибка сохранения';
+                    showToast('Не удалось сохранить данные в Cloudflare: ' + err.message, true);
+                }
+            }).catch(err=>console.error(err));
         }
 
         function addLogAction(actionText) {
@@ -1842,8 +1789,8 @@
         function submitAcademyTest(){const a=document.querySelector('input[name="academyAnswer"]:checked');if(!a){showToast('Выбери ответ.',true);return;}let p=dbData.academyProgress.find(x=>x.user===currentUser.name);if(!p){p={user:currentUser.name,completed:[],testPassed:false};dbData.academyProgress.push(p);}p.testPassed=a.value==='b';p.testAt=Date.now();if(p.testPassed){showToast('Верно! Недостаток доказательств нужно зафиксировать и передать на проверку.');}else showToast('Ответ неверный. Перечитай материал о доказательствах.',true);saveCloudData();renderAcademy();}
 
         function getOwnStaffRecord(){return (dbData.staff||[]).find(m=>m.name===currentUser?.name)||currentUser;}
-        function renderOwnProfileEditor(){const ed=document.getElementById('profileEditor');if(!ed||!currentUser)return;const me=getOwnStaffRecord();ed.innerHTML=`<h3 style="margin-bottom:10px">Настроить свой профиль</h3><p class="muted" style="margin-bottom:12px">Изменять можно только собственный профиль. Для анимированных аватаров/баннеров используй GIF-ссылку. Файлы загружаются в Firebase Storage.</p><div class="grid-2"><div><label>Ссылка на аватар</label><input id="ownAvatarUrl" class="form-control" value="${escapeHtml(me.avatar||'')}" placeholder="https://.../avatar.gif"><input id="ownAvatarFile" type="file" accept="image/*" class="form-control" style="margin-top:7px"></div><div><label>Ссылка на баннер</label><input id="ownBannerUrl" class="form-control" value="${escapeHtml(me.bannerUrl||'')}" placeholder="https://.../banner.gif"><input id="ownBannerFile" type="file" accept="image/*" class="form-control" style="margin-top:7px"></div><div><label>Рамка</label><select id="ownFrame" class="form-control"><option value="none">Без рамки</option><option value="green">Неоновая</option><option value="gold">Золотая</option><option value="ice">Ледяная</option><option value="fire">Огненная</option><option value="rainbow">Радужная</option></select></div><div><label>Титул</label><input id="ownTitle" class="form-control" value="${escapeHtml(me.profileTitle||'Не назначен')}" readonly title="Титулы назначает руководство"><small class="muted">Титулы выдаёт руководство; самостоятельно изменить нельзя.</small></div><div><label>Артефакт / оформление</label><input id="ownArtifact" class="form-control" maxlength="50" value="${escapeHtml(me.profileArtifact||'')}" placeholder="Название предмета"></div><div><label>Дополнительный значок</label><input id="ownCustomBadge" class="form-control" maxlength="40" placeholder="Название значка"></div></div><div class="search-row" style="margin-top:12px"><button class="btn-primary" style="width:auto" onclick="saveOwnProfile()">Сохранить профиль</button><button class="btn-sm btn-warning" onclick="manageOwnBadges()">Убрать достижение</button></div>`;const f=document.getElementById('ownFrame');if(f)f.value=me.profileFrame||'none';}
-        async function uploadToStorage(file,path){if(!file)return '';if(!storage)throw new Error('Firebase Storage SDK недоступен');if(file.size>25*1024*1024)throw new Error('Файл больше 25 МБ');const ref=storage.ref().child(path+'/'+Date.now()+'_'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_'));const snap=await ref.put(file);return await snap.ref.getDownloadURL();}
+        function renderOwnProfileEditor(){const ed=document.getElementById('profileEditor');if(!ed||!currentUser)return;const me=getOwnStaffRecord();ed.innerHTML=`<h3 style="margin-bottom:10px">Настроить свой профиль</h3><p class="muted" style="margin-bottom:12px">Изменять можно только собственный профиль. Для анимированных аватаров/баннеров используй GIF-ссылку. Для изображений пока используй прямые HTTPS-ссылки.</p><div class="grid-2"><div><label>Ссылка на аватар</label><input id="ownAvatarUrl" class="form-control" value="${escapeHtml(me.avatar||'')}" placeholder="https://.../avatar.gif"><input id="ownAvatarFile" type="file" accept="image/*" class="form-control" style="margin-top:7px"></div><div><label>Ссылка на баннер</label><input id="ownBannerUrl" class="form-control" value="${escapeHtml(me.bannerUrl||'')}" placeholder="https://.../banner.gif"><input id="ownBannerFile" type="file" accept="image/*" class="form-control" style="margin-top:7px"></div><div><label>Рамка</label><select id="ownFrame" class="form-control"><option value="none">Без рамки</option><option value="green">Неоновая</option><option value="gold">Золотая</option><option value="ice">Ледяная</option><option value="fire">Огненная</option><option value="rainbow">Радужная</option></select></div><div><label>Титул</label><input id="ownTitle" class="form-control" value="${escapeHtml(me.profileTitle||'Не назначен')}" readonly title="Титулы назначает руководство"><small class="muted">Титулы выдаёт руководство; самостоятельно изменить нельзя.</small></div><div><label>Артефакт / оформление</label><input id="ownArtifact" class="form-control" maxlength="50" value="${escapeHtml(me.profileArtifact||'')}" placeholder="Название предмета"></div><div><label>Дополнительный значок</label><input id="ownCustomBadge" class="form-control" maxlength="40" placeholder="Название значка"></div></div><div class="search-row" style="margin-top:12px"><button class="btn-primary" style="width:auto" onclick="saveOwnProfile()">Сохранить профиль</button><button class="btn-sm btn-warning" onclick="manageOwnBadges()">Убрать достижение</button></div>`;const f=document.getElementById('ownFrame');if(f)f.value=me.profileFrame||'none';}
+        async function uploadToStorage(file,path){if(!file)return '';throw new Error('Загрузка файлов пока не настроена. Используй прямую HTTPS-ссылку на изображение; R2 подключим отдельным шагом.');}
         async function saveOwnProfile(){if(!currentUser)return;const me=getOwnStaffRecord();if(!me||me.name!==currentUser.name){showToast('Можно менять только собственный профиль.',true);return;}try{let avatar=(document.getElementById('ownAvatarUrl')?.value||'').trim(),banner=(document.getElementById('ownBannerUrl')?.value||'').trim();const af=document.getElementById('ownAvatarFile')?.files?.[0],bf=document.getElementById('ownBannerFile')?.files?.[0];if(af)avatar=await uploadToStorage(af,'profile-avatars/'+encodeURIComponent(currentUser.name));if(bf)banner=await uploadToStorage(bf,'profile-banners/'+encodeURIComponent(currentUser.name));me.avatar=avatar;me.bannerUrl=banner;me.profileFrame=document.getElementById('ownFrame')?.value||'none';/* Титул назначается только руководством; владелец не может изменить его здесь. */me.profileTitle=me.profileTitle||'';me.profileArtifact=(document.getElementById('ownArtifact')?.value||'').trim();const badge=(document.getElementById('ownCustomBadge')?.value||'').trim();if(badge){me.customBadges=Array.isArray(me.customBadges)?me.customBadges:[];if(!me.customBadges.includes(badge))me.customBadges.push(badge);}addLogAction('Изменил собственное оформление профиля');saveCloudData();renderAchievements();showToast('Профиль сохранён.');}catch(e){showToast('Не удалось загрузить файл: '+e.message,true);}}
         function manageOwnBadges(){const me=getOwnStaffRecord();const list=(me.hiddenAchievements||[]);const all=(dbData.reports||[]).filter(r=>r.author===me.name).length;const choice=prompt('Укажи название достижения, которое нужно скрыть/показать. Скрытые: '+(list.join(', ')||'нет')+'\n\nАвтоматические достижения можно скрывать только визуально.');if(choice===null||!choice.trim())return;me.hiddenAchievements=Array.isArray(me.hiddenAchievements)?me.hiddenAchievements:[];const name=choice.trim();if(me.hiddenAchievements.includes(name))me.hiddenAchievements=me.hiddenAchievements.filter(x=>x!==name);else me.hiddenAchievements.push(name);saveCloudData();renderAchievements();showToast('Видимость достижения обновлена.');}
         function applySavedSiteBackground(){
