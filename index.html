@@ -1308,7 +1308,7 @@
                 <p><b>Отчётов за всё время:</b> <span style="color:var(--accent);font-weight:bold;">${lifetime}</span></p>
                 <p><b>Отчётов на этой неделе:</b> ${member.total || 0}</p>
                 <p><b>Муты за неделю:</b> ${member.mutes || 0} / ${reqMutes}</p>
-                ${!isHelper ? `<p><b>Баны за неделю:</b> ${member.bans \vert{}\vert{} 0} /${reqBans}</p>` : ''}
+                ${!isHelper ? `<p><b>Баны за неделю:</b> ${member.bans || 0} / ${reqBans}</p>` : ''}
                 <p><b>Зарплата:</b> <span style="color: var(--accent); font-weight: bold;">${sal > 0 ? `${sal} суриков` : 'Нет зарплаты'}</span></p>
                 <button class="btn-primary" style="margin-top:14px;" onclick="editLifetimeReportCount('${member.id}')"><i class="fa-solid fa-pen-to-square"></i> Изменить общее число отчётов</button>
             `;
