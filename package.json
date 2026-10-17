@@ -1,0 +1,15 @@
+{
+  "name": "surebox-staff-panel",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:remote": "wrangler d1 execute surebox-staff-db --remote --file=migrations/0001_init.sql",
+    "db:local": "wrangler d1 execute surebox-staff-db --local --file=migrations/0001_init.sql"
+  },
+  "devDependencies": {
+    "wrangler": "^4.15.1"
+  }
+}
