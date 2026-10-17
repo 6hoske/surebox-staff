@@ -3,13 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SureBox Staff 4.2 | STEALTH PRO</title>
+    <title>SureBox Staff 4.3 | STEALTH PRO</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 
     <style>
         :root {
@@ -149,7 +144,7 @@
         .bottom-controls { position: fixed; bottom: 25px; right: 25px; display: flex; gap: 15px; align-items: center; z-index: 999; }
         .theme-switcher { background: var(--bg-card); border: 1px solid var(--border); padding: 10px 16px; border-radius: 35px; display: flex; gap: 10px; align-items: center; box-shadow: 0 8px 25px rgba(0,0,0,0.6); backdrop-filter: blur(12px); }
         .theme-circle { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.25); }
-    
+
         .request-status-card {
             padding: 14px 16px;
             margin: 10px 0;
@@ -226,11 +221,8 @@
             *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
         }
 
-
-        /* SureBox 4.2 — desktop-first STEALTH PRO visual system */
         .bg-image-layer,.bg-video-layer { z-index:0!important; } .bg-dim-layer { z-index:1!important; }
         #appScreen,#authScreen { position:relative; z-index:2; } .sync-badge { position:fixed; z-index:10000; } .toast-container { position:fixed; z-index:10002; } .bottom-controls { position:fixed; z-index:999; } .modal-overlay { position:fixed; z-index:10001; }
-        .sync-badge { position:fixed; z-index:10000; } .bottom-controls { position:fixed; z-index:999; } .modal-overlay { position:fixed; z-index:10001; }
         :root { --sb-panel:rgba(5,13,25,.93); --sb-line:rgba(53,179,255,.25); --sb-glow:rgba(0,174,255,.18); }
         body { background-color:#030811; background-image:radial-gradient(ellipse at 65% 0%,rgba(0,109,200,.16),transparent 45%),linear-gradient(145deg,#02060d,#071222 55%,#030811); background-attachment:fixed; }
         #appScreen > header { backdrop-filter:blur(18px); box-shadow:0 8px 28px rgba(0,0,0,.22); }
@@ -275,7 +267,6 @@
         @media(max-width:600px) { .staff-showcase-avatar { width:58px;height:58px;border-radius:16px; } .staff-showcase-name { font-size:16px; } .dashboard-hero { padding:17px; } .dashboard-hero-icon { width:55px;height:55px;font-size:25px; } }
         @media(prefers-reduced-motion:reduce) { .frame-gold,.frame-rainbow,.frame-fire,.frame-ice { animation:none!important; } }
 
-
         .dashboard-ai-shortcuts { display:grid; gap:7px; }
         .dashboard-ai-shortcuts button { text-align:left; border:1px solid rgba(61,187,255,.2); background:rgba(18,43,67,.62); color:#c9eaff; border-radius:9px; padding:9px 11px; cursor:pointer; font-size:12px; }
         .dashboard-ai-shortcuts button:hover { border-color:#45d9ff; background:rgba(20,95,135,.35); }
@@ -285,11 +276,12 @@
         #dashboardMiniLogs .mini-log-row { font-size:11px; padding:8px 0; border-bottom:1px solid rgba(65,172,230,.12); color:#c1d5e6; }
         @media(min-width:1000px) { #tab-dashboard { display:none; } #tab-dashboard.active { display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:0 18px; align-items:start; } #tab-dashboard > .dashboard-hero,#tab-dashboard > .dashboard-layout-tools { grid-column:1/-1; } #tab-dashboard > #staffShowcaseCard { grid-column:1; } #tab-dashboard > #dashboardSideWidgets { grid-column:2; grid-row:3 / span 3; position:sticky; top:84px; } #tab-dashboard > .card:not(#staffShowcaseCard):not(#dashboardSideWidgets) { grid-column:1/-1; } }
         @media(max-width:999px) { #dashboardSideWidgets { grid-column:1; } }
-
-</style>
+    </style>
 </head>
 <body>
-    <div id="customBgImage" class="bg-image-layer"></div><video id="customBgVideo" class="bg-video-layer" autoplay muted loop playsinline></video><div id="customBgDim" class="bg-dim-layer"></div>
+    <div id="customBgImage" class="bg-image-layer"></div>
+    <video id="customBgVideo" class="bg-video-layer" autoplay muted loop playsinline></video>
+    <div id="customBgDim" class="bg-dim-layer"></div>
 
     <div class="sync-badge">
         <i class="fa-solid fa-cloud" id="syncIcon" style="color: var(--accent);"></i>
@@ -321,7 +313,16 @@
             <div class="theme-circle" style="background: #ff4757;" onclick="setTheme('pink')"></div>
             <div class="theme-circle" style="background: #1e90ff;" onclick="setTheme('blue')"></div>
             <div class="theme-circle" style="background: #8a2be2;" onclick="setTheme('purple')"></div>
-            <div class="theme-circle" style="background: #ffa502;" onclick="setTheme('orange')"></div><div class="theme-circle" title="Cyan" style="background:#00d9ff" onclick="setTheme('cyan')"></div><div class="theme-circle" title="Gold" style="background:#f5c542" onclick="setTheme('gold')"></div><div class="theme-circle" title="Crimson" style="background:#e11d48" onclick="setTheme('crimson')"></div><div class="theme-circle" title="Ice" style="background:#a5d8ff" onclick="setTheme('ice')"></div><div class="theme-circle" title="Matrix" style="background:#a3ff12" onclick="setTheme('matrix')"></div><div class="theme-circle" title="Stealth Pro" style="background:#45d9ff" onclick="setTheme('stealth')"></div><div class="theme-circle" title="Graphite" style="background:#9da9b9" onclick="setTheme('graphite')"></div><div class="theme-circle" title="White" style="background:#f4f6fa" onclick="setTheme('white')"></div><div class="theme-circle" title="Milk" style="background:#e9e5dc" onclick="setTheme('milk')"></div>
+            <div class="theme-circle" style="background: #ffa502;" onclick="setTheme('orange')"></div>
+            <div class="theme-circle" title="Cyan" style="background:#00d9ff" onclick="setTheme('cyan')"></div>
+            <div class="theme-circle" title="Gold" style="background:#f5c542" onclick="setTheme('gold')"></div>
+            <div class="theme-circle" title="Crimson" style="background:#e11d48" onclick="setTheme('crimson')"></div>
+            <div class="theme-circle" title="Ice" style="background:#a5d8ff" onclick="setTheme('ice')"></div>
+            <div class="theme-circle" title="Matrix" style="background:#a3ff12" onclick="setTheme('matrix')"></div>
+            <div class="theme-circle" title="Stealth Pro" style="background:#45d9ff" onclick="setTheme('stealth')"></div>
+            <div class="theme-circle" title="Graphite" style="background:#9da9b9" onclick="setTheme('graphite')"></div>
+            <div class="theme-circle" title="White" style="background:#f4f6fa" onclick="setTheme('white')"></div>
+            <div class="theme-circle" title="Milk" style="background:#e9e5dc" onclick="setTheme('milk')"></div>
         </div>
     </div>
 
@@ -347,7 +348,8 @@
     <!-- Основное Окно -->
     <div id="appScreen" style="display: none;">
         <header>
-            <div class="logo"><i class="fa-solid fa-crown"></i> SureBox Staff <span style="font-size:10px;color:#57dfff;border:1px solid rgba(87,223,255,.35);padding:3px 6px;border-radius:6px">STEALTH PRO</span></div><input id="quickSearch" class="form-control" style="max-width:360px;padding:10px 13px" placeholder="⌕ Быстрый поиск / Ctrl + K" onkeydown="if(event.key==='Enter')runQuickSearch(this.value)">
+            <div class="logo"><i class="fa-solid fa-crown"></i> SureBox Staff <span style="font-size:10px;color:#57dfff;border:1px solid rgba(87,223,255,.35);padding:3px 6px;border-radius:6px">STEALTH PRO</span></div>
+            <input id="quickSearch" class="form-control" style="max-width:360px;padding:10px 13px" placeholder="⌕ Быстрый поиск / Ctrl + K" onkeydown="if(event.key==='Enter')runQuickSearch(this.value)">
             <div class="user-nav">
                 <button onclick="switchTab('notifications')" class="btn-sm btn-warning" title="Уведомления"><i class="fa-solid fa-bell"></i> <span id="notificationCount">0</span></button>
                 <div class="user-badge"><span id="userName">User</span> | <span class="role" id="userRole">Роль</span></div>
@@ -575,15 +577,15 @@
                 </div>
             </div>
             <!-- AI-помощник -->
-            <div id="tab-ai" class="tab-content"><div class="card"><div class="card-title"><div><i class="fa-solid fa-wand-magic-sparkles"></i> AI-помощник по данным стаффа</div></div><p class="muted" style="margin-bottom:15px;">Отвечает по текущим данным, которые доступны в панели. Это локальный аналитический помощник, а не подключённая генеративная модель.</p><div class="search-row"><input id="aiQuestion" class="form-control" placeholder="Например: кто сейчас работает особенно хорошо?" onkeydown="if(event.key==='Enter') askStaffAI()"><button class="btn-primary" style="width:auto" onclick="askStaffAI()">Спросить</button></div><div id="aiAnswer" class="notice-item">Задай вопрос о сотрудниках, норме, наказаниях или активности.</div><div class="search-row" style="margin-top:12px;"><button class="btn-sm btn-warning" onclick="document.getElementById('aiQuestion').value='Кто сейчас работает особенно хорошо?';askStaffAI()">Лучшие сотрудники</button><button class="btn-sm btn-warning" onclick="document.getElementById('aiQuestion').value='Кто не выполнил норму?';askStaffAI()">Невыполненная норма</button><button class="btn-sm btn-warning" onclick="document.getElementById('aiQuestion').value='Сводка за неделю';askStaffAI()">Сводка недели</button><button class="btn-sm btn-warning" onclick="document.getElementById('aiQuestion').value='Топ по мутам за 30 дней';askStaffAI()">Топ мутов</button><button class="btn-sm btn-warning" onclick="document.getElementById('aiQuestion').value='Кто снизил активность?';askStaffAI()">Падение активности</button><button class="btn-sm btn-warning" onclick="document.getElementById('aiQuestion').value='Сравни сотрудников за неделю';askStaffAI()">Сравнить команду</button><button class="btn-sm btn-warning" onclick="document.getElementById('aiQuestion').value='Какие варны активны?';askStaffAI()">Активные варны</button><button class="btn-sm btn-warning" onclick="document.getElementById('aiQuestion').value='Кто лучший за последние 7 дней по мутам, банам и отчётам?';askStaffAI()">Топ недели</button><button class="btn-sm btn-warning" onclick="document.getElementById('aiQuestion').value='Найди возможные дубликаты отчётов и подозрительные всплески активности';askStaffAI()">Проверка накрутки</button><button class="btn-sm btn-warning" onclick="document.getElementById('aiQuestion').value='Сравни активность за последние 7 и 30 дней';askStaffAI()">Сравнить периоды</button><button class="btn-sm btn-warning" onclick="document.getElementById('aiQuestion').value='Составь сводку по качеству модерации и рискам';askStaffAI()">Качество работы</button></div></div></div>
+            <div id="tab-ai" class="tab-content"><div class="card"><div class="card-title"><div><i class="fa-solid fa-wand-magic-sparkles"></i> AI-помощник по данным стаффа</div></div><p class="muted" style="margin-bottom:15px;">Отвечает по текущим данным, которые доступны в панели. Это локальный аналитический помощник, а не подключённая генеративная модель.</p><div class="search-row"><input id="aiQuestion" class="form-control" placeholder="Например: кто сейчас работает особенно хорошо?" onkeydown="if(event.key==='Enter') askStaffAI()"><button class="btn-primary" style="width:auto" onclick="askStaffAI()">Спросить</button></div><div id="aiAnswer" class="notice-item">Задай вопрос о сотрудниках, норме, наказаниях или активности.</div><div class="search-row" style="margin-top:12px;"><button class="btn-sm btn-warning" onclick="document.getElementById('aiQuestion').value='Кто сейчас работает особенно хорошо?';askStaffAI()">Лучшие сотрудники</button><button class="btn-sm btn-warning" onclick="document.getElementById('aiQuestion').value='Кто не выполнил норму?';askStaffAI()">Невыполненная норма</button><button class="btn-sm btn-warning" onclick="document.getElementById('aiQuestion').value='Сводка за неделю';askStaffAI()">Сводка недели</button><button class="btn-sm btn-warning" onclick="document.getElementById('aiQuestion').value='Топ по мутам за 30 дней';askStaffAI()">Топ мутов</button><button class="btn-sm btn-warning" onclick="document.getElementById('aiQuestion').value='Кто снизил активность?';askStaffAI()">Падение активности</button><button class="btn-sm btn-warning" onclick="document.getElementById('aiQuestion').value='Сравни сотрудников за неделю';askStaffAI()">Сравнить команду</button><button class="btn-sm btn-warning" onclick="document.getElementById('aiQuestion').value='Какие варны активны?';askStaffAI()">Активные варны</button><button class="btn-sm btn-warning" onclick="document.getElementById('aiQuestion').value='Кто лучший за последние 7 дней по мутам, банам и отчётам?';askStaffAI()">Топ недели</button><button class="btn-sm btn-warning" onclick="document.getElementById('aiQuestion').value='Найди возможные дубликаты отчётов и подозрительные всплески активности';askStaffAI()">Проверка накрутки</button><button class="btn-sm btn-warning" onclick="document.getElementById('aiQuestion').value='Сравни активность за последние 7 и 30 дней';askStaffAI()">Сравнить периоды</button><button class="btn-sm btn-warning" onclick="document.getElementById('aiQuestion').value='Составь сводку по качеству модерации и рисками';askStaffAI()">Качество работы</button></div></div></div>
             <!-- Запросы / сообщения -->
-            <div id="tab-requests" class="tab-content"><div class="card"><div class="card-title"><div><i class="fa-solid fa-comments"></i> Запросы и личные ветки</div></div><div class="grid-2"><div><label>Кому написать</label><select id="messageTarget" class="form-control"></select><label style="display:block;margin-top:12px;">Тема ветки</label><input id="messageSubject" class="form-control" placeholder="Например: вопрос по смене"><button class="btn-primary" style="margin-top:12px;" onclick="createMessageThread()">Создать ветку</button><div id="messageThreads" style="margin-top:15px;"></div></div><div><div id="messageThreadTitle" class="card-title">Выбери ветку</div><div id="messageThreadMessages"></div><textarea id="messageText" class="form-control" rows="3" placeholder="Напиши сообщение…" style="margin-top:12px;"></textarea><input id="messageVideoUrl" class="form-control" placeholder="Ссылка на видео (необязательно)" style="margin-top:8px"><input id="messageVideoFile" type="file" accept="video/*" class="form-control" style="margin-top:8px"><small class="muted">Видео по ссылке или загрузка в Firebase Storage. Для загрузки должны быть включены Storage и правила доступа.</small><button class="btn-primary" style="margin-top:10px;" onclick="sendThreadMessage()">Отправить</button></div></div></div></div>
+            <div id="tab-requests" class="tab-content"><div class="card"><div class="card-title"><div><i class="fa-solid fa-comments"></i> Запросы и личные ветки</div></div><div class="grid-2"><div><label>Кому написать</label><select id="messageTarget" class="form-control"></select><label style="display:block;margin-top:12px;">Тема ветки</label><input id="messageSubject" class="form-control" placeholder="Например: вопрос по смене"><button class="btn-primary" style="margin-top:12px;" onclick="createMessageThread()">Создать ветку</button><div id="messageThreads" style="margin-top:15px;"></div></div><div><div id="messageThreadTitle" class="card-title">Выбери ветку</div><div id="messageThreadMessages"></div><textarea id="messageText" class="form-control" rows="3" placeholder="Напиши сообщение…" style="margin-top:12px;"></textarea><input id="messageVideoUrl" class="form-control" placeholder="Ссылка на видео (необязательно)" style="margin-top:8px"><input id="messageVideoFile" type="file" accept="video/*" class="form-control" style="margin-top:8px"><small class="muted">Видео по ссылке или загрузка через Worker / Cloudflare. Правила доступа обновлены под D1.</small><button class="btn-primary" style="margin-top:10px;" onclick="sendThreadMessage()">Отправить</button></div></div></div></div>
             <!-- Академия -->
             <div id="tab-academy" class="tab-content"><div class="card"><div class="card-title"><div><i class="fa-solid fa-graduation-cap"></i> Академия новичков</div></div><p class="muted" style="margin-bottom:15px;">Пройди материалы и мини-тест. Кураторы видят прогресс адаптации.</p><div id="academyModules"></div><div id="academyTest" class="notice-item"><b>Контрольный вопрос</b><p style="margin:8px 0;">Если доказательств недостаточно, что следует сделать?</p><label><input type="radio" name="academyAnswer" value="a"> Выдать самое строгое наказание</label><br><label><input type="radio" name="academyAnswer" value="b"> Запросить дополнительные доказательства или передать на проверку</label><br><label><input type="radio" name="academyAnswer" value="c"> Игнорировать жалобу без отметки</label><button class="btn-primary" style="margin-top:12px;" onclick="submitAcademyTest()">Проверить ответ</button></div><div id="academyProgress" style="margin-top:15px;"></div><div id="academyAdmin" style="margin-top:15px;"></div></div></div>
             <!-- Достижения / профили -->
             <div id="tab-achievements" class="tab-content"><div class="card"><div class="card-title"><div><i class="fa-solid fa-medal"></i> Профиль и достижения</div></div><div id="ownFullProfile"></div><div id="profileEditor" style="margin-top:18px;"></div><div id="achievementsGrid" class="grid-2"></div></div></div>
             <!-- Зал славы -->
-            <div id="tab-hall" class="tab-content"><div class="card"><div class="card-title"><div><i class="fa-solid fa-star"></i> Зал славы персонала</div></div><div id="hallAdmin" style="display:none;"><div class="grid-2"><input id="hallTitle" class="form-control" placeholder="Название награды / рекорда"><input id="hallDescription" class="form-control" placeholder="Описание достижения"><select id="hallWinner" class="form-control"></select></div><button class="btn-primary" style="margin-top:12px;" onclick="addHallEntry()">Добавить в зал славы</button></div><div id="hallEntries" style="margin-top:15px;"></div></div></div>
+            <div id="tab-hall" class="tab-content"><div class="card"><div class="card-title"><div><i class="fa-solid fa-star"></i> Зал славы персонала</div></div><div id="hallAdmin" style="display:none;"><div class="grid-2"><input id="hallTitle" class="form-control" placeholder="Награда / рекорд"><input id="hallDescription" class="form-control" placeholder="Описание достижения"><select id="hallWinner" class="form-control"></select></div><button class="btn-primary" style="margin-top:12px;" onclick="addHallEntry()">Добавить в зал славы</button></div><div id="hallEntries" style="margin-top:15px;"></div></div></div>
 
             <!-- Настройки -->
             <div id="tab-settings" class="tab-content">
@@ -592,8 +594,8 @@
                     <div class="settings-line"><div><b>Анимации</b><div class="muted">Плавные переходы и появление карточек</div></div><input type="checkbox" id="animationToggle" checked onchange="setAnimationsEnabled(this.checked)"></div>
                     <div class="settings-line"><div><b>Цветовая тема</b><div class="muted">Можно также нажать на кружки внизу страницы</div></div><select id="themeSelect" class="form-control" style="max-width:200px;" onchange="setTheme(this.value)"><option value="green">Зелёная</option><option value="pink">Красная</option><option value="blue">Синяя</option><option value="purple">Фиолетовая</option><option value="orange">Оранжевая</option><option value="cyan">Cyan</option><option value="gold">Золото</option><option value="crimson">Crimson</option><option value="ice">Лёд</option><option value="matrix">Matrix</option><option value="stealth">Stealth Pro</option><option value="graphite">Графит</option><option value="white">Белая</option><option value="milk">Молочная</option></select></div>
                 </div>
-                <div class="card"><div class="card-title"><div><i class="fa-solid fa-panorama"></i> Собственный фон сайта</div></div><p class="muted" style="margin-bottom:12px">Вставь прямую ссылку на изображение/GIF/видео или выбери файл. Файл будет храниться в этом браузере; ссылка сохраняется локально для текущего устройства.</p><input id="siteBackgroundUrl" class="form-control" placeholder="Прямая ссылка на JPG / PNG / GIF / MP4 / WEBM"><input id="siteBackgroundFile" type="file" accept="image/*,video/mp4,video/webm" class="form-control" style="margin-top:8px"><div id="siteBackgroundPreview" class="site-bg-preview"><span>Предпросмотр фона появится здесь</span></div><div class="search-row" style="margin-top:10px"><button class="btn-primary" style="width:auto" onclick="applySiteBackground()"><i class="fa-solid fa-check"></i> Применить фон</button><button class="btn-sm btn-warning" onclick="resetSiteBackground()">Сбросить фон</button></div><div class="settings-line"><div><b>Затемнение фона</b><div class="muted">Помогает читать текст поверх изображения</div></div><input id="siteBgDim" type="range" min="0" max="85" value="45" oninput="applySiteBgDim(this.value)"></div><small class="muted">Ссылка/настройка хранится в этом браузере. Для синхронизации между устройствами нужна серверная настройка. Файлы видео загружайте в Firebase Storage и вставляйте прямую ссылку.</small></div>
-                <div class="card" id="backupCard"><div class="card-title"><div><i class="fa-solid fa-database"></i> Резервная копия</div></div><p class="muted" style="margin-bottom:16px;">Создай резервную копию перед обновлением. Восстановление заменит текущие данные приложения — сначала скачай копию. Доступ только руководству.</p><div class="security-note" style="margin-bottom:12px">Резервная копия может содержать конфиденциальные данные. Не отправляй её посторонним. Защита кнопки в интерфейсе не заменяет Firebase Security Rules.</div><div class="input-group"><button class="btn-primary" onclick="exportBackup()"><i class="fa-solid fa-download"></i> Скачать копию JSON</button><label class="btn-primary" style="cursor:pointer;"><i class="fa-solid fa-upload"></i> Восстановить JSON<input type="file" id="backupImport" accept="application/json,.json" style="display:none;" onchange="importBackup(event)"></label></div></div>
+                <div class="card"><div class="card-title"><div><i class="fa-solid fa-panorama"></i> Собственный фон сайта</div></div><p class="muted" style="margin-bottom:12px">Вставь прямую ссылку на изображение/GIF/видео или выбери файл. Файл сохраняется локально для текущего устройства.</p><input id="siteBackgroundUrl" class="form-control" placeholder="Прямая ссылка на JPG / PNG / GIF / MP4 / WEBM"><input id="siteBackgroundFile" type="file" accept="image/*,video/mp4,video/webm" class="form-control" style="margin-top:8px"><div id="siteBackgroundPreview" class="site-bg-preview"><span>Предпросмотр фона появится здесь</span></div><div class="search-row" style="margin-top:10px"><button class="btn-primary" style="width:auto" onclick="applySiteBackground()"><i class="fa-solid fa-check"></i> Применить фон</button><button class="btn-sm btn-warning" onclick="resetSiteBackground()">Сбросить фон</button></div><div class="settings-line"><div><b>Затемнение фона</b><div class="muted">Помогает читать текст поверх изображения</div></div><input id="siteBgDim" type="range" min="0" max="85" value="45" oninput="applySiteBgDim(this.value)"></div></div>
+                <div class="card" id="backupCard"><div class="card-title"><div><i class="fa-solid fa-database"></i> Резервная копия</div></div><p class="muted" style="margin-bottom:16px;">Создай резервную копию перед обновлением. Восстановление синхронизирует данные через Cloudflare Worker.</p><div class="input-group"><button class="btn-primary" onclick="exportBackup()"><i class="fa-solid fa-download"></i> Скачать копию JSON</button><label class="btn-primary" style="cursor:pointer;"><i class="fa-solid fa-upload"></i> Восстановить JSON<input type="file" id="backupImport" accept="application/json,.json" style="display:none;" onchange="importBackup(event)"></label></div></div>
             </div>
 
             <!-- Управление КП -->
@@ -615,7 +617,7 @@
                     </div>
                 </div>
 
-                <div class="card" id="salarySettingsCard"><div class="card-title"><div><i class="fa-solid fa-coins"></i> Управление зарплатами по должностям</div></div><p class="muted" style="margin-bottom:12px;">Зам. куратора и выше могут менять базовую зарплату. Премиальные множители за выполнение нормы сохраняются.</p><div class="grid-2" id="salarySettingsGrid"></div><button class="btn-primary" style="margin-top:12px;" onclick="saveSalarySettings()">Сохранить зарплаты</button></div>
+                <div class="card" id="salarySettingsCard"><div class="card-title"><div><i class="fa-solid fa-coins"></i> Управление зарплатами по должностям</div></div><p class="muted" style="margin-bottom:12px;">Зам. куратора и выше могут менять базовую зарплату.</p><div class="grid-2" id="salarySettingsGrid"></div><button class="btn-primary" style="margin-top:12px;" onclick="saveSalarySettings()">Сохранить зарплаты</button></div>
 
                 <!-- Выдача варна -->
                 <div class="card" id="warnManageCard" style="display: none;">
@@ -660,7 +662,7 @@
                 </div>
 
                 <div class="card">
-                    <div class="card-title"><div><i class="fa-solid fa-key"></i> Управление доступом</div></div><p class="muted" style="margin-bottom:12px;">Пароли не показываются в таблице. Для смены пароля используй сброс. В текущей версии старые пароли всё ещё лежат в документе Firebase в открытом виде — миграция на Firebase Authentication нужна отдельно.</p>
+                    <div class="card-title"><div><i class="fa-solid fa-key"></i> Управление доступом</div></div><p class="muted" style="margin-bottom:12px;">Управление паролями и ролями через Cloudflare Worker.</p>
                     <table>
                         <thead><tr><th>Логин</th><th>Пароль</th><th>Роль</th><th>Действие</th></tr></thead>
                         <tbody id="passDbTable"></tbody>
@@ -668,7 +670,7 @@
                 </div>
 
                 <div class="card">
-                    <div class="card-title"><div><i class="fa-solid fa-users-gear"></i> Управление Составом КП (клик для профиля)</div></div>
+                    <div class="card-title"><div><i class="fa-solid fa-users-gear"></i> Управление Составом КП</div></div>
                     <table>
                         <thead><tr><th>Логин</th><th>Роль</th><th>Изменить роль</th><th>Действия</th></tr></thead>
                         <tbody id="staffTable"></tbody>
@@ -699,32 +701,13 @@
     </div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBNp_STeCxdaFMIGuc46-W3FKiXg6rXN-k",
-            authDomain: "surebox-staff.firebaseapp.com",
-            projectId: "surebox-staff",
-            storageBucket: "surebox-staff.firebasestorage.app",
-            messagingSenderId: "1082525260350",
-            appId: "1:1082525260350:web:7485ba44427c3d27720f6f"
-        };
-
-        let db = null;
-        let storage = null;
-        try {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.firestore();
-            storage = firebase.storage();
-        } catch (e) {
-            console.warn("Firebase Init Warning:", e);
-        }
+        const API = "https://surebox-staff-api.surebox-staff.workers.dev";
 
         let currentUser = null;
         let selectedStaffFilter = 'all';
         let currentPastedImage = null;
         let dbData = { 
-            staff: [
-                { id: 'st-1', name: '6hoske', pass: 'X#9_kL$mP7!zQ2_v', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0, warns: 0, createdAt: Date.now() }
-            ], 
+            staff: [], 
             reports: [], news: [], vacations: [], promotions: [], logs: [], tasks: [], notifications: [], weekArchives: [], messages: [], hallOfFame: [], academyProgress: [],
             salaries: { "Хелпер":300, "Ст. Хелпер":400, "Мл. Модератор":500, "Модератор":600, "Ст. Модератор":700 },
             norms: { helperMutes: 50, modMutes: 55, modBans: 15 }
@@ -758,15 +741,13 @@
                     osc.start(now + note.t);
                     osc.stop(now + note.t + note.d + 0.02);
                 });
-            } catch (e) {
-                // Audio is optional; UI must keep working if the browser blocks it.
-            }
+            } catch (e) {}
         }
 
         document.addEventListener('click', function (event) {
             const control = event.target.closest('button, .nav-tab, .staff-user-card, .theme-btn, [role="button"], [onclick]');
             if (!control || control.disabled || control.dataset.silentSound === 'true') return;
-            if (control.matches('[onclick*="submitReport"]')) return; // successful report has its own confirmation sound
+            if (control.matches('[onclick*="submitReport"]')) return;
             playUiSound('tap');
         }, true);
 
@@ -778,8 +759,55 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
-        // ЖЕСТКИЙ И НАДЕЖНЫЙ ОБРАБОТЧИК ВХОДА КЛИКОМ
-        document.addEventListener('DOMContentLoaded', () => {
+        async function loadDataFromCloud() {
+            try {
+                const res = await fetch(API + "/api/data");
+                if (!res.ok) throw new Error("HTTP error " + res.status);
+                const data = await res.json();
+                dbData.staff = data.staff || [];
+                dbData.reports = data.reports || [];
+                dbData.news = data.news || [];
+                dbData.vacations = data.vacations || [];
+                dbData.promotions = data.promotions || [];
+                dbData.tasks = data.tasks || [];
+                dbData.notifications = data.notifications || [];
+                if (data.norms) dbData.norms = data.norms;
+                if (data.salaries) dbData.salaries = data.salaries;
+                
+                const st = document.getElementById('syncText');
+                if (st) st.textContent = 'Синхронизировано';
+            } catch (err) {
+                console.error('Cloud load error:', err);
+                const syncText = document.getElementById('syncText');
+                const syncIcon = document.getElementById('syncIcon');
+                if (syncText) syncText.textContent = 'Ошибка синхронизации';
+                if (syncIcon) syncIcon.style.color = 'var(--danger)';
+                showToast('Не удалось загрузить данные из Cloudflare D1.', true);
+            }
+        }
+
+        async function saveCloudData() {
+            try {
+                document.getElementById('syncText').textContent = 'Сохранение…';
+                const res = await fetch(API + "/api/sync", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(dbData)
+                });
+                if (!res.ok) throw new Error("HTTP error " + res.status);
+                const st = document.getElementById('syncText'); 
+                if (st) st.textContent = 'Синхронизировано';
+            } catch (err) {
+                console.error('Cloud sync error:', err);
+                const st = document.getElementById('syncText'); 
+                if (st) st.textContent = 'Ошибка сохранения';
+                showToast('Не удалось сохранить данные через Cloudflare Worker.', true);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadDataFromCloud();
+
             const btn = document.getElementById('loginBtn');
             if (btn) {
                 btn.onclick = function() {
@@ -791,17 +819,12 @@
                         return;
                     }
 
-                    // Проверка главного администратора
-                    if (log === '6hoske' && pass === 'X#9_kL$mP7!zQ2_v') {
-                        currentUser = dbData.staff.find(m => m.name === '6hoske') || { id: 'st-1', name: '6hoske', pass: 'X#9_kL$mP7!zQ2_v', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0, warns: 0 };
+                    const found = dbData.staff.find(u => u.name === log && u.pass === pass);
+                    if (found) {
+                        currentUser = found;
                     } else {
-                        const found = dbData.staff.find(u => u.name === log && u.pass === pass);
-                        if (found) {
-                            currentUser = found;
-                        } else {
-                            showToast('Неверный логин или пароль!', true);
-                            return;
-                        }
+                        showToast('Неверный логин или пароль!', true);
+                        return;
                     }
 
                     document.getElementById('authScreen').style.display = 'none';
@@ -851,76 +874,6 @@
                 };
             }
         });
-
-        if (db) {
-            db.collection("appData").doc("main").onSnapshot((doc) => {
-                if (doc.exists) {
-                    dbData = doc.data();
-                    ensureCollections();
-                    if (!dbData.staff) dbData.staff = [];
-                    if (!dbData.reports) dbData.reports = [];
-                    if (!dbData.news) dbData.news = [];
-                    if (!dbData.vacations) dbData.vacations = [];
-                    if (!dbData.promotions) dbData.promotions = [];
-                    if (!dbData.logs) dbData.logs = [];
-                    dbData.staff.forEach(member => {
-                        if (member.lifetimeTotal == null) {
-                            member.lifetimeTotal = Math.max(
-                                (dbData.reports || []).filter(report => report.author === member.name).length,
-                                Number(member.total) || 0
-                            );
-                        }
-                    });
-                    if (!dbData.norms) dbData.norms = { helperMutes: 50, modMutes: 55, modBans: 15 };
-                    if (dbData.norms.helperMutes == null) dbData.norms.helperMutes = 50;
-                    if (dbData.norms.modMutes == null) dbData.norms.modMutes = 55;
-                    if (dbData.norms.modBans == null) dbData.norms.modBans = 15;
-
-                    if (!dbData.staff.some(m => m.name === '6hoske')) {
-                        dbData.staff.push({ id: 'st-1', name: '6hoske', pass: 'X#9_kL$mP7!zQ2_v', role: 'Куратор (Владелец)', mutes: 0, bans: 0, total: 0, warns: 0, createdAt: Date.now() });
-                        saveCloudData();
-                    }
-
-                    if (currentUser) {
-                        currentUser = dbData.staff.find(m => m.name === currentUser.name) || currentUser;
-                        renderStaffTables(); renderSalarySettings();
-                        renderSupportView();
-                        renderRequestsTables();
-                        renderNews();
-                        renderWeeklyArchives();
-                        renderLogs();
-                        updateProfileStats();
-                        renderDashboard();
-                        renderLeaderboard();
-                        renderTasks();
-                        renderNotifications();
-                        updateTaskAssignees();
-                    }
-                }
-            }, (error) => {
-                console.error('Firebase Firestore read error:', error);
-                const syncText = document.getElementById('syncText');
-                const syncIcon = document.getElementById('syncIcon');
-                if (syncText) syncText.textContent = 'Ошибка синхронизации';
-                if (syncIcon) syncIcon.style.color = 'var(--danger)';
-                showToast('Не удалось загрузить данные из облака. Проверь интернет и правила Firestore.', true);
-            });
-        }
-
-        function saveCloudData() {
-            if (db) {
-                document.getElementById('syncText').textContent = 'Сохранение…';
-                db.collection("appData").doc("main").set(dbData).then(() => {
-                    const st = document.getElementById('syncText'); if (st) st.textContent = 'Синхронизировано';
-                }).catch(err => {
-                    console.error('Firebase write error:', err);
-                    const st = document.getElementById('syncText'); if (st) st.textContent = 'Ошибка сохранения';
-                    showToast('Не удалось сохранить данные в Firebase. Проверь правила доступа.', true);
-                });
-            } else {
-                showToast('Firebase не подключён — изменения не сохранены в облако.', true);
-            }
-        }
 
         function addLogAction(actionText) {
             ensureCollections();
@@ -1055,7 +1008,7 @@
             showToast('Общее количество отчётов обновлено.');
         }
 
-        function submitReport() {
+        async function submitReport() {
             const cmd = document.getElementById('repCmd').value;
             const target = document.getElementById('repTarget').value.trim();
             const duration = document.getElementById('repDuration').value.trim();
@@ -1067,44 +1020,58 @@
             }
 
             const rep = { author: currentUser.name, cmd, target, duration, reason, img: currentPastedImage, time: new Date().toLocaleString() };
-            rep.id = 'rep-' + Date.now() + '-' + Math.random().toString(36).slice(2,6);
-            rep.createdAt = Date.now();
-            dbData.reports.push(rep);
-            addNotification('leadership', 'Новый отчёт', `${currentUser.name} отправил отчёт по ${target}.`, 'report');
-            addLogAction(`Отправил отчёт по наказанию ${target} (/${cmd})`);
+            
+            try {
+                const res = await fetch(API + "/api/reports", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(rep)
+                });
+                if (!res.ok) throw new Error("HTTP error " + res.status);
+                const json = await res.json();
+                rep.id = json.id;
+                rep.createdAt = Date.now();
+                dbData.reports.push(rep);
 
-            const u = dbData.staff.find(m => m.name === currentUser.name);
-            if (u && !isLeadershipRole(u.role)) {
-                if (cmd === 'tempmute') u.mutes = (u.mutes || 0) + 1;
-                else u.bans = (u.bans || 0) + 1;
-                u.total = (u.total || 0) + 1;
-                u.lifetimeTotal = getLifetimeReportCount(u) + 1;
+                addNotification('leadership', 'Новый отчёт', `${currentUser.name} отправил отчёт по ${target}.`, 'report');
+                addLogAction(`Отправил отчёт по наказанию ${target} (/${cmd})`);
 
-                if (u.warns > 0 && ((u.warnWorkType || 'mutes') === 'mutes' ? cmd === 'tempmute' : cmd !== 'tempmute')) {
-                    u.warnProgress = (u.warnProgress || 0) + 1;
-                    const activeWarn = (u.warnHistory || []).find(w => w.status === 'active');
-                    if (activeWarn) activeWarn.progress = u.warnProgress;
-                    if (u.warnProgress >= u.warnRequired) {
-                        if (activeWarn) { activeWarn.status = 'completed'; activeWarn.completedAt = Date.now(); }
-                        u.warns = Math.max(0, (u.warns || 1) - 1); u.warnReason = ''; u.warnRequired = 0; u.warnProgress = 0; u.warnWorkType = 'mutes';
-                        showToast('Отработка предупреждения завершена!');
+                const u = dbData.staff.find(m => m.name === currentUser.name);
+                if (u && !isLeadershipRole(u.role)) {
+                    if (cmd === 'tempmute') u.mutes = (u.mutes || 0) + 1;
+                    else u.bans = (u.bans || 0) + 1;
+                    u.total = (u.total || 0) + 1;
+                    u.lifetimeTotal = getLifetimeReportCount(u) + 1;
+
+                    if (u.warns > 0 && ((u.warnWorkType || 'mutes') === 'mutes' ? cmd === 'tempmute' : cmd !== 'tempmute')) {
+                        u.warnProgress = (u.warnProgress || 0) + 1;
+                        const activeWarn = (u.warnHistory || []).find(w => w.status === 'active');
+                        if (activeWarn) activeWarn.progress = u.warnProgress;
+                        if (u.warnProgress >= u.warnRequired) {
+                            if (activeWarn) { activeWarn.status = 'completed'; activeWarn.completedAt = Date.now(); }
+                            u.warns = Math.max(0, (u.warns || 1) - 1); u.warnReason = ''; u.warnRequired = 0; u.warnProgress = 0; u.warnWorkType = 'mutes';
+                            showToast('Отработка предупреждения завершена!');
+                        }
                     }
                 }
+
+                saveCloudData();
+                playUiSound('success');
+                renderDashboard(); renderLeaderboard(); renderNotifications(); renderAnalytics(); renderAchievements(); renderShop(); updateBackupAccess();
+                showToast('Отчёт успешно отправлен!');
+
+                document.getElementById('repTarget').value = '';
+                document.getElementById('repDuration').value = '';
+                document.getElementById('repReason').value = '';
+                document.getElementById('repCmd').selectedIndex = 0;
+                document.getElementById('previewImg').src = '';
+                document.getElementById('previewImg').style.display = 'none';
+                document.getElementById('pasteZone').classList.remove('has-image');
+                currentPastedImage = null;
+            } catch (err) {
+                console.error('Report submission error:', err);
+                showToast('Не удалось отправить отчет на бэкенд.', true);
             }
-
-            saveCloudData();
-            playUiSound('success');
-            renderDashboard(); renderLeaderboard(); renderNotifications(); renderAnalytics(); renderAchievements(); renderShop(); updateBackupAccess();
-            showToast('Отчёт успешно отправлен!');
-
-            document.getElementById('repTarget').value = '';
-            document.getElementById('repDuration').value = '';
-            document.getElementById('repReason').value = '';
-            document.getElementById('repCmd').selectedIndex = 0;
-            document.getElementById('previewImg').src = '';
-            document.getElementById('previewImg').style.display = 'none';
-            document.getElementById('pasteZone').classList.remove('has-image');
-            currentPastedImage = null;
         }
 
         function editReport(idx) {
@@ -1183,7 +1150,7 @@
             if (!isLeaderUser()) { showToast('Снимать сотрудников может только руководство.', true); return; }
             const member = dbData.staff.find(m => m.id === id); if (!member) return;
             if (isLeadershipRole(member.role) && !isOwnerCurator()) { showToast('Снимать администраторов и кураторов может только куратор-владелец.', true); return; }
-            if (!confirm(`Удалить сотрудника ${member.name} и связанные с ним данные: отчёты, отпуска, повышения, уведомления, запросы и историю профиля? Это действие нельзя отменить без резервной копии.`)) return;
+            if (!confirm(`Удалить сотрудника ${member.name} и связанные с ним данные?`)) return;
             const name=member.name;
             addLogAction(`Удалил сотрудника и связанные данные: ${name} (${member.role})`);
             dbData.staff=dbData.staff.filter(m=>m.id!==id);
@@ -1301,16 +1268,8 @@
             if (!isLeaderUser()) { showToast('Публиковать итоги недели может только руководство.', true); return; }
             let rows = dbData.staff.filter(u => !isLeadershipRole(u.role)).map(u => {
                 const sal = calculateUserSalary(u);
-                const onVacation = dbData.vacations.some(v => v.author === u.name && v.status === 'Одобрено');
-                const isNewbie = (Date.now() - (u.createdAt || Date.now())) < (7 * 24 * 60 * 60 * 1000);
                 const normDone = checkUserNormCompleted(u);
-
-                // В итогах недели: зеленый — выполнил норму, красный — не выполнил.
-                // Одобренный отпуск и статус новичка цвет не переопределяют.
-                const colorStyle = normDone
-                    ? 'color: var(--success);'
-                    : 'color: var(--danger);';
-
+                const colorStyle = normDone ? 'color: var(--success);' : 'color: var(--danger);';
                 return `<tr><td><b style="${colorStyle}">${u.name}</b></td><td>${u.role}</td><td>${u.mutes || 0}</td><td>${u.bans || 0}</td><td style="color:var(--accent);"><b>${sal > 0 ? `${sal} суриков` : 'Нет зарплаты'}</b></td></tr>`;
             }).join('');
 
@@ -1767,7 +1726,7 @@
                 try {
                     const parsed = JSON.parse(reader.result);
                     if (!parsed || !Array.isArray(parsed.staff) || !Array.isArray(parsed.reports)) throw new Error('Неподходящий формат');
-                    if (!confirm('Восстановить копию? Текущие данные будут заменены. Сначала скачай резервную копию текущих данных.')) return;
+                    if (!confirm('Восстановить копию? Текущие данные будут заменены.')) return;
                     dbData = parsed; ensureCollections(); addLogAction('Восстановил данные из резервной копии.'); saveCloudData();
                     renderStaffTables(); renderSupportView(); renderRequestsTables(); renderNews(); renderWeeklyArchives(); renderLogs(); updateProfileStats(); renderDashboard(); renderLeaderboard(); renderTasks(); renderNotifications();
                     showToast('Данные из копии загружены.');
@@ -1777,16 +1736,15 @@
             reader.readAsText(file);
         }
 
-        // ---------- SureBox Staff 3.0 modules ----------
         function renderSalarySettings(){const box=document.getElementById('salarySettingsGrid');if(!box||!currentUser)return;const roles=['Хелпер','Ст. Хелпер','Мл. Модератор','Модератор','Ст. Модератор'];box.innerHTML=roles.map(r=>`<div class="form-group" style="margin:0"><label>${r} · сурики</label><input class="form-control salary-role-input" data-role="${r}" type="number" min="0" value="${Number((dbData.salaries||{})[r])||0}" ${isLeaderUser()?'':'disabled'}></div>`).join('');const card=document.getElementById('salarySettingsCard');if(card)card.style.display=isLeaderUser()?'block':'none';}
         function saveSalarySettings(){if(!isLeaderUser()){showToast('Менять зарплаты может только руководство.',true);return;}dbData.salaries=dbData.salaries||{};document.querySelectorAll('.salary-role-input').forEach(i=>dbData.salaries[i.dataset.role]=Math.max(0,Number(i.value)||0));addLogAction('Изменил базовые зарплаты должностей');saveCloudData();renderSalarySettings();updateProfileStats();renderLeaderboard();showToast('Базовые зарплаты сохранены.');}
 
         function resetLegacyPassword(id) {
             if (!isLeaderUser()) { showToast('Только руководство может менять доступ.', true); return; }
             const member = dbData.staff.find(m => m.id === id); if (!member) return;
-            const next = prompt(`Задай новый пароль для ${member.name}. Старый пароль не отображается:`, '');
+            const next = prompt(`Задай новый пароль для ${member.name}:`, '');
             if (next === null) return; if (next.trim().length < 8) { showToast('Пароль должен быть не короче 8 символов.', true); return; }
-            member.pass = next.trim(); addLogAction(`Сменил пароль сотруднику ${member.name}`); saveCloudData(); renderStaffTables(); showToast('Пароль обновлён. Важно: текущая система хранит его в Firebase открытым текстом; для реальной защиты нужна миграция на Firebase Authentication.');
+            member.pass = next.trim(); addLogAction(`Сменил пароль сотруднику ${member.name}`); saveCloudData(); renderStaffTables(); showToast('Пароль обновлён.');
         }
 
         function renderAchievementBadges(member) {
@@ -1816,14 +1774,14 @@
         function askStaffAI() {
             if(!isLeaderUser()) { showToast('ИИ-помощник доступен только руководству.',true); return; }
             const q=(document.getElementById('aiQuestion')?.value||'').trim().toLowerCase(), box=document.getElementById('aiAnswer'); if(!q||!box)return;
-            const staff=dbData.staff||[]; let answer='Я пока умею отвечать на вопросы о текущей активности, нормах, наказаниях и недельной сводке. Попробуй: «кто работает хорошо», «кто не выполнил норму» или «сводка за неделю».';
+            const staff=dbData.staff||[]; let answer='Я пока умею отвечать на вопросы о текущей активности, нормах, наказаниях и недельной сводке.';
             const active=staff.filter(m=>!isLeadershipRole(m.role));
-            if(/кто.*(хорош|луч|актив)|топ|лучшие/.test(q)){const sorted=[...staff].sort((a,b)=>((Number(b.mutes)||0)+(Number(b.bans)||0))-((Number(a.mutes)||0)+(Number(a.bans)||0))).slice(0,5);answer='По текущим недельным показателям лидируют: '+(sorted.map((m,i)=>`${i+1}. ${m.name} — ${Number(m.mutes)||0} мутов, ${Number(m.bans)||0} банов, ${checkUserNormCompleted(m)?'норма выполнена':'норма не выполнена'}`).join('; ')||'данных пока нет')+'. Оценка основана на объёме, а не на качестве решений.';}
-            else if(/не выполн|просроч|норм/.test(q)){const misses=active.filter(m=>!checkUserNormCompleted(m));answer=misses.length?'Норму пока не выполнили: '+misses.map(m=>`${m.name} (${Number(m.mutes)||0} мутов, ${Number(m.bans)||0} банов)`).join('; '):'Все сотрудники, для которых применяется норма, выполнили её по текущим данным.';}
-            else if(/сводк|недел|статист/.test(q)){const eligibleNames=new Set(staff.filter(m=>!isLeadershipRole(m.role)).map(m=>m.name));const recent=(dbData.reports||[]).filter(r=>eligibleNames.has(r.author)&&Number(r.createdAt||0)>=Date.now()-7*86400000);const mutes=recent.filter(r=>r.cmd==='tempmute').length;answer=`Сводка за последние 7 дней: ${recent.length} отчётов; ${mutes} мутов и ${recent.length-mutes} банов/прочих наказаний; сотрудников в базе — ${staff.length}; норму выполнили ${active.filter(checkUserNormCompleted).length} из ${active.length} сотрудников с нормой.`;}
-            else if(/зарплат|сурик/.test(q)){answer=staff.map(m=>`${m.name}: расчётная зарплата ${calculateUserSalary(m)} суриков; баланс наград ${Number(m.suriki)||0}`).join(' · ');}
-            else if(/варн|предупрежд/.test(q)){const warned=staff.filter(m=>Number(m.warns)>0);answer=warned.length?'Активные предупреждения: '+warned.map(m=>`${m.name} — ${m.warnReason||'причина не указана'}, отработка ${Number(m.warnProgress)||0}/${Number(m.warnRequired)||0} ${m.warnWorkType==='bans'?'банов':'мутов'}`).join('; '):'Активных варнов по данным базы нет.';}
-            box.innerHTML=`<b>Ответ по данным панели</b><p style="margin-top:8px;line-height:1.6">${escapeHtml(answer)}</p><small class="muted">Это локальная аналитика. Для свободного диалога с настоящей языковой моделью потребуется защищённый серверный API.</small>`;
+            if(/кто.*(хорош|луч|актив)|топ|лучшие/.test(q)){const sorted=[...staff].sort((a,b)=>((Number(b.mutes)||0)+(Number(b.bans)||0))-((Number(a.mutes)||0)+(Number(a.bans)||0))).slice(0,5);answer='По текущим недельным показателям лидируют: '+(sorted.map((m,i)=>`${i+1}. ${m.name} — ${Number(m.mutes)||0} мутов, ${Number(m.bans)||0} банов`).join('; ')||'данных пока нет')+'.';}
+            else if(/не выполн|просроч|норм/.test(q)){const misses=active.filter(m=>!checkUserNormCompleted(m));answer=misses.length?'Норму пока не выполнили: '+misses.map(m=>`${m.name} (${Number(m.mutes)||0} мутов, ${Number(m.bans)||0} банов)`).join('; '):'Все сотрудники выполнили норму.';}
+            else if(/сводк|недел|статист/.test(q)){const eligibleNames=new Set(staff.filter(m=>!isLeadershipRole(m.role)).map(m=>m.name));const recent=(dbData.reports||[]).filter(r=>eligibleNames.has(r.author)&&Number(r.createdAt||0)>=Date.now()-7*86400000);const mutes=recent.filter(r=>r.cmd==='tempmute').length;answer=`Сводка за последние 7 дней: ${recent.length} отчётов; ${mutes} мутов и ${recent.length-mutes} банов; сотрудников — ${staff.length}.`;}
+            else if(/зарплат|сурик/.test(q)){answer=staff.map(m=>`${m.name}: расчётная зарплата ${calculateUserSalary(m)} суриков`).join(' · ');}
+            else if(/варн|предупрежд/.test(q)){const warned=staff.filter(m=>Number(m.warns)>0);answer=warned.length?'Активные предупреждения: '+warned.map(m=>`${m.name} — ${m.warnReason||'без причины'}`).join('; '):'Активных варнов нет.';}
+            box.innerHTML=`<b>Ответ по данным панели</b><p style="margin-top:8px;line-height:1.6">${escapeHtml(answer)}</p>`;
         }
 
         function createMessageThread() {
@@ -1832,59 +1790,37 @@
         }
         let selectedMessageThread=null;
         function renderMessages(){if(!currentUser)return;ensureCollections();const sel=document.getElementById('messageTarget');if(sel){const val=sel.value;sel.innerHTML=dbData.staff.filter(m=>m.name!==currentUser.name).map(m=>`<option value="${escapeHtml(m.name)}">${escapeHtml(m.name)} · ${escapeHtml(m.role)}</option>`).join('');if([...sel.options].some(o=>o.value===val))sel.value=val;}
-            const box=document.getElementById('messageThreads');if(!box)return;const threads=dbData.messages.filter(t=>(t.participants||[]).includes(currentUser.name));box.innerHTML=threads.length?threads.map(t=>`<div class="message-thread ${selectedMessageThread===t.id?'active':''}" onclick="openMessageThread('${t.id}')"><b>${escapeHtml(t.subject)}</b><div class="muted">${escapeHtml((t.participants||[]).filter(n=>n!==currentUser.name).join(', '))} · ${(t.messages||[]).length} сообщений</div></div>`).join(''):'<p class="muted">Пока нет веток. Создай запрос сотруднику.</p>';if(selectedMessageThread&&!threads.some(t=>t.id===selectedMessageThread))selectedMessageThread=null;if(!selectedMessageThread&&threads.length)selectedMessageThread=threads[0].id;if(selectedMessageThread)renderSelectedThread();}
+            const box=document.getElementById('messageThreads');if(!box)return;const threads=dbData.messages.filter(t=>(t.participants||[]).includes(currentUser.name));box.innerHTML=threads.length?threads.map(t=>`<div class="message-thread ${selectedMessageThread===t.id?'active':''}" onclick="openMessageThread('${t.id}')"><b>${escapeHtml(t.subject)}</b><div class="muted">${escapeHtml((t.participants||[]).filter(n=>n!==currentUser.name).join(', '))} · ${(t.messages||[]).length} сообщений</div></div>`).join(''):'<p class="muted">Пока нет веток.</p>';if(selectedMessageThread&&!threads.some(t=>t.id===selectedMessageThread))selectedMessageThread=null;if(!selectedMessageThread&&threads.length)selectedMessageThread=threads[0].id;if(selectedMessageThread)renderSelectedThread();}
         function openMessageThread(id){selectedMessageThread=id;renderMessages();renderSelectedThread();}
-        function renderSelectedThread(){const t=dbData.messages.find(x=>x.id===selectedMessageThread);if(!t)return;const title=document.getElementById('messageThreadTitle'),box=document.getElementById('messageThreadMessages');if(title)title.textContent=t.subject;if(box)box.innerHTML=(t.messages||[]).map(m=>`<div class="chat-message"><b>${escapeHtml(m.author)}</b><small class="muted" style="float:right">${formatDate(m.createdAt)}</small><div style="margin-top:6px">${escapeHtml(m.text||'')}</div>${m.videoUrl?`<div style="margin-top:8px"><a href="${escapeHtml(m.videoUrl)}" target="_blank" rel="noopener" style="color:var(--accent)">Открыть прикреплённое видео</a>${/\.(mp4|webm)(\?|$)/i.test(m.videoUrl)?`<video src="${escapeHtml(m.videoUrl)}" controls style="display:block;max-width:100%;max-height:280px;margin-top:8px;border-radius:10px"></video>`:''}</div>`:''}</div>`).join('')||'<p class="muted">Сообщений пока нет.</p>';}
-        async function sendThreadMessage(){const text=(document.getElementById('messageText')?.value||'').trim(),t=dbData.messages.find(x=>x.id===selectedMessageThread),url=(document.getElementById('messageVideoUrl')?.value||'').trim(),file=document.getElementById('messageVideoFile')?.files?.[0];if(!t||(!text&&!url&&!file)){showToast('Добавь текст или видео.',true);return;}if(!(t.participants||[]).includes(currentUser.name)){showToast('Нет доступа к этой ветке.',true);return;}try{let videoUrl=url;if(file){if(!file.type.startsWith('video/'))throw new Error('Выбери видеофайл');videoUrl=await uploadToStorage(file,'message-videos/'+t.id);}t.messages=Array.isArray(t.messages)?t.messages:[];t.messages.push({id:'msg-'+Date.now(),author:currentUser.name,text,videoUrl,createdAt:Date.now()});t.updatedAt=Date.now();(t.participants||[]).filter(n=>n!==currentUser.name).forEach(n=>addNotification(n,'Новое сообщение',`${currentUser.name}: ${t.subject}`,'message'));addLogAction(`Отправил сообщение в ветке «${t.subject}»`);saveCloudData();document.getElementById('messageText').value='';document.getElementById('messageVideoUrl').value='';document.getElementById('messageVideoFile').value='';renderMessages();renderSelectedThread();}catch(e){showToast('Не удалось прикрепить видео: '+e.message,true);}}
+        function renderSelectedThread(){const t=dbData.messages.find(x=>x.id===selectedMessageThread);if(!t)return;const title=document.getElementById('messageThreadTitle'),box=document.getElementById('messageThreadMessages');if(title)title.textContent=t.subject;if(box)box.innerHTML=(t.messages||[]).map(m=>`<div class="chat-message"><b>${escapeHtml(m.author)}</b><small class="muted" style="float:right">${formatDate(m.createdAt)}</small><div style="margin-top:6px">${escapeHtml(m.text||'')}</div>${m.videoUrl?`<div style="margin-top:8px"><a href="${escapeHtml(m.videoUrl)}" target="_blank" rel="noopener" style="color:var(--accent)">Открыть видео</a></div>`:''}</div>`).join('')||'<p class="muted">Сообщений пока нет.</p>';}
+        async function sendThreadMessage(){const text=(document.getElementById('messageText')?.value||'').trim(),t=dbData.messages.find(x=>x.id===selectedMessageThread),url=(document.getElementById('messageVideoUrl')?.value||'').trim();if(!t||(!text&&!url)){showToast('Добавь текст или видео.',true);return;}t.messages=Array.isArray(t.messages)?t.messages:[];t.messages.push({id:'msg-'+Date.now(),author:currentUser.name,text,videoUrl:url,createdAt:Date.now()});t.updatedAt=Date.now();(t.participants||[]).filter(n=>n!==currentUser.name).forEach(n=>addNotification(n,'Новое сообщение',`${currentUser.name}: ${t.subject}`,'message'));addLogAction(`Отправил сообщение в ветке «${t.subject}»`);saveCloudData();document.getElementById('messageText').value='';document.getElementById('messageVideoUrl').value='';const vf=document.getElementById('messageVideoFile');if(vf)vf.value='';renderMessages();renderSelectedThread();}
 
-        function renderAcademy(){if(!currentUser)return;ensureCollections();const modules=[{id:'rules',title:'Правила сервера',text:'Перед наказанием сверься с действующим пунктом правил и его формулировкой.'},{id:'evidence',title:'Доказательства',text:'Проверь контекст, полноту доказательств и соответствие ника игрока.'},{id:'communication',title:'Общение',text:'Пиши нейтрально, без оскорблений; спорные случаи передавай старшему.'},{id:'reports',title:'Оформление отчётов',text:'Укажи команду, срок, причину и прикрепи доказательства, если они есть.'}];const progress=dbData.academyProgress.find(x=>x.user===currentUser.name)||{completed:[]};const box=document.getElementById('academyModules');if(box)box.innerHTML=modules.map(m=>`<div class="notice-item"><div style="display:flex;justify-content:space-between;gap:10px"><b>${m.title}</b><span class="status-pill ${(progress.completed||[]).includes(m.id)?'done':'pending'}">${(progress.completed||[]).includes(m.id)?'Пройдено':'Не пройдено'}</span></div><p class="muted" style="margin:8px 0">${m.text}</p><button class="btn-sm btn-success" onclick="completeAcademyModule('${m.id}')">${(progress.completed||[]).includes(m.id)?'Отметить повторно':'Прочитал материал'}</button></div>`).join('');const p=document.getElementById('academyProgress');if(p)p.innerHTML=`Прогресс: ${(progress.completed||[]).length}/4 модулей · тест: ${progress.testPassed?'сдан':'не сдан'}`;const admin=document.getElementById('academyAdmin');if(admin)admin.innerHTML=isLeaderUser()?`<h3 style="margin:12px 0">Прогресс новичков</h3>`+dbData.staff.map(m=>{const x=dbData.academyProgress.find(a=>a.user===m.name)||{completed:[]};return `<div class="notice-item"><b>${escapeHtml(m.name)}</b> · ${(x.completed||[]).length}/4 модулей · ${x.testPassed?'тест сдан':'тест не сдан'}</div>`}).join(''):'';}
-        function completeAcademyModule(id){let p=dbData.academyProgress.find(x=>x.user===currentUser.name);if(!p){p={user:currentUser.name,completed:[],testPassed:false};dbData.academyProgress.push(p);}p.completed=Array.isArray(p.completed)?p.completed:[];if(!p.completed.includes(id))p.completed.push(id);p.updatedAt=Date.now();saveCloudData();renderAcademy();showToast('Этап адаптации отмечен.');}
-        function submitAcademyTest(){const a=document.querySelector('input[name="academyAnswer"]:checked');if(!a){showToast('Выбери ответ.',true);return;}let p=dbData.academyProgress.find(x=>x.user===currentUser.name);if(!p){p={user:currentUser.name,completed:[],testPassed:false};dbData.academyProgress.push(p);}p.testPassed=a.value==='b';p.testAt=Date.now();if(p.testPassed){showToast('Верно! Недостаток доказательств нужно зафиксировать и передать на проверку.');}else showToast('Ответ неверный. Перечитай материал о доказательствах.',true);saveCloudData();renderAcademy();}
+        function renderAcademy(){if(!currentUser)return;ensureCollections();const modules=[{id:'rules',title:'Правила сервера',text:'Перед наказанием сверься с действующим пунктом правил.'},{id:'evidence',title:'Доказательства',text:'Проверь контекст и полноту доказательств.'},{id:'communication',title:'Общение',text:'Пиши нейтрально, без оскорблений.'},{id:'reports',title:'Оформление отчётов',text:'Укажи команду, срок и причину.'}];const progress=dbData.academyProgress.find(x=>x.user===currentUser.name)||{completed:[]};const box=document.getElementById('academyModules');if(box)box.innerHTML=modules.map(m=>`<div class="notice-item"><div style="display:flex;justify-content:space-between;gap:10px"><b>${m.title}</b><span class="status-pill ${(progress.completed||[]).includes(m.id)?'done':'pending'}">${(progress.completed||[]).includes(m.id)?'Пройдено':'Не пройдено'}</span></div><p class="muted" style="margin:8px 0">${m.text}</p><button class="btn-sm btn-success" onclick="completeAcademyModule('${m.id}')">Прочитал материал</button></div>`).join('');const p=document.getElementById('academyProgress');if(p)p.innerHTML=`Прогресс: ${(progress.completed||[]).length}/4 модулей · тест: ${progress.testPassed?'сдан':'не сдан'}`;}
+        function completeAcademyModule(id){let p=dbData.academyProgress.find(x=>x.user===currentUser.name);if(!p){p={user:currentUser.name,completed:[],testPassed:false};dbData.academyProgress.push(p);}p.completed=Array.isArray(p.completed)?p.completed:[];if(!p.completed.includes(id))p.completed.push(id);saveCloudData();renderAcademy();showToast('Этап адаптации отмечен.');}
+        function submitAcademyTest(){const a=document.querySelector('input[name="academyAnswer"]:checked');if(!a){showToast('Выбери ответ.',true);return;}let p=dbData.academyProgress.find(x=>x.user===currentUser.name);if(!p){p={user:currentUser.name,completed:[],testPassed:false};dbData.academyProgress.push(p);}p.testPassed=a.value==='b';if(p.testPassed){showToast('Верно!');}else showToast('Ответ неверный.',true);saveCloudData();renderAcademy();}
 
         function getOwnStaffRecord(){return (dbData.staff||[]).find(m=>m.name===currentUser?.name)||currentUser;}
-        function renderOwnProfileEditor(){const ed=document.getElementById('profileEditor');if(!ed||!currentUser)return;const me=getOwnStaffRecord();ed.innerHTML=`<h3 style="margin-bottom:10px">Настроить свой профиль</h3><p class="muted" style="margin-bottom:12px">Изменять можно только собственный профиль. Для анимированных аватаров/баннеров используй GIF-ссылку. Файлы загружаются в Firebase Storage.</p><div class="grid-2"><div><label>Ссылка на аватар</label><input id="ownAvatarUrl" class="form-control" value="${escapeHtml(me.avatar||'')}" placeholder="https://.../avatar.gif"><input id="ownAvatarFile" type="file" accept="image/*" class="form-control" style="margin-top:7px"></div><div><label>Ссылка на баннер</label><input id="ownBannerUrl" class="form-control" value="${escapeHtml(me.bannerUrl||'')}" placeholder="https://.../banner.gif"><input id="ownBannerFile" type="file" accept="image/*" class="form-control" style="margin-top:7px"></div><div><label>Рамка</label><select id="ownFrame" class="form-control"><option value="none">Без рамки</option><option value="green">Неоновая</option><option value="gold">Золотая</option><option value="ice">Ледяная</option><option value="fire">Огненная</option><option value="rainbow">Радужная</option></select></div><div><label>Титул</label><input id="ownTitle" class="form-control" value="${escapeHtml(me.profileTitle||'Не назначен')}" readonly title="Титулы назначает руководство"><small class="muted">Титулы выдаёт руководство; самостоятельно изменить нельзя.</small></div><div><label>Артефакт / оформление</label><input id="ownArtifact" class="form-control" maxlength="50" value="${escapeHtml(me.profileArtifact||'')}" placeholder="Название предмета"></div><div><label>Дополнительный значок</label><input id="ownCustomBadge" class="form-control" maxlength="40" placeholder="Название значка"></div></div><div class="search-row" style="margin-top:12px"><button class="btn-primary" style="width:auto" onclick="saveOwnProfile()">Сохранить профиль</button><button class="btn-sm btn-warning" onclick="manageOwnBadges()">Убрать достижение</button></div>`;const f=document.getElementById('ownFrame');if(f)f.value=me.profileFrame||'none';}
-        async function uploadToStorage(file,path){if(!file)return '';if(!storage)throw new Error('Firebase Storage SDK недоступен');if(file.size>25*1024*1024)throw new Error('Файл больше 25 МБ');const ref=storage.ref().child(path+'/'+Date.now()+'_'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_'));const snap=await ref.put(file);return await snap.ref.getDownloadURL();}
-        async function saveOwnProfile(){if(!currentUser)return;const me=getOwnStaffRecord();if(!me||me.name!==currentUser.name){showToast('Можно менять только собственный профиль.',true);return;}try{let avatar=(document.getElementById('ownAvatarUrl')?.value||'').trim(),banner=(document.getElementById('ownBannerUrl')?.value||'').trim();const af=document.getElementById('ownAvatarFile')?.files?.[0],bf=document.getElementById('ownBannerFile')?.files?.[0];if(af)avatar=await uploadToStorage(af,'profile-avatars/'+encodeURIComponent(currentUser.name));if(bf)banner=await uploadToStorage(bf,'profile-banners/'+encodeURIComponent(currentUser.name));me.avatar=avatar;me.bannerUrl=banner;me.profileFrame=document.getElementById('ownFrame')?.value||'none';/* Титул назначается только руководством; владелец не может изменить его здесь. */me.profileTitle=me.profileTitle||'';me.profileArtifact=(document.getElementById('ownArtifact')?.value||'').trim();const badge=(document.getElementById('ownCustomBadge')?.value||'').trim();if(badge){me.customBadges=Array.isArray(me.customBadges)?me.customBadges:[];if(!me.customBadges.includes(badge))me.customBadges.push(badge);}addLogAction('Изменил собственное оформление профиля');saveCloudData();renderAchievements();showToast('Профиль сохранён.');}catch(e){showToast('Не удалось загрузить файл: '+e.message,true);}}
-        function manageOwnBadges(){const me=getOwnStaffRecord();const list=(me.hiddenAchievements||[]);const all=(dbData.reports||[]).filter(r=>r.author===me.name).length;const choice=prompt('Укажи название достижения, которое нужно скрыть/показать. Скрытые: '+(list.join(', ')||'нет')+'\n\nАвтоматические достижения можно скрывать только визуально.');if(choice===null||!choice.trim())return;me.hiddenAchievements=Array.isArray(me.hiddenAchievements)?me.hiddenAchievements:[];const name=choice.trim();if(me.hiddenAchievements.includes(name))me.hiddenAchievements=me.hiddenAchievements.filter(x=>x!==name);else me.hiddenAchievements.push(name);saveCloudData();renderAchievements();showToast('Видимость достижения обновлена.');}
+        function renderOwnProfileEditor(){const ed=document.getElementById('profileEditor');if(!ed||!currentUser)return;const me=getOwnStaffRecord();ed.innerHTML=`<h3 style="margin-bottom:10px">Настроить свой профиль</h3><div class="grid-2"><div><label>Ссылка на аватар</label><input id="ownAvatarUrl" class="form-control" value="${escapeHtml(me.avatar||'')}" placeholder="https://..."></div><div><label>Ссылка на баннер</label><input id="ownBannerUrl" class="form-control" value="${escapeHtml(me.bannerUrl||'')}" placeholder="https://..."></div><div><label>Рамка</label><select id="ownFrame" class="form-control"><option value="none">Без рамки</option><option value="green">Неоновая</option><option value="gold">Золотая</option><option value="ice">Ледяная</option><option value="fire">Огненная</option><option value="rainbow">Радужная</option></select></div><div><label>Титул</label><input id="ownTitle" class="form-control" value="${escapeHtml(me.profileTitle||'Не назначен')}" readonly></div></div><div class="search-row" style="margin-top:12px"><button class="btn-primary" style="width:auto" onclick="saveOwnProfile()">Сохранить профиль</button></div>`;const f=document.getElementById('ownFrame');if(f)f.value=me.profileFrame||'none';}
+        function saveOwnProfile(){if(!currentUser)return;const me=getOwnStaffRecord();me.avatar=(document.getElementById('ownAvatarUrl')?.value||'').trim();me.bannerUrl=(document.getElementById('ownBannerUrl')?.value||'').trim();me.profileFrame=document.getElementById('ownFrame')?.value||'none';addLogAction('Изменил собственное оформление профиля');saveCloudData();renderAchievements();showToast('Профиль сохранён.');}
+
         function applySavedSiteBackground(){
             const image=document.getElementById('customBgImage'),video=document.getElementById('customBgVideo'),dim=document.getElementById('customBgDim');
-            const src=localStorage.getItem('surebox_bg_url')||localStorage.getItem('surebox_bg_data')||'';const type=localStorage.getItem('surebox_bg_type')||'';const urlField=document.getElementById('siteBackgroundUrl');if(urlField&&src&&!src.startsWith('data:'))urlField.value=src;const opacity=Math.max(0,Math.min(85,Number(localStorage.getItem('surebox_bg_dim')??45)))/100;
+            const src=localStorage.getItem('surebox_bg_url')||'';const type=localStorage.getItem('surebox_bg_type')||'';const urlField=document.getElementById('siteBackgroundUrl');if(urlField&&src)urlField.value=src;const opacity=Math.max(0,Math.min(85,Number(localStorage.getItem('surebox_bg_dim']??45)))/100;
             if(video){video.pause();video.removeAttribute('src');video.load();video.style.display='none';}
             if(image){image.style.display='none';image.style.backgroundImage='';}
             if(dim){dim.style.display=src?'block':'none';dim.style.background=`rgba(2,6,14,${opacity})`;}
-            if(!src){document.body.classList.remove('has-custom-background');return;}
-            document.body.classList.add('has-custom-background');
-            if(type==='video'||/\.(mp4|webm|mov)(\?|#|$)/i.test(src)){
-                if(video){video.src=src;video.style.display='block';video.play().catch(()=>{});}
-            }else if(image){image.style.backgroundImage=`url("${src.replace(/"/g,'%22')}")`;image.style.display='block';}
-            const preview=document.getElementById('siteBackgroundPreview');if(preview){preview.style.backgroundImage=type==='video'?'none':`url("${src.replace(/"/g,'%22')}")`;const label=preview.querySelector('span');if(label)label.style.display=type==='video'?'block':'none';}
+            if(!src)return;
+            if(type==='video'||/\.(mp4|webm|mov)(\?|#|$)/i.test(src)){if(video){video.src=src;video.style.display='block';video.play().catch(()=>{});}}else if(image){image.style.backgroundImage=`url("${src}")`;image.style.display='block';}
         }
-        async function applySiteBackground(){
-            const urlInput=document.getElementById('siteBackgroundUrl'),fileInput=document.getElementById('siteBackgroundFile');let src=(urlInput?.value||'').trim(),type='image';const file=fileInput?.files?.[0];
-            if(file){type=file.type.startsWith('video/')?'video':'image';
-                if(file.size>25*1024*1024){showToast('Файл больше 25 МБ. Для видео используй ссылку Firebase Storage.',true);return;}
-                if(typeof storage!=='undefined'&&storage){try{src=await uploadToStorage(file,'site-backgrounds');}catch(e){showToast('Загрузка в Firebase Storage не удалась: '+e.message,true);return;}}
-                else if(type==='image'&&file.size<=1200*1024){src=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(file);});}
-                else {showToast('Для этого файла нужно подключить Firebase Storage или вставить прямую ссылку на файл.',true);return;}
-            }
-            if(!src){showToast('Вставь прямую ссылку или выбери файл.',true);return;}
-            if(!file&&!/^https?:\/\//i.test(src)&&!src.startsWith('data:image/')){showToast('Нужна прямая ссылка, начинающаяся с https://',true);return;}
-            if(!file)type=/\.(mp4|webm|mov)(\?|#|$)/i.test(src)?'video':'image';
-            try{localStorage.setItem('surebox_bg_url',src);localStorage.removeItem('surebox_bg_data');localStorage.setItem('surebox_bg_type',type);applySavedSiteBackground();showToast('Фон применён.');}
-            catch(e){showToast('Не удалось сохранить фон в этом браузере. Используй ссылку на файл.',true);}
-        }
+        function applySiteBackground(){const urlInput=document.getElementById('siteBackgroundUrl');let src=(urlInput?.value||'').trim();if(!src){showToast('Вставь ссылку.',true);return;};let type=/\.(mp4|webm|mov)(\?|#|$)/i.test(src)?'video':'image';localStorage.setItem('surebox_bg_url',src);localStorage.setItem('surebox_bg_type',type);applySavedSiteBackground();showToast('Фон применён.');}
         function applySiteBgDim(value){localStorage.setItem('surebox_bg_dim',String(value));applySavedSiteBackground();}
-        function resetSiteBackground(){['surebox_bg_data','surebox_bg_url','surebox_bg_type'].forEach(k=>localStorage.removeItem(k));const image=document.getElementById('customBgImage'),video=document.getElementById('customBgVideo'),dim=document.getElementById('customBgDim');if(image){image.style.display='none';image.style.backgroundImage='';}if(video){video.pause();video.removeAttribute('src');video.load();video.style.display='none';}if(dim)dim.style.display='none';document.body.classList.remove('has-custom-background');const url=document.getElementById('siteBackgroundUrl');if(url)url.value='';showToast('Фон сброшен.');}
-        function previewSiteBackgroundInput(){const box=document.getElementById('siteBackgroundPreview');if(!box)return;const src=(document.getElementById('siteBackgroundUrl')?.value||'').trim();box.style.backgroundImage=src&&!/\.(mp4|webm|mov)(\?|#|$)/i.test(src)?`url("${src.replace(/"/g,'%22')}")`:'';const old=box.querySelector('video');if(old)old.remove();if(src&&/\.(mp4|webm|mov)(\?|#|$)/i.test(src)){const v=document.createElement('video');v.src=src;v.muted=true;v.loop=true;v.autoplay=true;v.playsInline=true;box.appendChild(v);}const label=box.querySelector('span');if(label)label.style.display=src?'none':'block';}
+        function resetSiteBackground(){['surebox_bg_url','surebox_bg_type'].forEach(k=>localStorage.removeItem(k));applySavedSiteBackground();showToast('Фон сброшен.');}
+        function previewSiteBackgroundInput(){}
 
-
-        function editPublicProfile(id){const m=dbData.staff.find(x=>x.id===id);if(!currentUser||!m||m.name!==currentUser.name){showToast('Профиль может изменять только его владелец.',true);return;}switchTab('achievements');renderAchievements();}
-        function renderAchievements(){if(!currentUser)return;const me=dbData.staff.find(m=>m.name===currentUser.name)||currentUser;const own=document.getElementById('ownFullProfile');if(own)own.innerHTML=`<div class="profile-banner" style="${me.bannerUrl?`background-image:linear-gradient(90deg,rgba(0,0,0,.55),rgba(0,0,0,.1)),url('${escapeHtml(me.bannerUrl)}');background-size:cover;background-position:center;`:me.bannerColor?`background:${escapeHtml(me.bannerColor)}`:''}"><img src="${escapeHtml(me.avatar||'https://mc-heads.net/avatar/'+encodeURIComponent(me.name)+'/96')}" style="width:78px;height:78px;object-fit:cover;border-radius:18px;vertical-align:middle;margin-right:15px"><span style="font-size:24px;font-weight:800;vertical-align:middle">${escapeHtml(me.name)}</span>${me.profileTitle?`<span class="achievement-badge">${escapeHtml(me.profileTitle)}</span>`:''}<p class="muted" style="margin-top:10px">${escapeHtml(me.role)} · В команде с ${formatDate(me.createdAt)} · ${Math.max(0,Math.floor((Date.now()-(me.createdAt||Date.now()))/86400000))} дней</p><p style="margin-top:8px">Баланс наград: <b>${Number(me.suriki)||0} суриков</b> · Пункты профиля: <b>${Number(me.profilePoints)||0}</b></p></div><p><b>Текущая норма:</b> ${Number(me.mutes)||0} мутов, ${Number(me.bans)||0} банов · ${checkUserNormCompleted(me)?'выполнена':'не выполнена'}</p><p style="margin-top:8px"><b>Повышения:</b> ${(me.roleHistory||[]).map(x=>`${escapeHtml(x.role)} (${formatDate(x.at)})`).join(' → ')||'История появится после фиксации повышений.'}</p><p style="margin-top:8px"><b>Предупреждения:</b> ${Number(me.warns)||0}/3</p><p style="margin-top:8px"><b>История варнов:</b> ${(me.warnHistory||[]).map(w=>`${escapeHtml(w.reason)} — ${w.status==='completed'?'отработан':'активен'} (${formatDate(w.createdAt)})`).join('; ')||'Записей пока нет.'}</p><h3 style="margin:16px 0 8px">Активность за последние 7 дней</h3><div class="analytics-bars" style="grid-template-columns:repeat(7,minmax(0,1fr))">${Array.from({length:7},(_,i)=>{const d=new Date(Date.now()-(6-i)*86400000);const count=(dbData.reports||[]).filter(r=>r.author===me.name&&new Date(Number(r.createdAt)||0).toDateString()===d.toDateString()).length;return `<div class="analytics-bar-wrap"><div class="analytics-bar-value">${count}</div><div class="analytics-bar" style="height:${Math.max(4,Math.min(85,count*8))}px"></div><div class="analytics-bar-label">${['Вс','Пн','Вт','Ср','Чт','Пт','Сб'][d.getDay()]}</div></div>`}).join('')}</div>`;
-            const grid=document.getElementById('achievementsGrid');if(grid)grid.innerHTML=dbData.staff.map(m=>`<div class="notice-item"><div style="display:flex;align-items:center;gap:10px"><img src="${escapeHtml(m.avatar||'https://mc-heads.net/avatar/'+encodeURIComponent(m.name)+'/40')}" style="width:40px;height:40px;border-radius:10px;border:3px solid ${m.profileFrame==='gold'?'#f5c542':m.profileFrame==='ice'?'#a5d8ff':m.profileFrame==='fire'?'#ff5733':m.profileFrame==='rainbow'?'#a855f7':m.profileFrame==='green'?'var(--accent)':'transparent'}"><div><b>${escapeHtml(m.name)}</b><div class="muted">${escapeHtml(m.profileTitle||m.role)}${m.profileArtifact?' · '+escapeHtml(m.profileArtifact):''}</div></div></div><div style="margin-top:10px">${renderAchievementBadges(m)}</div>${(m.customBadges||[]).map(b=>`<span class="achievement-badge">${escapeHtml(b)}</span>`).join('')}</div>`).join('');renderOwnProfileEditor();}
-
-        function renderHallOfFame(){if(!currentUser)return;ensureCollections();const admin=document.getElementById('hallAdmin');if(admin)admin.style.display=isLeaderUser()?'block':'none';const winner=document.getElementById('hallWinner');if(winner){const val=winner.value;winner.innerHTML=dbData.staff.map(m=>`<option value="${escapeHtml(m.name)}">${escapeHtml(m.name)}</option>`).join('');if([...winner.options].some(o=>o.value===val))winner.value=val;}const box=document.getElementById('hallEntries');if(!box)return;const entries=[...(dbData.hallOfFame||[])].sort((a,b)=>(Number(b.createdAt)||0)-(Number(a.createdAt)||0));box.innerHTML=entries.length?entries.map(e=>`<div class="notice-item"><div style="display:flex;justify-content:space-between;gap:12px"><b><i class="fa-solid fa-trophy" style="color:var(--accent)"></i> ${escapeHtml(e.title)}</b><small class="muted">${formatDate(e.createdAt)}</small></div><p style="margin-top:7px">${escapeHtml(e.description||'')}</p><p class="muted" style="margin-top:6px">Награждён: <b>${escapeHtml(e.winner)}</b> · Добавил: ${escapeHtml(e.author)}</p>${isLeaderUser()?`<button class="btn-sm btn-danger" style="margin-top:8px" onclick="deleteHallEntry('${e.id}')">Удалить</button>`:''}</div>`).join(''):'<p class="muted">Зал славы пока пуст. Добавлять записи может зам. куратора и выше.</p>';}
-        function addHallEntry(){if(!isLeaderUser()){showToast('Добавлять записи может только руководство.',true);return;}const title=document.getElementById('hallTitle').value.trim(),description=document.getElementById('hallDescription').value.trim(),winner=document.getElementById('hallWinner').value;if(!title||!winner){showToast('Укажи название и победителя.',true);return;}dbData.hallOfFame.unshift({id:'hof-'+Date.now(),title,description,winner,author:currentUser.name,createdAt:Date.now()});addLogAction(`Добавил в зал славы: ${title} — ${winner}`);saveCloudData();renderHallOfFame();document.getElementById('hallTitle').value='';document.getElementById('hallDescription').value='';}
-        function deleteHallEntry(id){if(!isLeaderUser())return;dbData.hallOfFame=dbData.hallOfFame.filter(e=>e.id!==id);addLogAction('Удалил запись из зала славы');saveCloudData();renderHallOfFame();}
+        function renderAchievements(){if(!currentUser)return;const me=getOwnStaffRecord();const own=document.getElementById('ownFullProfile');if(own)own.innerHTML=`<div class="profile-banner"><span style="font-size:24px;font-weight:800">${escapeHtml(me.name)}</span><p class="muted" style="margin-top:10px">${escapeHtml(me.role)}</p></div>`;renderOwnProfileEditor();}
+        function renderHallOfFame(){if(!currentUser)return;ensureCollections();const admin=document.getElementById('hallAdmin');if(admin)admin.style.display=isLeaderUser()?'block':'none';const winner=document.getElementById('hallWinner');if(winner){winner.innerHTML=dbData.staff.map(m=>`<option value="${escapeHtml(m.name)}">${escapeHtml(m.name)}</option>`).join('');}const box=document.getElementById('hallEntries');if(!box)return;const entries=[...(dbData.hallOfFame||[])];box.innerHTML=entries.length?entries.map(e=>`<div class="notice-item"><b>${escapeHtml(e.title)}</b><p>${escapeHtml(e.description||'')}</p></div>`).join(''):'<p class="muted">Зал славы пуст.</p>';}
+        function addHallEntry(){if(!isLeaderUser())return;const title=document.getElementById('hallTitle').value.trim(),winner=document.getElementById('hallWinner').value;if(!title)return;dbData.hallOfFame.unshift({id:'hof-'+Date.now(),title,winner,createdAt:Date.now()});saveCloudData();renderHallOfFame();showToast('Добавлено в зал славы.');}
+        function deleteHallEntry(id){if(!isLeaderUser())return;dbData.hallOfFame=dbData.hallOfFame.filter(e=>e.id!==id);saveCloudData();renderHallOfFame();}
 
         function escapeHtml(value) {
             return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -1910,32 +1846,10 @@
                 }
             }
         });
-    
 
-        // Weekly top 5: awards are additional profile points, not salary.
         function getWeekStart(ts=Date.now()){const d=new Date(ts);d.setHours(0,0,0,0);const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d.getTime();}
-        function weeklyRows(){const start=getWeekStart(),end=start+7*86400000;return (dbData.staff||[]).filter(m=>!isLeadershipRole(m.role)).map(m=>{const reps=(dbData.reports||[]).filter(r=>r.author===m.name&&Number(r.createdAt||0)>=start&&Number(r.createdAt||0)<end);const signatures=new Set();let dup=0;reps.forEach(r=>{const sig=[r.author,r.cmd||r.type||'',r.player||r.target||'',r.reason||'',Math.floor((Number(r.createdAt)||0)/60000)].join('|').toLowerCase();if(signatures.has(sig))dup++;else signatures.add(sig);});return {m,count:reps.length,mutes:reps.filter(r=>/mute/i.test(String(r.cmd||r.type||''))).length,bans:reps.filter(r=>/ban/i.test(String(r.cmd||r.type||''))).length,duplicates:dup};}).sort((a,b)=>b.count-a.count||b.mutes-a.mutes||b.bans-a.bans);}
-        function renderWeeklyTop(){ensureCollections();const box=document.getElementById('weeklyTopFive');if(!box)return;const start=getWeekStart(),rows=weeklyRows().slice(0,5),weekKey=String(start),awarded=(dbData.weeklyTopAwards||[]).some(x=>x.weekKey===weekKey);const rewards=[500,350,250,150,100],medals=['👑','🥈','🥉','🏅','🏅'];box.innerHTML=rows.length?rows.map((x,i)=>`<div class="top-five-card"><div class="top-five-rank">${medals[i]} #${i+1}</div><img class="top-five-avatar" src="${escapeHtml(x.m.avatar||'https://mc-heads.net/avatar/'+encodeURIComponent(x.m.name)+'/64')}" alt=""><b>${escapeHtml(x.m.name)}</b><div class="muted" style="font-size:12px;margin-top:5px">${x.count} отчётов · ${x.mutes} мутов · ${x.bans} банов</div><div class="shop-price">+${rewards[i]} очков профиля</div>${x.duplicates?`<div class="security-note">Возможные повторы: ${x.duplicates}</div>`:''}</div>`).join(''):'<p class="muted">На этой неделе пока нет отчётов.</p>';const admin=document.getElementById('weeklyTopAdmin');if(admin)admin.innerHTML=isLeaderUser()?`<button class="btn-primary" ${awarded?'disabled':''} onclick="awardWeeklyTop()">${awarded?'Награды за эту неделю уже выданы':'Выдать очки ТОП-5 недели'}</button> <button class="btn-sm btn-warning" onclick="scanAntiAbuse()">Проверить отчёты на повторы</button>`:'';}
-        function awardWeeklyTop(){if(!isLeaderUser()){showToast('Выдать награды может только руководство.',true);return;}ensureCollections();const weekKey=String(getWeekStart());dbData.weeklyTopAwards=Array.isArray(dbData.weeklyTopAwards)?dbData.weeklyTopAwards:[];if(dbData.weeklyTopAwards.some(x=>x.weekKey===weekKey)){showToast('Награды за эту неделю уже выдавались.',true);return;}const rewards=[500,350,250,150,100],rows=weeklyRows().slice(0,5);if(!rows.length){showToast('Пока нет отчётов для рейтинга.',true);return;}if(!confirm('Выдать очки профиля ТОП-5 недели? Это отдельная награда сверх зарплаты.'))return;rows.forEach((x,i)=>{x.m.profilePoints=(Number(x.m.profilePoints)||0)+rewards[i];addNotification(x.m.name,'Награда ТОП-5 недели',`Ты занял(а) ${i+1} место и получил(а) ${rewards[i]} очков профиля.`,'reward');});dbData.weeklyTopAwards.push({weekKey,at:Date.now(),author:currentUser.name,rows:rows.map((x,i)=>({name:x.m.name,place:i+1,points:rewards[i]}))});addLogAction('Выдал награды ТОП-5 недели');saveCloudData();renderLeaderboard();renderAchievements();renderShop();showToast('Награды ТОП-5 недели выданы.');}
-        function scanAntiAbuse(){if(!isLeaderUser()){showToast('Проверка доступна руководству.',true);return;}ensureCollections();const flags=[],byAuthor={};(dbData.reports||[]).forEach(r=>{const key=[r.author,r.cmd||r.type||'',r.player||r.target||'',r.reason||'',Math.floor((Number(r.createdAt)||0)/60000)].join('|').toLowerCase();if(!byAuthor[key])byAuthor[key]=[];byAuthor[key].push(r);});Object.entries(byAuthor).forEach(([signature,items])=>{if(items.length>1)flags.push({id:'ab-'+items[0].id+'-'+items.length,signature,count:items.length,author:items[0].author,createdAt:Date.now(),status:'review'});});dbData.antiAbuseFlags=flags.slice(0,200);addLogAction(`Проверка накрутки: найдено ${flags.length} групп возможных дубликатов`);saveCloudData();alert(flags.length?`Найдено ${flags.length} групп возможных повторов. Они сохранены для проверки, автоматических наказаний нет.`:'Явных дубликатов по доступным полям не найдено. Это не гарантирует отсутствие накрутки.');renderLeaderboard();}
-
-        const PROFILE_SHOP=[
-          {id:'frame_neon',name:'Неоновая рамка',category:'frame',price:100,icon:'🟢',rarity:'Обычный',frame:'green'}, {id:'frame_gold',name:'Золотая рамка',category:'frame',price:250,icon:'🌟',rarity:'Редкий',frame:'gold'}, {id:'frame_ice',name:'Ледяная рамка',category:'frame',price:250,icon:'❄️',rarity:'Редкий',frame:'ice'}, {id:'frame_fire',name:'Огненная рамка',category:'frame',price:300,icon:'🔥',rarity:'Эпический',frame:'fire'}, {id:'frame_rainbow',name:'Радужная рамка',category:'frame',price:450,icon:'🌈',rarity:'Эпический',frame:'rainbow'}, {id:'frame_void',name:'Рамка «Пустота»',category:'frame',price:600,icon:'🌀',rarity:'Легендарный',frame:'void'},
-          {id:'title_guardian',name:'Страж SureBox',category:'title',price:150,icon:'🛡️',rarity:'Обычный',title:'Страж SureBox'}, {id:'title_legend',name:'Живая легенда',category:'title',price:700,icon:'👑',rarity:'Легендарный',title:'Живая легенда'}, {id:'title_ghost',name:'Призрак онлайна',category:'title',price:350,icon:'👻',rarity:'Эпический',title:'Призрак онлайна'}, {id:'title_veteran',name:'Ветеран КП',category:'title',price:300,icon:'🎖️',rarity:'Редкий',title:'Ветеран КП'}, {id:'title_neon',name:'NEON RIDER',category:'title',price:400,icon:'💠',rarity:'Эпический',title:'NEON RIDER'},
-          {id:'avatar_cube',name:'Кибер-куб',category:'avatar',price:120,icon:'🧊',rarity:'Обычный',avatar:'https://api.dicebear.com/9.x/bottts-neutral/svg?seed=SureBoxCube'}, {id:'avatar_phantom',name:'Фантом',category:'avatar',price:300,icon:'👾',rarity:'Редкий',avatar:'https://api.dicebear.com/9.x/bottts/svg?seed=Phantom'}, {id:'avatar_ember',name:'Эмбер',category:'avatar',price:350,icon:'🔥',rarity:'Эпический',avatar:'https://api.dicebear.com/9.x/bottts/svg?seed=Ember'}, {id:'avatar_royal',name:'Роял',category:'avatar',price:500,icon:'💎',rarity:'Легендарный',avatar:'https://api.dicebear.com/9.x/bottts/svg?seed=Royal'},
-          {id:'banner_neon',name:'Неоновый город',category:'banner',price:200,icon:'🌃',rarity:'Редкий',banner:'https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=1200&q=80'}, {id:'banner_space',name:'Космическая пыль',category:'banner',price:300,icon:'🌌',rarity:'Эпический',banner:'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=1200&q=80'}, {id:'banner_ice',name:'Ледяной пик',category:'banner',price:250,icon:'🏔️',rarity:'Редкий',banner:'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&w=1200&q=80'},
-          {id:'artifact_crystal',name:'Кристалл опыта',category:'artifact',price:250,icon:'🔮',rarity:'Редкий',artifact:'Кристалл опыта'}, {id:'artifact_dragon',name:'Сердце дракона',category:'artifact',price:600,icon:'🐉',rarity:'Легендарный',artifact:'Сердце дракона'}, {id:'artifact_star',name:'Падающая звезда',category:'artifact',price:400,icon:'🌠',rarity:'Эпический',artifact:'Падающая звезда'}, {id:'artifact_crown',name:'Корона лидера',category:'artifact',price:750,icon:'👑',rarity:'Легендарный',artifact:'Корона лидера'},
-          {id:'badge_fox',name:'Лисий значок',category:'badge',price:100,icon:'🦊',rarity:'Обычный',badge:'🦊 Лисий значок'}, {id:'badge_owl',name:'Мудрая сова',category:'badge',price:180,icon:'🦉',rarity:'Редкий',badge:'🦉 Мудрая сова'}, {id:'badge_lightning',name:'Молния',category:'badge',price:250,icon:'⚡',rarity:'Эпический',badge:'⚡ Молния'}, {id:'badge_crown',name:'Королевский знак',category:'badge',price:500,icon:'👑',rarity:'Легендарный',badge:'👑 Королевский знак'}
-        ];
-        function renderShop(){if(!currentUser)return;const me=getOwnStaffRecord();const bal=document.getElementById('shopBalance');if(bal)bal.textContent=Number(me.profilePoints)||0;const cat=document.getElementById('shopCategory')?.value||'all',q=(document.getElementById('shopSearch')?.value||'').toLowerCase();const grid=document.getElementById('shopGrid');if(grid){const inventory=Array.isArray(me.shopInventory)?me.shopInventory:[];grid.innerHTML=PROFILE_SHOP.filter(it=>(cat==='all'||it.category===cat)&&it.name.toLowerCase().includes(q)).map(it=>{const owned=inventory.includes(it.id);return `<div class="shop-item ${owned?'shop-equipped':''}"><div class="shop-icon">${it.icon}</div><div class="rarity">${it.rarity} · ${it.category}</div><h3>${it.name}</h3><div class="muted" style="font-size:12px">${owned?'Уже в коллекции':'Открой предмет для оформления профиля'}</div><div class="shop-price">${owned?'Куплено':it.price+' очков'}</div><button class="btn-primary" style="width:100%" onclick="${owned?`equipShopItem('${it.id}')`:`buyShopItem('${it.id}')`}">${owned?'Надеть':'Купить'}</button></div>`;}).join('')||'<p class="muted">Ничего не найдено.</p>';}
-          const inv=document.getElementById('shopInventory');if(inv){const items=(Array.isArray(me.shopInventory)?me.shopInventory:[]).map(id=>PROFILE_SHOP.find(x=>x.id===id)).filter(Boolean);inv.innerHTML=items.length?items.map(it=>`<div class="shop-item"><div class="shop-icon">${it.icon}</div><h3>${it.name}</h3><div class="rarity">${it.rarity}</div><button class="btn-sm btn-success" onclick="equipShopItem('${it.id}')">Надеть</button></div>`).join(''):'<p class="muted">Коллекция пока пуста — заработай очки в ТОП-5 недели или за задания.</p>';}}
-        function buyShopItem(id){const it=PROFILE_SHOP.find(x=>x.id===id),me=getOwnStaffRecord();if(!it||!me)return;me.shopInventory=Array.isArray(me.shopInventory)?me.shopInventory:[];if(me.shopInventory.includes(id)){showToast('Этот предмет уже куплен.');return;}if((Number(me.profilePoints)||0)<it.price){showToast('Не хватает очков профиля.',true);return;}if(!confirm(`Купить «${it.name}» за ${it.price} очков профиля?`))return;me.profilePoints=(Number(me.profilePoints)||0)-it.price;me.shopInventory.push(id);addLogAction(`Купил предмет профиля: ${it.name}`);saveCloudData();renderShop();renderAchievements();showToast('Предмет добавлен в коллекцию.');}
-        function equipShopItem(id){const it=PROFILE_SHOP.find(x=>x.id===id),me=getOwnStaffRecord();if(!it||!me||!(me.shopInventory||[]).includes(id)){showToast('Предмет не найден в коллекции.',true);return;}if(it.frame)me.profileFrame=it.frame;if(it.title)me.profileTitle=it.title;if(it.avatar)me.avatar=it.avatar;if(it.banner)me.bannerUrl=it.banner;if(it.artifact)me.profileArtifact=it.artifact;if(it.badge){me.customBadges=Array.isArray(me.customBadges)?me.customBadges:[];if(!me.customBadges.includes(it.badge))me.customBadges.push(it.badge);}addLogAction(`Надел предмет профиля: ${it.name}`);saveCloudData();renderShop();renderAchievements();showToast(`Предмет «${it.name}» применён.`);}
-
-        function updateBackupAccess(){const card=document.getElementById('backupCard');if(card)card.style.display=isLeaderUser()?'block':'none';}
-        function exportBackup(){if(!isLeaderUser()){showToast('Резервную копию может создать только руководство.',true);return;}addLogAction('Создал резервную копию данных');const payload={format:'SureBoxStaffBackup',version:4,createdAt:new Date().toISOString(),createdBy:currentUser.name,data:dbData};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='SureBox_Staff_backup_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);saveCloudData();showToast('Резервная копия скачана. Храни файл в безопасном месте.');}
-        function importBackup(event){if(!isLeaderUser()){showToast('Восстановление доступно только руководству.',true);event.target.value='';return;}const file=event.target.files?.[0];if(!file)return;if(file.size>20*1024*1024){showToast('Файл больше 20 МБ.',true);return;}const reader=new FileReader();reader.onload=()=>{try{const parsed=JSON.parse(String(reader.result||'')),data=parsed.data||parsed;if(!data||!Array.isArray(data.staff)||!Array.isArray(data.reports))throw new Error('Это не резервная копия SureBox Staff.');if(!confirm('ВНИМАНИЕ: текущие данные будут заменены данными из файла. Продолжить?'))return;dbData=data;ensureCollections();addLogAction('Восстановил данные из резервной копии');saveCloudData();renderDashboard();renderLeaderboard();renderAnalytics();renderAchievements();renderTasks();renderMessages();renderNotifications();renderShop();showToast('Данные восстановлены. Перезагрузи страницу, если часть интерфейса не обновилась.');}catch(e){showToast('Не удалось восстановить копию: '+e.message,true);}finally{event.target.value='';}};reader.readAsText(file);}
-
-</script>
+        function weeklyRows(){const start=getWeekStart(),end=start+7*86400000;return (dbData.staff||[]).filter(m=>!isLeadershipRole(m.role)).map(m=>{const reps=(dbData.reports||[]).filter(r=>r.author===m.name&&Number(r.createdAt||0)>=start&&Number(r.createdAt||0)<end);return {m,count:reps.length,mutes:reps.filter(r=>/mute/i.test(String(r.cmd||r.type||''))).length,bans:reps.filter(r=>/ban/i.test(String(r.cmd||r.type||''))).length};}).sort((a,b)=>b.count-a.count);}
+        function renderWeeklyTop(){ensureCollections();const box=document.getElementById('weeklyTopFive');if(!box)return;const rows=weeklyRows().slice(0,5),rewards=[500,350,250,150,100],medals=['👑','🥈','🥉','🏅','🏅'];box.innerHTML=rows.length?rows.map((x,i)=>`<div class="top-five-card"><div class="top-five-rank">${medals[i]} #${i+1}</div><b>${escapeHtml(x.m.name)}</b><div class="shop-price">+${rewards[i]} очков</div></div>`).join(''):'<p class="muted">Пока нет отчётов.</p>';}
+    </script>
 </body>
 </html>
