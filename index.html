@@ -290,7 +290,7 @@
 
     <div class="sync-badge">
         <i class="fa-solid fa-cloud" id="syncIcon" style="color: var(--accent);"></i>
-        <span id="syncText">System Ready</span>
+        <span id="syncText" title="Нажмите, чтобы повторить сохранение" onclick="saveCloudData()" style="cursor:pointer">System Ready</span>
     </div>
 
     <div class="toast-container" id="toastBox"></div>
@@ -697,15 +697,12 @@
 
     <script>
         // Cloudflare Worker API. Set this to your deployed Worker URL.
-        const API_BASE = 'https://surebox-worker-api.surebox-staff.workers.dev/';
+        const API_BASE = 'https://surebox-worker-api.surebox-staff.workers.dev';
         let apiToken = sessionStorage.getItem('surebox_api_token') || '';
         async function apiRequest(path, options={}) {
             const headers = { 'Content-Type':'application/json', ...(options.headers||{}) };
             if (apiToken) headers.Authorization = 'Bearer ' + apiToken;
-            const response = await fetch(
-    API_BASE + path.replace(/^\/+/, ''),
-    { ...options, headers }
-);
+            const response = await fetch(API_BASE + path, { ...options, headers });
             const payload = await response.json().catch(()=>({}));
             if (!response.ok) throw new Error(payload.error || `API error ${response.status}`);
             return payload;
@@ -855,21 +852,50 @@
             }
         }
 
+        // Coalesce queued saves so an older snapshot is never sent after a newer one.
         let saveQueue = Promise.resolve();
+        let saveRequested = false;
+        let saveInProgress = false;
+        let unsavedChanges = false;
         function saveCloudData() {
             if (!apiToken) { const st=document.getElementById('syncText'); if(st) st.textContent='Войдите для сохранения'; return; }
-            const snapshot = JSON.stringify(dbData);
-            saveQueue = saveQueue.then(async () => {
-                const st=document.getElementById('syncText'); if(st) st.textContent='Сохранение…';
-                try {
-                    await apiRequest('/api/sync', { method:'POST', body:snapshot });
+            unsavedChanges = true;
+            saveRequested = true;
+            if (saveInProgress) return saveQueue;
+            saveInProgress = true;
+            saveQueue = (async () => {
+                const st=document.getElementById('syncText');
+                while (saveRequested) {
+                    saveRequested = false;
+                    const snapshot = JSON.stringify(dbData);
+                    if(st) st.textContent='Сохранение…';
+                    let saved = false, lastError = null;
+                    for (let attempt = 0; attempt < 3; attempt++) {
+                        try {
+                            await apiRequest('/api/sync', { method:'POST', body:snapshot });
+                            saved = true;
+                            break;
+                        } catch(err) {
+                            lastError = err;
+                            console.error(`Cloudflare API write attempt ${attempt + 1} failed:`, err);
+                            if (attempt < 2) await new Promise(resolve => setTimeout(resolve, 700 * (attempt + 1)));
+                        }
+                    }
+                    if (!saved) {
+                        unsavedChanges = true;
+                        if(st) st.textContent='Не сохранено — нажмите «Повторить сохранение»';
+                        console.error('Cloudflare API write error:', lastError);
+                        showToast('Не удалось сохранить данные. Они остались на этой странице; проверьте соединение и повторите сохранение. ' + (lastError?.message || ''), true);
+                        // Do not loop forever while offline; a later saveCloudData() retries latest dbData.
+                        break;
+                    }
+                    unsavedChanges = false;
                     if(st) st.textContent='Синхронизировано';
-                } catch(err) {
-                    console.error('Cloudflare API write error:', err);
-                    if(st) st.textContent='Ошибка сохранения';
-                    showToast('Не удалось сохранить данные в Cloudflare: ' + err.message, true);
+                    // If changes happened during the request, send the latest state next.
+                    if (saveRequested) unsavedChanges = true;
                 }
-            }).catch(err=>console.error(err));
+            })().finally(() => { saveInProgress = false; });
+            return saveQueue;
         }
 
         function addLogAction(actionText) {
