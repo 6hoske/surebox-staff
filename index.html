@@ -810,7 +810,8 @@
                     document.getElementById('userName').innerText = currentUser.name;
                     document.getElementById('userRole').innerText = currentUser.role;
 
-                    const isLeader = currentUser.role.includes('Куратор') || currentUser.role === 'Зам. Куратора' || currentUser.role === 'Администратор' || currentUser.role === 'Владелец';
+                    const isLeader = isLeaderUser();
+                    applyRoleVisibility();
                     if (isLeader) {
                         document.getElementById('curatorTab').style.display = 'flex';
                         document.getElementById('supportTab').style.display = 'flex';
@@ -946,8 +947,24 @@
             localStorage.setItem('surebox_animations_enabled', String(!!enabled));
         }
 
-        function isLeaderUser() {
-            return !!currentUser && (String(currentUser.role || '').includes('Куратор') || ['Зам. Куратора','Администратор','Владелец'].includes(currentUser.role));
+        function isLeadershipRole(role) {
+            const r = String(role || '').trim().toLowerCase();
+            return r.includes('куратор') || r === 'администратор' || r === 'владелец' || r.includes('технический администратор') || r.includes('зам. куратора');
+        }
+        function isLeaderUser() { return !!currentUser && isLeadershipRole(currentUser.role); }
+        function isOwnerCurator() { return !!currentUser && /^(куратор|куратор \(владелец\)|владелец)$/i.test(String(currentUser.role||'').trim()); }
+        function applyRoleVisibility() {
+            const leader = isLeaderUser();
+            ['tabBtn-analytics','tabBtn-ai','tabBtn-news','tabBtn-leaderboard','tabBtn-shop','tabBtn-achievements','tabBtn-hall','tabBtn-academy'].forEach(id => { const el=document.getElementById(id); if(el) el.style.display=leader?'flex':'none'; });
+            ['dashboardSideWidgets','dashboardOverviewCard'].forEach(id => { const el=document.getElementById(id); if(el) el.style.display=leader?'block':'none'; });
+            const dashboardCards=document.querySelectorAll('#tab-dashboard .grid-2'); dashboardCards.forEach(el=>{el.style.display=leader?'grid':'none';});
+            const reportTab=document.getElementById('tabBtn-reports'); if(reportTab) reportTab.style.display='flex';
+            const notificationTab=document.getElementById('tabBtn-notifications'); if(notificationTab) notificationTab.style.display='flex';
+            const curator=document.getElementById('curatorTab'); if(curator) curator.style.display=leader?'flex':'none';
+            const support=document.getElementById('supportTab'); if(support) support.style.display=leader?'flex':'none';
+            const logs=document.getElementById('logsTab'); if(logs) logs.style.display=leader?'flex':'none';
+            const currentPanel=document.querySelector('.tab-content.active');
+            if(!leader && currentPanel && ['tab-analytics','tab-ai','tab-news','tab-leaderboard','tab-shop','tab-achievements','tab-hall','tab-academy','tab-curator','tab-supportView','tab-logsView'].includes(currentPanel.id)) switchTab('dashboard');
         }
 
         function ensureCollections() {
@@ -1053,11 +1070,11 @@
             rep.id = 'rep-' + Date.now() + '-' + Math.random().toString(36).slice(2,6);
             rep.createdAt = Date.now();
             dbData.reports.push(rep);
-            addNotification('all', 'Новый отчёт', `${currentUser.name} отправил отчёт по ${target}.`, 'report');
+            addNotification('leadership', 'Новый отчёт', `${currentUser.name} отправил отчёт по ${target}.`, 'report');
             addLogAction(`Отправил отчёт по наказанию ${target} (/${cmd})`);
 
             const u = dbData.staff.find(m => m.name === currentUser.name);
-            if (u) {
+            if (u && !isLeadershipRole(u.role)) {
                 if (cmd === 'tempmute') u.mutes = (u.mutes || 0) + 1;
                 else u.bans = (u.bans || 0) + 1;
                 u.total = (u.total || 0) + 1;
@@ -1164,13 +1181,29 @@
 
         function deleteAccount(id) {
             if (!isLeaderUser()) { showToast('Снимать сотрудников может только руководство.', true); return; }
-            const member = dbData.staff.find(m => m.id === id);
-            if (member && confirm(`Снять сотрудника ${member.name}?`)) {
-                addLogAction(`Снял сотрудника с должности: ${member.name} (${member.role})`);
-                dbData.staff = dbData.staff.filter(m => m.id !== id);
-                saveCloudData();
-                showToast('Сотрудник снят!');
-            }
+            const member = dbData.staff.find(m => m.id === id); if (!member) return;
+            if (isLeadershipRole(member.role) && !isOwnerCurator()) { showToast('Снимать администраторов и кураторов может только куратор-владелец.', true); return; }
+            if (!confirm(`Удалить сотрудника ${member.name} и связанные с ним данные: отчёты, отпуска, повышения, уведомления, запросы и историю профиля? Это действие нельзя отменить без резервной копии.`)) return;
+            const name=member.name;
+            addLogAction(`Удалил сотрудника и связанные данные: ${name} (${member.role})`);
+            dbData.staff=dbData.staff.filter(m=>m.id!==id);
+            ['reports','vacations','promotions'].forEach(k=>{dbData[k]=(dbData[k]||[]).filter(x=>x.author!==name);});
+            dbData.notifications=(dbData.notifications||[]).filter(n=>n.user!==name && !String(n.message||'').includes(name));
+            dbData.messages=(dbData.messages||[]).filter(t=>!(t.participants||[]).includes(name) && t.createdBy!==name);
+            dbData.tasks=(dbData.tasks||[]).filter(t=>t.author!==name && t.assignee!==name);
+            dbData.academyProgress=(dbData.academyProgress||[]).filter(x=>x.user!==name && x.name!==name);
+            dbData.hallOfFame=(dbData.hallOfFame||[]).filter(x=>x.name!==name && x.user!==name);
+            dbData.weekArchives=(dbData.weekArchives||[]).map(a=>({...a,rows:(a.rows||[]).filter(r=>r.name!==name)}));
+            dbData.weeklyTopAwards=(dbData.weeklyTopAwards||[]).map(a=>({...a,rows:(a.rows||[]).filter(r=>r.name!==name)}));
+            dbData.antiAbuseFlags=(dbData.antiAbuseFlags||[]).filter(x=>x.author!==name);
+            saveCloudData(); renderStaffTables(); renderSupportView(); renderRequestsTables(); renderNotifications(); renderDashboard(); renderLeaderboard(); renderAnalytics(); renderLogs();
+            showToast('Сотрудник и связанные данные удалены.');
+        }
+        function deleteNews(id) {
+            if(!isLeaderUser()){showToast('Удалять новости может только руководство.',true);return;}
+            const item=(dbData.news||[]).find((n,i)=>n.id===id || n._id===id || (!n.id&&!n._id&&('legacy-'+i)===id)); if(!item){showToast('Новость не найдена.',true);return;}
+            if(!confirm(`Удалить новость «${item.title||'Без названия'}»?`))return;
+            dbData.news=dbData.news.filter(n=>n!==item); addLogAction(`Удалил новость: ${item.title||'Без названия'}`); saveCloudData(); renderNews(); renderLogs(); showToast('Новость удалена.');
         }
 
         function submitVacation() {
@@ -1266,7 +1299,7 @@
 
         function generateWeeklyReport() {
             if (!isLeaderUser()) { showToast('Публиковать итоги недели может только руководство.', true); return; }
-            let rows = dbData.staff.map(u => {
+            let rows = dbData.staff.filter(u => !isLeadershipRole(u.role)).map(u => {
                 const sal = calculateUserSalary(u);
                 const onVacation = dbData.vacations.some(v => v.author === u.name && v.status === 'Одобрено');
                 const isNewbie = (Date.now() - (u.createdAt || Date.now())) < (7 * 24 * 60 * 60 * 1000);
@@ -1282,17 +1315,17 @@
             }).join('');
 
             ensureCollections();
-            const archive = { id:'week-' + Date.now(), date: new Date().toISOString(), title:'Итоги недели КП и зарплаты', rows: dbData.staff.map(u => ({ name:u.name, role:u.role, mutes:Number(u.mutes)||0, bans:Number(u.bans)||0, total:Number(u.total)||0, lifetimeTotal:getLifetimeReportCount(u), salary:calculateUserSalary(u), normDone:checkUserNormCompleted(u) })) };
+            const archive = { id:'week-' + Date.now(), date: new Date().toISOString(), title:'Итоги недели КП и зарплаты', rows: dbData.staff.filter(u => !isLeadershipRole(u.role)).map(u => ({ name:u.name, role:u.role, mutes:Number(u.mutes)||0, bans:Number(u.bans)||0, total:Number(u.total)||0, lifetimeTotal:getLifetimeReportCount(u), salary:calculateUserSalary(u), normDone:checkUserNormCompleted(u) })) };
             dbData.weekArchives.unshift(archive);
             dbData.weekArchives = dbData.weekArchives.slice(0, 52);
             dbData.news.unshift({
-                title: 'Итоги недели КП и зарплаты',
+                id:'news-'+Date.now(), title: 'Итоги недели КП и зарплаты',
                 author: currentUser.name,
                 date: new Date().toLocaleDateString(),
                 content: `<table><thead><tr><th>Сотрудник</th><th>Роль</th><th>Мутов</th><th>Банов</th><th>Зарплата</th></tr></thead><tbody>${rows}</tbody></table>`
             });
 
-            dbData.staff.forEach(u => { u.mutes = 0; u.bans = 0; u.total = 0; });
+            dbData.staff.filter(u => !isLeadershipRole(u.role)).forEach(u => { u.mutes = 0; u.bans = 0; u.total = 0; });
             addLogAction('Сформировал недельный отчёт и архивировал показатели.');
             addNotification('all', 'Итоги недели опубликованы', 'Руководство сформировало недельный отчёт.', 'news');
             saveCloudData();
@@ -1322,6 +1355,7 @@
                             <option value="Ст. Модератор" ${m.role==='Ст. Модератор'?'selected':''}>Ст. Модератор</option>
                             <option value="Администратор" ${m.role==='Администратор'?'selected':''}>Администратор</option>
                             <option value="Зам. Куратора" ${m.role==='Зам. Куратора'?'selected':''}>Зам. Куратора</option>
+                            <option value="Куратор" ${m.role==='Куратор'?'selected':''}>Куратор</option>
                             <option value="Владелец" ${m.role==='Владелец'?'selected':''}>Владелец</option>
                         </select>
                         <button onclick="changeUserRole('${m.id}')" class="btn-sm btn-warning" style="margin-left: 8px;">Изменить</button>
@@ -1455,15 +1489,11 @@
         }
 
         function renderNews() {
-            const container = document.getElementById('newsContainer');
-            if (!container) return;
-            container.innerHTML = dbData.news.length ? dbData.news.map(n => `
-                <div class="card">
-                    <div class="card-title"><div><i class="fa-solid fa-bullhorn"></i> ${n.title}</div></div>
-                    <p style="color:var(--text-muted); margin-bottom:15px;">Автор: <b>${n.author}</b> (${n.date})</p>
-                    ${n.content}
-                </div>
-            `).join('') : '<div class="card"><div class="card-title"><div><i class="fa-solid fa-bullhorn"></i> Новости</div></div><p style="color:var(--text-muted);">Пока нет новостей.</p></div>';
+            const container = document.getElementById('newsContainer'); if (!container) return;
+            container.innerHTML = dbData.news.length ? dbData.news.map((n,i) => `
+                <div class="card"><div class="card-title"><div><i class="fa-solid fa-bullhorn"></i> ${escapeHtml(n.title||'Новость')}</div>${isLeaderUser()?`<button class="btn-sm btn-danger" onclick="deleteNews('${escapeHtml(n.id||n._id||('legacy-'+i))}')"><i class="fa-solid fa-trash"></i> Удалить</button>`:''}</div>
+                    <p style="color:var(--text-muted); margin-bottom:15px;">Автор: <b>${escapeHtml(n.author||'Система')}</b> (${escapeHtml(n.date||'')})</p>${n.content||''}</div>`
+            ).join('') : '<div class="card"><div class="card-title"><div><i class="fa-solid fa-bullhorn"></i> Новости</div></div><p style="color:var(--text-muted);">Пока нет новостей.</p></div>';
         }
 
         function renderLogs() {
@@ -1538,6 +1568,8 @@
         document.addEventListener('change',function(e){if(e.target&&e.target.id==='siteBackgroundFile'){const f=e.target.files&&e.target.files[0];if(f){const box=document.getElementById('siteBackgroundPreview');if(box){box.style.backgroundImage='';box.innerHTML='<span>'+String(f.name).replace(/[<>]/g,'')+' · '+(f.type.startsWith('video/')?'видео':'изображение')+'</span>';if(f.type.startsWith('video/')){const v=document.createElement('video');v.src=URL.createObjectURL(f);v.muted=true;v.loop=true;v.autoplay=true;v.playsInline=true;box.appendChild(v);}else{box.style.backgroundImage='url('+URL.createObjectURL(f)+')';}}}}});
 
         function switchTab(tabId) {
+            const leadershipOnly = ['analytics','ai','news','leaderboard','shop','achievements','hall','academy','curator','supportView','logsView'];
+            if (leadershipOnly.includes(tabId) && !isLeaderUser()) { showToast('Этот раздел доступен только руководству.', true); return; }
             const panel = document.getElementById('tab-' + tabId);
             const legacyTabs = { curator:'curatorTab', supportView:'supportTab', logsView:'logsTab' };
             const tab = document.getElementById('tabBtn-' + tabId) || document.getElementById(legacyTabs[tabId] || '');
@@ -1565,12 +1597,12 @@
             ensureCollections();
             const set = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
             set('dashStaff', dbData.staff.length);
-            set('dashReports', dbData.staff.reduce((sum,m) => sum + (Number(m.total)||0), 0));
+            set('dashReports', dbData.staff.filter(m=>!isLeadershipRole(m.role)).reduce((sum,m) => sum + (Number(m.total)||0), 0));
             set('dashRequests', [...dbData.vacations, ...dbData.promotions].filter(r => !r.status || r.status === 'На рассмотрении').length);
             set('dashNormMiss', dbData.staff.filter(m => !checkUserNormCompleted(m)).length);
             const nbox = document.getElementById('dashboardNotifications');
             if (nbox) {
-                const ns = dbData.notifications.filter(n => n.user === currentUser.name || n.user === 'all').slice(0,4);
+                const ns = dbData.notifications.filter(n => (n.user === currentUser.name || n.user === 'all' || (isLeaderUser() && n.user === 'leadership')) && (isLeaderUser() || n.type !== 'report')).slice(0,4);
                 nbox.innerHTML = ns.length ? ns.map(n => { const read = Array.isArray(n.readBy) ? n.readBy.includes(currentUser.name) : !!n.read; return `<div class="notice-item ${read ? '' : 'unread'}"><b>${escapeHtml(n.title)}</b><div class="muted" style="margin-top:5px;">${escapeHtml(n.message)}</div><small class="muted">${formatDate(n.createdAt)}</small></div>`; }).join('') : '<p class="muted">Пока нет уведомлений.</p>';
             }
             const cbox = document.getElementById('dashboardCalendar');
@@ -1621,7 +1653,7 @@
         function renderLeaderboard() {
             const body=document.getElementById('leaderboardBody');if(!body)return;
             const period=document.getElementById('leaderboardPeriod')?.value||'all', cutoff=period==='all'?0:Date.now()-Number(period)*86400000;
-            const rows=dbData.staff.map(m=>{const reps=(dbData.reports||[]).filter(r=>r.author===m.name&&Number(r.createdAt||0)>=cutoff);const mutes=reps.filter(r=>/mute/i.test(String(r.cmd||r.type||''))).length;const bans=reps.filter(r=>/ban/i.test(String(r.cmd||r.type||''))).length;return {m,reports:period==='all'?getLifetimeReportCount(m):reps.length,mutes:period==='all'?(Number(m.mutes)||0):mutes,bans:period==='all'?(Number(m.bans)||0):bans};});
+            const rows=dbData.staff.filter(m=>!isLeadershipRole(m.role)).map(m=>{const reps=(dbData.reports||[]).filter(r=>r.author===m.name&&Number(r.createdAt||0)>=cutoff);const mutes=reps.filter(r=>/mute/i.test(String(r.cmd||r.type||''))).length;const bans=reps.filter(r=>/ban/i.test(String(r.cmd||r.type||''))).length;return {m,reports:period==='all'?getLifetimeReportCount(m):reps.length,mutes:period==='all'?(Number(m.mutes)||0):mutes,bans:period==='all'?(Number(m.bans)||0):bans};});
             const key=leaderboardMode==='mutes'?'mutes':leaderboardMode==='bans'?'bans':'reports';rows.sort((a,b)=>b[key]-a[key]);
             body.innerHTML=rows.length?rows.map((x,i)=>`<tr><td><b>${i+1}</b></td><td><a href="#" onclick="switchTab('achievements');return false" style="color:var(--accent)">${escapeHtml(x.m.name)}</a></td><td>${escapeHtml(x.m.role)}</td><td>${x.mutes}</td><td>${x.bans}</td><td>${x.reports}</td><td><span class="status-pill ${checkUserNormCompleted(x.m)?'done':'failed'}">${checkUserNormCompleted(x.m)?'Выполнена':'Не выполнена'}</span></td></tr>`).join(''):'<tr><td colspan="7">Нет сотрудников</td></tr>';renderWeeklyTop();
         }
@@ -1685,7 +1717,7 @@
         function renderNotifications() {
             if (!currentUser) return;
             ensureCollections();
-            const own = dbData.notifications.filter(n => n.user === currentUser.name || n.user === 'all');
+            const own = dbData.notifications.filter(n => (n.user === currentUser.name || n.user === 'all' || (isLeaderUser() && n.user === 'leadership')) && (isLeaderUser() || n.type !== 'report'));
             const unread = own.filter(n => Array.isArray(n.readBy) ? !n.readBy.includes(currentUser.name) : !n.read).length;
             const count = document.getElementById('notificationCount'); if (count) count.textContent = unread;
             const badge = document.getElementById('notificationBadge'); if (badge) { badge.textContent = unread; badge.style.display = unread ? 'inline-block' : 'none'; }
@@ -1695,7 +1727,7 @@
 
         function markNotificationsRead() {
             if (!currentUser) return;
-            dbData.notifications.forEach(n => { if (n.user === currentUser.name || n.user === 'all') { n.readBy = Array.isArray(n.readBy) ? n.readBy : []; if (!n.readBy.includes(currentUser.name)) n.readBy.push(currentUser.name); } });
+            dbData.notifications.forEach(n => { if (n.user === currentUser.name || n.user === 'all' || (isLeaderUser() && n.user === 'leadership')) { n.readBy = Array.isArray(n.readBy) ? n.readBy : []; if (!n.readBy.includes(currentUser.name)) n.readBy.push(currentUser.name); } });
             saveCloudData(); renderNotifications(); renderDashboard(); showToast('Уведомления отмечены прочитанными.');
         }
 
@@ -1771,9 +1803,10 @@
         }
 
         function renderAnalytics() {
-            if(!currentUser)return;ensureCollections();const now=Date.now(),period=document.getElementById('analyticsPeriod')?.value||'7',days=period==='all'?null:Number(period),cutoff=days===null?0:now-days*86400000;const recent=(dbData.reports||[]).filter(r=>Number(r.createdAt||0)>=cutoff);
+            if(!isLeaderUser()) return;
+            if(!currentUser)return;ensureCollections();const now=Date.now(),period=document.getElementById('analyticsPeriod')?.value||'7',days=period==='all'?null:Number(period),cutoff=days===null?0:now-days*86400000;const eligibleNames=new Set((dbData.staff||[]).filter(m=>!isLeadershipRole(m.role)).map(m=>m.name));const recent=(dbData.reports||[]).filter(r=>eligibleNames.has(r.author)&&Number(r.createdAt||0)>=cutoff);
             const el=(id,v)=>{const n=document.getElementById(id);if(n)n.textContent=v;};el('anReports',recent.length);el('anReportsLabel',period==='all'?'Отчётов за всё время':`Отчётов за ${days} дней`);el('anStaff',dbData.staff.length);
-            const eligible=dbData.staff.filter(m=>!String(m.role||'').includes('Куратор')&&!['Зам. Куратора','Администратор','Владелец'].includes(m.role));const done=eligible.filter(checkUserNormCompleted).length;el('anNorm',eligible.length?Math.round(done/eligible.length*100)+'%':'—');
+            const eligible=dbData.staff.filter(m=>!isLeadershipRole(m.role));const done=eligible.filter(checkUserNormCompleted).length;el('anNorm',eligible.length?Math.round(done/eligible.length*100)+'%':'—');
             const dayNames=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];const bucketCount=days===null?Math.min(30,Math.max(7,Math.ceil((now-Math.min(...recent.map(r=>Number(r.createdAt)||now)))/86400000)+1)):Math.min(days,60);const ordered=[];for(let i=bucketCount-1;i>=0;i--){const d=new Date(now-i*86400000);const count=recent.filter(r=>new Date(Number(r.createdAt)||0).toDateString()===d.toDateString()).length;ordered.push({label:bucketCount<=21?dayNames[d.getDay()]+' '+d.getDate():String(d.getDate())+'/'+(d.getMonth()+1),value:count});}
             const daysBox=document.getElementById('analyticsDays');if(daysBox){daysBox.style.gridTemplateColumns=`repeat(${Math.min(15,ordered.length)},minmax(0,1fr))`;const max=Math.max(1,...ordered.map(x=>x.value));daysBox.innerHTML=ordered.map(x=>`<div class="analytics-bar-wrap"><div class="analytics-bar-value">${x.value}</div><div class="analytics-bar" style="height:${Math.max(4,x.value/max*95)}px"></div><div class="analytics-bar-label">${x.label}</div></div>`).join('');}
             const hourCounts=Array(24).fill(0);recent.forEach(r=>hourCounts[new Date(Number(r.createdAt)||0).getHours()]++);const peak=hourCounts.indexOf(Math.max(...hourCounts));el('anPeak',recent.length?`${String(peak).padStart(2,'0')}:00`:'—');const hoursBox=document.getElementById('analyticsHours');if(hoursBox){const max=Math.max(1,...hourCounts);hoursBox.style.gridTemplateColumns='repeat(12,minmax(0,1fr))';hoursBox.innerHTML=hourCounts.map((v,i)=>`<div class="analytics-bar-wrap"><div class="analytics-bar-value">${v}</div><div class="analytics-bar" style="height:${Math.max(3,v/max*95)}px"></div><div class="analytics-bar-label">${String(i).padStart(2,'0')}</div></div>`).join('');}
@@ -1781,12 +1814,13 @@
         }
 
         function askStaffAI() {
+            if(!isLeaderUser()) { showToast('ИИ-помощник доступен только руководству.',true); return; }
             const q=(document.getElementById('aiQuestion')?.value||'').trim().toLowerCase(), box=document.getElementById('aiAnswer'); if(!q||!box)return;
             const staff=dbData.staff||[]; let answer='Я пока умею отвечать на вопросы о текущей активности, нормах, наказаниях и недельной сводке. Попробуй: «кто работает хорошо», «кто не выполнил норму» или «сводка за неделю».';
-            const active=staff.filter(m=>!String(m.role||'').includes('Куратор')&&!['Зам. Куратора','Администратор','Владелец'].includes(m.role));
+            const active=staff.filter(m=>!isLeadershipRole(m.role));
             if(/кто.*(хорош|луч|актив)|топ|лучшие/.test(q)){const sorted=[...staff].sort((a,b)=>((Number(b.mutes)||0)+(Number(b.bans)||0))-((Number(a.mutes)||0)+(Number(a.bans)||0))).slice(0,5);answer='По текущим недельным показателям лидируют: '+(sorted.map((m,i)=>`${i+1}. ${m.name} — ${Number(m.mutes)||0} мутов, ${Number(m.bans)||0} банов, ${checkUserNormCompleted(m)?'норма выполнена':'норма не выполнена'}`).join('; ')||'данных пока нет')+'. Оценка основана на объёме, а не на качестве решений.';}
             else if(/не выполн|просроч|норм/.test(q)){const misses=active.filter(m=>!checkUserNormCompleted(m));answer=misses.length?'Норму пока не выполнили: '+misses.map(m=>`${m.name} (${Number(m.mutes)||0} мутов, ${Number(m.bans)||0} банов)`).join('; '):'Все сотрудники, для которых применяется норма, выполнили её по текущим данным.';}
-            else if(/сводк|недел|статист/.test(q)){const recent=(dbData.reports||[]).filter(r=>Number(r.createdAt||0)>=Date.now()-7*86400000);const mutes=recent.filter(r=>r.cmd==='tempmute').length;answer=`Сводка за последние 7 дней: ${recent.length} отчётов; ${mutes} мутов и ${recent.length-mutes} банов/прочих наказаний; сотрудников в базе — ${staff.length}; норму выполнили ${active.filter(checkUserNormCompleted).length} из ${active.length} сотрудников с нормой.`;}
+            else if(/сводк|недел|статист/.test(q)){const eligibleNames=new Set(staff.filter(m=>!isLeadershipRole(m.role)).map(m=>m.name));const recent=(dbData.reports||[]).filter(r=>eligibleNames.has(r.author)&&Number(r.createdAt||0)>=Date.now()-7*86400000);const mutes=recent.filter(r=>r.cmd==='tempmute').length;answer=`Сводка за последние 7 дней: ${recent.length} отчётов; ${mutes} мутов и ${recent.length-mutes} банов/прочих наказаний; сотрудников в базе — ${staff.length}; норму выполнили ${active.filter(checkUserNormCompleted).length} из ${active.length} сотрудников с нормой.`;}
             else if(/зарплат|сурик/.test(q)){answer=staff.map(m=>`${m.name}: расчётная зарплата ${calculateUserSalary(m)} суриков; баланс наград ${Number(m.suriki)||0}`).join(' · ');}
             else if(/варн|предупрежд/.test(q)){const warned=staff.filter(m=>Number(m.warns)>0);answer=warned.length?'Активные предупреждения: '+warned.map(m=>`${m.name} — ${m.warnReason||'причина не указана'}, отработка ${Number(m.warnProgress)||0}/${Number(m.warnRequired)||0} ${m.warnWorkType==='bans'?'банов':'мутов'}`).join('; '):'Активных варнов по данным базы нет.';}
             box.innerHTML=`<b>Ответ по данным панели</b><p style="margin-top:8px;line-height:1.6">${escapeHtml(answer)}</p><small class="muted">Это локальная аналитика. Для свободного диалога с настоящей языковой моделью потребуется защищённый серверный API.</small>`;
@@ -1880,7 +1914,7 @@
 
         // Weekly top 5: awards are additional profile points, not salary.
         function getWeekStart(ts=Date.now()){const d=new Date(ts);d.setHours(0,0,0,0);const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d.getTime();}
-        function weeklyRows(){const start=getWeekStart(),end=start+7*86400000;return (dbData.staff||[]).map(m=>{const reps=(dbData.reports||[]).filter(r=>r.author===m.name&&Number(r.createdAt||0)>=start&&Number(r.createdAt||0)<end);const signatures=new Set();let dup=0;reps.forEach(r=>{const sig=[r.author,r.cmd||r.type||'',r.player||r.target||'',r.reason||'',Math.floor((Number(r.createdAt)||0)/60000)].join('|').toLowerCase();if(signatures.has(sig))dup++;else signatures.add(sig);});return {m,count:reps.length,mutes:reps.filter(r=>/mute/i.test(String(r.cmd||r.type||''))).length,bans:reps.filter(r=>/ban/i.test(String(r.cmd||r.type||''))).length,duplicates:dup};}).sort((a,b)=>b.count-a.count||b.mutes-a.mutes||b.bans-a.bans);}
+        function weeklyRows(){const start=getWeekStart(),end=start+7*86400000;return (dbData.staff||[]).filter(m=>!isLeadershipRole(m.role)).map(m=>{const reps=(dbData.reports||[]).filter(r=>r.author===m.name&&Number(r.createdAt||0)>=start&&Number(r.createdAt||0)<end);const signatures=new Set();let dup=0;reps.forEach(r=>{const sig=[r.author,r.cmd||r.type||'',r.player||r.target||'',r.reason||'',Math.floor((Number(r.createdAt)||0)/60000)].join('|').toLowerCase();if(signatures.has(sig))dup++;else signatures.add(sig);});return {m,count:reps.length,mutes:reps.filter(r=>/mute/i.test(String(r.cmd||r.type||''))).length,bans:reps.filter(r=>/ban/i.test(String(r.cmd||r.type||''))).length,duplicates:dup};}).sort((a,b)=>b.count-a.count||b.mutes-a.mutes||b.bans-a.bans);}
         function renderWeeklyTop(){ensureCollections();const box=document.getElementById('weeklyTopFive');if(!box)return;const start=getWeekStart(),rows=weeklyRows().slice(0,5),weekKey=String(start),awarded=(dbData.weeklyTopAwards||[]).some(x=>x.weekKey===weekKey);const rewards=[500,350,250,150,100],medals=['👑','🥈','🥉','🏅','🏅'];box.innerHTML=rows.length?rows.map((x,i)=>`<div class="top-five-card"><div class="top-five-rank">${medals[i]} #${i+1}</div><img class="top-five-avatar" src="${escapeHtml(x.m.avatar||'https://mc-heads.net/avatar/'+encodeURIComponent(x.m.name)+'/64')}" alt=""><b>${escapeHtml(x.m.name)}</b><div class="muted" style="font-size:12px;margin-top:5px">${x.count} отчётов · ${x.mutes} мутов · ${x.bans} банов</div><div class="shop-price">+${rewards[i]} очков профиля</div>${x.duplicates?`<div class="security-note">Возможные повторы: ${x.duplicates}</div>`:''}</div>`).join(''):'<p class="muted">На этой неделе пока нет отчётов.</p>';const admin=document.getElementById('weeklyTopAdmin');if(admin)admin.innerHTML=isLeaderUser()?`<button class="btn-primary" ${awarded?'disabled':''} onclick="awardWeeklyTop()">${awarded?'Награды за эту неделю уже выданы':'Выдать очки ТОП-5 недели'}</button> <button class="btn-sm btn-warning" onclick="scanAntiAbuse()">Проверить отчёты на повторы</button>`:'';}
         function awardWeeklyTop(){if(!isLeaderUser()){showToast('Выдать награды может только руководство.',true);return;}ensureCollections();const weekKey=String(getWeekStart());dbData.weeklyTopAwards=Array.isArray(dbData.weeklyTopAwards)?dbData.weeklyTopAwards:[];if(dbData.weeklyTopAwards.some(x=>x.weekKey===weekKey)){showToast('Награды за эту неделю уже выдавались.',true);return;}const rewards=[500,350,250,150,100],rows=weeklyRows().slice(0,5);if(!rows.length){showToast('Пока нет отчётов для рейтинга.',true);return;}if(!confirm('Выдать очки профиля ТОП-5 недели? Это отдельная награда сверх зарплаты.'))return;rows.forEach((x,i)=>{x.m.profilePoints=(Number(x.m.profilePoints)||0)+rewards[i];addNotification(x.m.name,'Награда ТОП-5 недели',`Ты занял(а) ${i+1} место и получил(а) ${rewards[i]} очков профиля.`,'reward');});dbData.weeklyTopAwards.push({weekKey,at:Date.now(),author:currentUser.name,rows:rows.map((x,i)=>({name:x.m.name,place:i+1,points:rewards[i]}))});addLogAction('Выдал награды ТОП-5 недели');saveCloudData();renderLeaderboard();renderAchievements();renderShop();showToast('Награды ТОП-5 недели выданы.');}
         function scanAntiAbuse(){if(!isLeaderUser()){showToast('Проверка доступна руководству.',true);return;}ensureCollections();const flags=[],byAuthor={};(dbData.reports||[]).forEach(r=>{const key=[r.author,r.cmd||r.type||'',r.player||r.target||'',r.reason||'',Math.floor((Number(r.createdAt)||0)/60000)].join('|').toLowerCase();if(!byAuthor[key])byAuthor[key]=[];byAuthor[key].push(r);});Object.entries(byAuthor).forEach(([signature,items])=>{if(items.length>1)flags.push({id:'ab-'+items[0].id+'-'+items.length,signature,count:items.length,author:items[0].author,createdAt:Date.now(),status:'review'});});dbData.antiAbuseFlags=flags.slice(0,200);addLogAction(`Проверка накрутки: найдено ${flags.length} групп возможных дубликатов`);saveCloudData();alert(flags.length?`Найдено ${flags.length} групп возможных повторов. Они сохранены для проверки, автоматических наказаний нет.`:'Явных дубликатов по доступным полям не найдено. Это не гарантирует отсутствие накрутки.');renderLeaderboard();}
